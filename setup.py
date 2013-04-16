@@ -1,3 +1,6 @@
+
+from __future__ import print_function
+
 from distutils.command.build import build as _build
 from distutils.errors import CompileError
 from distutils import sysconfig
@@ -11,7 +14,7 @@ BOOST_MINIMUM_VERSION = (1,47,0)
 SWIG_MINIMUM_VERSION  = (2,0,7)
 
 def die(msg):
-    print msg
+    print(msg)
     sys.exit(1)
 
 def str_version(tpl):
@@ -133,20 +136,20 @@ def configure(arguments):
 
     # verify that the boost directory is valid and has a good boost version
     if boost_version(boost_inc) < BOOST_MINIMUM_VERSION:
-        print "Boost version at least %s required!" \
-            % str_version(BOOST_MINIMUM_VERSION)
-        print "Use --boost=<path> to specify boost location."
+        print("Boost version at least %s required!" \
+            % str_version(BOOST_MINIMUM_VERSION))
+        print("Use --boost=<path> to specify boost location.")
         sys.exit(1)
-    print "boost=%s" % boost_inc
+    print("boost=%s" % boost_inc)
 
     # Verify that the swig version is adequate
     swig_executable = arguments["swig"] or "swig"
     if swig_version(swig_executable) < SWIG_MINIMUM_VERSION:
-        print "SWIG (version >= %s) must be in your $PATH," \
-            % str_version(SWIG_MINIMUM_VERSION)
-        print "or specified using --swig=<path/to/swig>."
+        print("SWIG (version >= %s) must be in your $PATH," \
+            % str_version(SWIG_MINIMUM_VERSION))
+        print("or specified using --swig=<path/to/swig>.")
         sys.exit(1)
-    print "swig=%s" % swig_executable
+    print("swig=%s" % swig_executable)
 
 
     debug = arguments["debug"]
@@ -173,7 +176,7 @@ class build(_build):
         configuration = configure(arguments)
         error = os.system(configuration + "make python")
         if error:
-            raise CompileError, "Failed to compile or link ConsensusCore C++ code"
+            raise CompileError("Failed to compile or link ConsensusCore C++ code")
 
     @staticmethod
     def pythonBuildDirectory():

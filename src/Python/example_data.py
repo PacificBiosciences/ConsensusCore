@@ -24,7 +24,7 @@ delQv = FloatArray(nObs)
 mergeQv = FloatArray(nObs)
 
 delTag = FloatArray(nObs)
-for i in xrange(nObs):
+for i in range(nObs):
     delTag[i] = ord('A')
 
 features2 = QvSequenceFeatures(read,
