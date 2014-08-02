@@ -39,7 +39,7 @@ configure_pbi ()
 {
     echo "Configuring based on PacBio P4 depot paths."
 
-    SOFTWARE=$(readlink -f ../../../..) # Path to //depot/software
+    SOFTWARE=$(readlink -f ../../../../..) # Path to //depot/software
     BOOST=$SOFTWARE/smrtanalysis/prebuilt.out/boost/boost_1_47_0/
     SWIG=$SOFTWARE/smrtanalysis/prebuilt.out/swig/swig-2.0.10/ubuntu-1004/bin/swig
     SWIG_LIB=$SOFTWARE/smrtanalysis/prebuilt.out/swig/swig-2.0.10/common/share/swig/2.0.10
