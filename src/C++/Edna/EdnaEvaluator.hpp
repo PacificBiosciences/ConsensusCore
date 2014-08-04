@@ -78,8 +78,7 @@ namespace ConsensusCore
                       const std::string& tpl,
                       const std::vector<int> channelTpl,
                       const EdnaModelParams& params)
-            : read_(Read::Null()),
-              features_(features),
+            : features_(features),
               params_(params),
               tpl_(tpl),
               channelTpl_(&(channelTpl[0]), tpl_.length()),
@@ -90,9 +89,9 @@ namespace ConsensusCore
         ~EdnaEvaluator()
         {}
 
-        const Read& Read() const
+        std::string ReadName() const
         {
-            return read_;
+            return "(anonymous)";
         }
 
         std::string Basecalls() const
@@ -322,7 +321,6 @@ namespace ConsensusCore
         }
 
     protected:
-        struct Read read_;
         ChannelSequenceFeatures features_;
         EdnaModelParams params_;
         std::string tpl_;

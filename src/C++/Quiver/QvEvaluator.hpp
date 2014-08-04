@@ -109,9 +109,9 @@ namespace ConsensusCore
         ~QvEvaluator()
         {}
 
-        const Read& Read() const
+        std::string ReadName() const
         {
-            return read_;
+            return read_.Name;
         }
 
         std::string Basecalls() const
@@ -309,7 +309,7 @@ namespace ConsensusCore
 
 
     protected:
-        struct Read read_;
+        Read read_;
         QvModelParams params_;
         std::string tpl_;
         bool pinStart_;
