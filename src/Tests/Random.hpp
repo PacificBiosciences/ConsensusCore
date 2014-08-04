@@ -46,6 +46,7 @@
 #include "Mutation.hpp"
 #include "Features.hpp"
 #include "Quiver/QvEvaluator.hpp"
+#include "Read.hpp"
 #include "Utils.hpp"
 
 using ConsensusCore::Mutation;
@@ -53,6 +54,7 @@ using ConsensusCore::MutationType;
 using ConsensusCore::QvEvaluator;
 using ConsensusCore::QvModelParams;
 using ConsensusCore::QvSequenceFeatures;
+using ConsensusCore::Read;
 
 template<typename RNG>
 std::string
@@ -126,6 +128,7 @@ RandomQvEvaluator(RNG& rng, int length)
     float* mergeQv = RandomQvArray(rng, readLength);
 
     QvSequenceFeatures f(seq, insQv, subsQv, delQv, delTag, mergeQv);
+    Read read(f, "anonymous", "unknown");
 
     delete[] insQv;
     delete[] subsQv;
@@ -135,7 +138,7 @@ RandomQvEvaluator(RNG& rng, int length)
 
     bool pinStart = RandomBernoulliDraw(rng, 0.5);
     bool pinEnd = RandomBernoulliDraw(rng, 0.5);
-    return QvEvaluator(f, tpl, TestingParams<QvModelParams>(), pinStart, pinEnd);
+    return QvEvaluator(read, tpl, TestingParams<QvModelParams>(), pinStart, pinEnd);
 }
 
 template<typename RNG>

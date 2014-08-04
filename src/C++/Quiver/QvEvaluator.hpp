@@ -55,6 +55,7 @@
 #include "Features.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
+#include "Read.hpp"
 
 #ifndef SWIG
 using std::min;
@@ -93,12 +94,12 @@ namespace ConsensusCore
         typedef QvModelParams      ParamsType;
 
     public:
-        QvEvaluator(const QvSequenceFeatures& features,
+        QvEvaluator(const Read& read,
                     const std::string& tpl,
                     const QvModelParams& params,
                     bool pinStart = true,
                     bool pinEnd = true)
-            : features_(features),
+            : read_(read),
               params_(params),
               tpl_(tpl),
               pinStart_(pinStart),
@@ -108,9 +109,14 @@ namespace ConsensusCore
         ~QvEvaluator()
         {}
 
-        std::string Read() const
+        const Read& Read() const
         {
-            return features_.Sequence();
+            return read_;
+        }
+
+        std::string Basecalls() const
+        {
+            return Features().Sequence();
         }
 
         std::string Template() const
@@ -126,7 +132,7 @@ namespace ConsensusCore
 
         int ReadLength() const
         {
-            return features_.Length();
+            return Features().Length();
         }
 
         int TemplateLength() const
@@ -148,7 +154,7 @@ namespace ConsensusCore
         {
             assert(0 <= i && i < ReadLength());
             assert (0 <= j && j < TemplateLength());
-            return (features_[i] == tpl_[j]);
+            return (Features()[i] == tpl_[j]);
         }
 
         float Inc(int i, int j) const
@@ -157,7 +163,7 @@ namespace ConsensusCore
                    0 <= i && i < ReadLength() );
             return (IsMatch(i, j)) ?
                     params_.Match :
-                    params_.Mismatch + params_.MismatchS * features_.SubsQv[i];
+                    params_.Mismatch + params_.MismatchS * Features().SubsQv[i];
         }
 
         float Del(int i, int j) const
@@ -171,8 +177,8 @@ namespace ConsensusCore
             else
             {
                 float tplBase = tpl_[j];
-                return (i < ReadLength() && tplBase == features_.DelTag[i]) ?
-                        params_.DeletionWithTag + params_.DeletionWithTagS * features_.DelQv[i] :
+                return (i < ReadLength() && tplBase == Features().DelTag[i]) ?
+                        params_.DeletionWithTag + params_.DeletionWithTagS * Features().DelQv[i] :
                         params_.DeletionN;
             }
         }
@@ -182,21 +188,21 @@ namespace ConsensusCore
             assert(0 <= j && j <= TemplateLength() &&
                    0 <= i && i < ReadLength() );
             return (j < TemplateLength() && IsMatch(i, j)) ?
-                    params_.Branch + params_.BranchS * features_.InsQv[i] :
-                    params_.Nce + params_.NceS * features_.InsQv[i];
+                    params_.Branch + params_.BranchS * Features().InsQv[i] :
+                    params_.Nce + params_.NceS * Features().InsQv[i];
         }
 
         float Merge(int i, int j) const
         {
             assert(0 <= j && j < TemplateLength() - 1 &&
                    0 <= i && i < ReadLength() );
-            if (!(features_[i] == tpl_[j] && features_[i] == tpl_[j + 1]) )
+            if (!(Features()[i] == tpl_[j] && Features()[i] == tpl_[j + 1]) )
             {
                 return -FLT_MAX;
             }
             else
             {   int tplBase = encodeTplBase(tpl_[j]);
-                return params_.Merge[tplBase] + params_.MergeS[tplBase] * features_.MergeQv[i];
+                return params_.Merge[tplBase] + params_.MergeS[tplBase] * Features().MergeQv[i];
             }
         }
 
@@ -210,9 +216,9 @@ namespace ConsensusCore
             assert (0 <= j && j < TemplateLength());
             float tplBase = tpl_[j];
             __m128 match = _mm_set_ps1(params_.Match);
-            __m128 mismatch = AFFINE4(params_.Mismatch, params_.MismatchS, &features_.SubsQv[i]);
+            __m128 mismatch = AFFINE4(params_.Mismatch, params_.MismatchS, &Features().SubsQv[i]);
             // Mask to see it the base is equal to the template
-            __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]),
+            __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
                                        _mm_set_ps1(tplBase));
             return MUX4(mask, match, mismatch);
         }
@@ -226,9 +232,9 @@ namespace ConsensusCore
                 float tplBase = tpl_[j];
                 __m128 delWTag = AFFINE4(params_.DeletionWithTag,
                                          params_.DeletionWithTagS,
-                                         &features_.DelQv[i]);
+                                         &Features().DelQv[i]);
                 __m128 delNoTag = _mm_set_ps1(params_.DeletionN);
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.DelTag[i]),
+                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().DelTag[i]),
                                            _mm_set_ps1(tplBase));
                 return MUX4(mask, delWTag, delNoTag);
             }
@@ -251,10 +257,10 @@ namespace ConsensusCore
             if (i != 0 && i + 3 != ReadLength())
             {
                 float tplBase = tpl_[j];
-                __m128 branch = AFFINE4(params_.Branch, params_.BranchS, &features_.InsQv[i]);
-                __m128 nce    = AFFINE4(params_.Nce,    params_.NceS,    &features_.InsQv[i]);
+                __m128 branch = AFFINE4(params_.Branch, params_.BranchS, &Features().InsQv[i]);
+                __m128 nce    = AFFINE4(params_.Nce,    params_.NceS,    &Features().InsQv[i]);
 
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]),
+                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
                                            _mm_set_ps1(tplBase));
                 return MUX4(mask, branch, nce);
             }
@@ -280,12 +286,12 @@ namespace ConsensusCore
 
             __m128 merge =  AFFINE4(params_.Merge[tplBase_],
                                     params_.MergeS[tplBase_],
-                                    &features_.MergeQv[i]);
+                                    &Features().MergeQv[i]);
             __m128 noMerge = _mm_set_ps1(-FLT_MAX);
 
             if (tplBase == tplBaseNext)
             {
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]),
+                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
                                            _mm_set_ps1(tplBase));
                 return MUX4(mask, merge, noMerge);
             }
@@ -295,9 +301,15 @@ namespace ConsensusCore
             }
         }
 
+    protected:
+        inline const QvSequenceFeatures& Features() const
+        {
+            return read_.Features;
+        }
+
 
     protected:
-        QvSequenceFeatures features_;
+        struct Read read_;
         QvModelParams params_;
         std::string tpl_;
         bool pinStart_;

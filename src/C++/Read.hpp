@@ -49,11 +49,15 @@ namespace ConsensusCore
         std::string Name;
         std::string Chemistry;
 
-        Read(const QvSequenceFeatures& features,
+        Read(QvSequenceFeatures features,
              std::string name,
              std::string chemistry);
 
         Read(const Read& other);
+
+        int Length() const;
+
+        static Read Null();
     };
 
     enum StrandEnum

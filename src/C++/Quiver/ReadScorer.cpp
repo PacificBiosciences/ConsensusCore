@@ -55,7 +55,7 @@ namespace ConsensusCore
         : _quiverConfig(config)
     {}
 
-    float ReadScorer::Score(const string& tpl, const QvSequenceFeatures & read) const
+    float ReadScorer::Score(const string& tpl, const Read& read) const
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -70,7 +70,7 @@ namespace ConsensusCore
     }
 
     const PairwiseAlignment*
-    ReadScorer::Align(const string& tpl, const QvSequenceFeatures & read) const
+    ReadScorer::Align(const string& tpl, const Read& read) const
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -84,7 +84,7 @@ namespace ConsensusCore
     }
 
     const SparseMatrix*
-    ReadScorer::Alpha(const string& tpl, const QvSequenceFeatures & read) const
+    ReadScorer::Alpha(const string& tpl, const Read& read) const
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -99,7 +99,7 @@ namespace ConsensusCore
     }
 
     const SparseMatrix*
-    ReadScorer::Beta(const string& tpl, const QvSequenceFeatures & read) const
+    ReadScorer::Beta(const string& tpl, const Read& read) const
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);

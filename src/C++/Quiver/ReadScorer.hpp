@@ -53,16 +53,16 @@ namespace ConsensusCore
         explicit ReadScorer(QuiverConfig& config);
 
         float Score
-        (const std::string& tpl, const QvSequenceFeatures& read) const;
+        (const std::string& tpl, const Read& read) const;
 
         const PairwiseAlignment* Align
-        (const std::string& tpl, const QvSequenceFeatures& read) const;
+        (const std::string& tpl, const Read& read) const;
 
         const SparseMatrix* Alpha
-        (const std::string& tpl, const QvSequenceFeatures& read) const;
+        (const std::string& tpl, const Read& read) const;
 
         const SparseMatrix* Beta
-        (const std::string& tpl, const QvSequenceFeatures& read) const;
+        (const std::string& tpl, const Read& read) const;
 
 
     private:

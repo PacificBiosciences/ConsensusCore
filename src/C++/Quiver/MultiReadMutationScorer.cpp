@@ -243,7 +243,7 @@ namespace ConsensusCore
     {
         DEBUG_ONLY(CheckInvariants());
         const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
-        EvaluatorType ev(mr.Features,
+        EvaluatorType ev(mr,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
                          config->QvParams);
         RecursorType recursor(config->MovesAvailable, config->Banding);

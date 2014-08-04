@@ -43,7 +43,7 @@
 
 namespace ConsensusCore {
 
-    Read::Read(const QvSequenceFeatures& features,
+    Read::Read(QvSequenceFeatures features,
                std::string name,
                std::string chemistry)
         : Features(features),
@@ -56,6 +56,16 @@ namespace ConsensusCore {
           Name(other.Name),
           Chemistry(other.Chemistry)
     {}
+
+    int Read::Length() const
+    {
+        return Features.Length();
+    }
+
+    Read Read::Null()
+    {
+        return Read(QvSequenceFeatures(""), "", "");
+    }
 
     MappedRead::MappedRead(const Read& read,
                            StrandEnum strand,

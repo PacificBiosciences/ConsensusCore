@@ -235,11 +235,11 @@ namespace detail {
             switch (move.MoveType) {
             case INCORPORATE:
                 target     += e.Template()[j];
-                query      += e.Read()[i];
+                query      += e.Basecalls()[i];
                 break;
             case EXTRA:
                 target     += '-';
-                query      += e.Read()[i];
+                query      += e.Basecalls()[i];
                 break;
             case DELETE:
                 target     += e.Template()[j];
@@ -249,7 +249,7 @@ namespace detail {
                 target     += e.Template()[j];
                 target     += e.Template()[j+1];
                 query      += '-';
-                query      += e.Read()[i];
+                query      += e.Basecalls()[i];
                 break;
             case INVALID_MOVE:
                 ShouldNotReachHere();

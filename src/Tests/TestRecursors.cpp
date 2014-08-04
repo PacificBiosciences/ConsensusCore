@@ -93,10 +93,13 @@ protected:
 #define E typename TypeParam::EvaluatorType
 #define NULL_MATRIX TypeParam::MatrixType::Null()
 
+
+extern Read AnonymousRead(std::string seq);
+
 TYPED_TEST(RecursorTest, SmallMatchTest)
 {
     std::string tpl("GATG");
-    QvSequenceFeatures read("GATG");
+    Read read = AnonymousRead("GATG");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES, this->noBanding_);
@@ -125,7 +128,7 @@ TYPED_TEST(RecursorTest, SmallMatchTest)
 TYPED_TEST(RecursorTest, SmallMismatchTest)
 {
     std::string tpl("GATG");
-    QvSequenceFeatures read("GATC");
+    Read read = AnonymousRead("GATC");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES, this->noBanding_);
@@ -151,7 +154,7 @@ TYPED_TEST(RecursorTest, SmallMismatchTest)
 TYPED_TEST(RecursorTest, SmallMergeTest)
 {
     std::string tpl("GATT");
-    QvSequenceFeatures read("GAT");
+    Read read = AnonymousRead("GAT");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES | MERGE, this->noBanding_);
@@ -190,7 +193,7 @@ TYPED_TEST(RecursorTest, MediumSizedTest)
     for (int i = 7; i < 10; i++) readSs << "GATTACA";
 
     std::string tpl(tplSs.str());
-    QvSequenceFeatures read(readSs.str());
+    Read read = AnonymousRead(readSs.str());
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES, this->standardBanding_);
@@ -203,7 +206,7 @@ TYPED_TEST(RecursorTest, MediumSizedTest)
 TYPED_TEST(RecursorTest, LinkTest)
 {
     std::string tpl("GATTCTC");
-    QvSequenceFeatures read("GATCTTC");
+    Read read = AnonymousRead("GATCTTC");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES | MERGE, this->noBanding_);
@@ -229,7 +232,7 @@ TYPED_TEST(RecursorTest, LinkTest)
 TYPED_TEST(RecursorTest, ExtendAlphaTest)
 {
     std::string tpl("GATTCTC");
-    QvSequenceFeatures read("GATCTTC");
+    Read read = AnonymousRead("GATCTTC");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES | MERGE, this->noBanding_);
@@ -261,7 +264,7 @@ TYPED_TEST(RecursorTest, ExtendAlphaTest)
 TYPED_TEST(RecursorTest, ExtendBetaTest)
 {
     std::string tpl("GATTCTC");
-    QvSequenceFeatures read("GATCTTC");
+    Read read = AnonymousRead("GATCTTC");
     E e(read, tpl, this->testingParams_);
 
     R recursor(BASIC_MOVES | MERGE, this->noBanding_);

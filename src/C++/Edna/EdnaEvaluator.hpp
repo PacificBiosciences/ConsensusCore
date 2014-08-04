@@ -51,6 +51,7 @@
 #include <vector>
 
 #include "Features.hpp"
+#include "Read.hpp"
 #include "LFloat.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
@@ -77,7 +78,8 @@ namespace ConsensusCore
                       const std::string& tpl,
                       const std::vector<int> channelTpl,
                       const EdnaModelParams& params)
-            : features_(features),
+            : read_(Read::Null()),
+              features_(features),
               params_(params),
               tpl_(tpl),
               channelTpl_(&(channelTpl[0]), tpl_.length()),
@@ -88,7 +90,12 @@ namespace ConsensusCore
         ~EdnaEvaluator()
         {}
 
-        std::string Read() const
+        const Read& Read() const
+        {
+            return read_;
+        }
+
+        std::string Basecalls() const
         {
             return features_.Sequence();
         }
@@ -315,6 +322,7 @@ namespace ConsensusCore
         }
 
     protected:
+        struct Read read_;
         ChannelSequenceFeatures features_;
         EdnaModelParams params_;
         std::string tpl_;
