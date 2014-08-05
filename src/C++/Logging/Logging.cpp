@@ -35,19 +35,17 @@
 
 // Author: David Alexander
 
-#if 1
-#include "easylogging++.h"
-_INITIALIZE_EASYLOGGINGPP
-#endif // 1
-
+#include "Logging.hpp"
+#include "cpplog/cpplog.hpp"
 
 namespace ConsensusCore
 {
-    void EnableLogging()
+    void Logging::EnableDiagnosticLogging()
     {
+        delete flog;
+        flog = new cpplog::FilteringLogger(LL_TRACE, slog);
     }
 
-    void DisableLogging()
-    {
-    }
+    cpplog::StdErrLogger* Logging::slog  = new cpplog::StdErrLogger();
+    cpplog::FilteringLogger* Logging::flog = new cpplog::FilteringLogger(LL_WARN, slog);
 }

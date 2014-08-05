@@ -2,6 +2,7 @@
 /* Includes the header in the wrapper code */
 #include "Utils.hpp"
 #include "Coverage.hpp"
+#include "Logging/Logging.hpp"
 using namespace ConsensusCore;
 %}
 
@@ -17,3 +18,4 @@ using namespace ConsensusCore;
 
 %include "Utils.hpp"
 %include "Coverage.hpp"
+%include "Logging/Logging.hpp"

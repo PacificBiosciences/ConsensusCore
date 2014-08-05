@@ -35,14 +35,25 @@
 
 // Author: David Alexander
 
-#if 1
-#include "easylogging++.h"
-
-#endif // 1
-
+#include "cpplog/cpplog.hpp"
 
 namespace ConsensusCore
 {
-    void EnableLogging();
-    void DisableLogging();
+    class Logging
+    {
+    public:
+        static void EnableDiagnosticLogging();
+
+#ifndef SWIG
+        static cpplog::StdErrLogger *slog;
+        static cpplog::FilteringLogger *flog;
+#endif // SWIG
+    };
 }
+
+#define LTRACE LOG_TRACE (*Logging::flog)
+#define LDEBUG LOG_DEBUG (*Logging::flog)
+#define LINFO  LOG_INFO  (*Logging::flog)
+#define LWARN  LOG_WARN  (*Logging::flog)
+#define LERROR LOG_ERROR (*Logging::flog)
+#define LFATAL LOG_FATAL (*Logging::flog)
