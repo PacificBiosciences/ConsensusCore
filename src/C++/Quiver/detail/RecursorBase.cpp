@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "LFloat.hpp"
+#include "Logging/Logging.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "PairwiseAlignment.hpp"
@@ -104,13 +105,10 @@ namespace detail {
             flipflops++;
         }
 
-        // TODO(dalexander): as a last ditch effort, we could increase the banding
-        // TODO(dalexander): store histogram of # flip flops in this recursor, so we
-        //  can get "recursor stats"
-
         if (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE)
         {
-            // throw AlphaBetaMismatchException();
+            LDEBUG << "Could not mate alpha, beta.  Read: " << e.ReadName() << " Tpl: " << e.Template();
+            throw AlphaBetaMismatchException();
         }
 
         return flipflops;

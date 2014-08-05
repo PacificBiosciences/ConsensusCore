@@ -120,6 +120,55 @@ namespace ConsensusCore {
     bool ReadScoresMutation(const MappedRead& mr, const Mutation& mut);
     Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
 
+
+    namespace {
+
+        template<typename ScorerType>
+        struct ReadState
+        {
+            MappedRead* Read;
+            ScorerType* Scorer;
+            bool IsActive;
+
+            ReadState(MappedRead* read,
+                      ScorerType* scorer,
+                      bool isActive)
+                : Read(read),
+                  Scorer(scorer),
+                  IsActive(isActive)
+            {
+                CheckInvariants();
+            }
+
+            ReadState(const ReadState& other)
+                : Read(NULL),
+                  Scorer(NULL),
+                  IsActive(other.IsActive)
+            {
+                if (other.Read != NULL) Read = new MappedRead(*other.Read);
+                if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
+                CheckInvariants();
+            }
+
+            ~ReadState()
+            {
+                if (Read != NULL) delete Read;
+                if (Scorer != NULL) delete Scorer;
+            }
+
+            void CheckInvariants() const
+            {
+                if (IsActive)
+                {
+                    assert(Read != NULL && Scorer != NULL);
+                    assert((int)Scorer->Template().length() ==
+                           Read->TemplateEnd - Read->TemplateStart);
+                }
+            }
+        };
+
+    }
+
     template<typename R>
     class MultiReadMutationScorer : public AbstractMultiReadMutationScorer
     {
@@ -127,6 +176,7 @@ namespace ConsensusCore {
         typedef R                                         RecursorType;
         typedef typename R::EvaluatorType                 EvaluatorType;
         typedef typename ConsensusCore::MutationScorer<R> ScorerType;
+        typedef ReadState<ScorerType>                     ReadStateType;
 
     public:
         MultiReadMutationScorer(const QuiverConfigTable& paramsByChemistry, std::string tpl);
@@ -197,13 +247,11 @@ namespace ConsensusCore {
         void CheckInvariants() const;
 
     private:
-        typedef typename std::pair<MappedRead*, ScorerType*> item_t;
-
         QuiverConfigTable quiverConfigByChemistry_;
         float fastScoreThreshold_;
         std::string fwdTemplate_;
         std::string revTemplate_;
-        std::vector<item_t> readsAndScorers_;
+        std::vector<ReadStateType> reads_;
     };
 
     typedef MultiReadMutationScorer<SparseSseQvRecursor> \

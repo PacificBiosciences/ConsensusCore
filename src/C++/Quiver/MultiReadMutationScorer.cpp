@@ -124,13 +124,12 @@ namespace ConsensusCore
 
 
     template<typename R>
-    MultiReadMutationScorer<R>::MultiReadMutationScorer
-    (const QuiverConfigTable& quiverConfigByChemistry,
-     std::string tpl)
+    MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfigTable& quiverConfigByChemistry,
+                                                        std::string tpl)
         : quiverConfigByChemistry_(quiverConfigByChemistry),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),
-          readsAndScorers_()
+          reads_()
     {
         DEBUG_ONLY(CheckInvariants());
         fastScoreThreshold_ = 0;
@@ -147,14 +146,12 @@ namespace ConsensusCore
           fastScoreThreshold_(other.fastScoreThreshold_),
           fwdTemplate_(other.fwdTemplate_),
           revTemplate_(other.revTemplate_),
-          readsAndScorers_()
+          reads_()
     {
         // Make a deep copy of the readsAndScorers
-        foreach(const item_t& kv, other.readsAndScorers_)
+        foreach (const ReadStateType& read, reads_)
         {
-            MappedRead* mr = new MappedRead(*kv.first);
-            MutationScorer<R>* scorer = new MutationScorer<R>(*kv.second);
-            readsAndScorers_.push_back(std::make_pair(mr, scorer));
+            reads_.push_back(ReadStateType(read));
         }
 
         DEBUG_ONLY(CheckInvariants());
@@ -163,13 +160,7 @@ namespace ConsensusCore
 
     template<typename R>
     MultiReadMutationScorer<R>::~MultiReadMutationScorer()
-    {
-        foreach (const item_t& kv, readsAndScorers_)
-        {
-            delete kv.first;
-            delete kv.second;
-        }
-    }
+    {}
 
     template<typename R>
     int
@@ -182,14 +173,14 @@ namespace ConsensusCore
     int
     MultiReadMutationScorer<R>::NumReads() const
     {
-        return readsAndScorers_.size();
+        return reads_.size();
     }
 
     template<typename R>
     const MappedRead*
     MultiReadMutationScorer<R>::Read(int readIdx) const
     {
-        return readsAndScorers_[readIdx].first;
+        return reads_[readIdx].Read;
     }
 
     template<typename R>
@@ -225,15 +216,22 @@ namespace ConsensusCore
         fwdTemplate_ = ConsensusCore::ApplyMutations(mutations, fwdTemplate_);
         revTemplate_ = ReverseComplement(fwdTemplate_);
 
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (ReadStateType& rs, reads_)
         {
-            int newTemplateStart = mtp[kv.first->TemplateStart];
-            int newTemplateEnd   = mtp[kv.first->TemplateEnd];
-            kv.second->Template(Template(kv.first->Strand,
-                                         newTemplateStart,
-                                         newTemplateEnd));
-            kv.first->TemplateStart = newTemplateStart;
-            kv.first->TemplateEnd   = newTemplateEnd;
+            if (!rs.IsActive) continue;
+            try {
+                int newTemplateStart = mtp[rs.Read->TemplateStart];
+                int newTemplateEnd   = mtp[rs.Read->TemplateEnd];
+                rs.Scorer->Template(Template(rs.Read->Strand,
+                                             newTemplateStart,
+                                             newTemplateEnd));
+                rs.Read->TemplateStart = newTemplateStart;
+                rs.Read->TemplateEnd   = newTemplateEnd;
+            }
+            catch (AlphaBetaMismatchException& e)
+            {
+               rs.IsActive = false;
+            }
         }
         DEBUG_ONLY(CheckInvariants());
     }
@@ -248,9 +246,17 @@ namespace ConsensusCore
                          config->QvParams);
         RecursorType recursor(config->MovesAvailable, config->Banding);
 
-        ScorerType* scorer = new MutationScorer<R>(ev, recursor);
+        ScorerType* scorer;
+        try
+        {
+            scorer = new MutationScorer<R>(ev, recursor);
+        }
+        catch (AlphaBetaMismatchException& e)
+        {
+            scorer = NULL;
+        }
 
-        if (threshold < 1.0f)
+        if (scorer != NULL && threshold < 1.0f)
         {
             int I = ev.ReadLength();
             int J = ev.TemplateLength();
@@ -264,7 +270,7 @@ namespace ConsensusCore
             }
         }
 
-        readsAndScorers_.push_back(std::make_pair(new MappedRead(mr), scorer));
+        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, scorer != NULL));
         DEBUG_ONLY(CheckInvariants());
         return true;
     }
@@ -281,13 +287,13 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::Score(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            if (ReadScoresMutation(*kv.first, m))
+            if (rs.IsActive && ReadScoresMutation(*rs.Read, m))
             {
-                Mutation orientedMut = OrientedMutation(*kv.first, m);
-                sum += (kv.second->ScoreMutation(orientedMut) -
-                        kv.second->Score());
+                Mutation orientedMut = OrientedMutation(*rs.Read, m);
+                sum += (rs.Scorer->ScoreMutation(orientedMut) -
+                        rs.Scorer->Score());
             }
         }
         return sum;
@@ -305,13 +311,13 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::FastScore(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            if (ReadScoresMutation(*kv.first, m))
+            if (rs.IsActive && ReadScoresMutation(*rs.Read, m))
             {
-                Mutation orientedMut = OrientedMutation(*kv.first, m);
-                sum += (kv.second->ScoreMutation(orientedMut) -
-                        kv.second->Score());
+                Mutation orientedMut = OrientedMutation(*rs.Read, m);
+                sum += (rs.Scorer->ScoreMutation(orientedMut) -
+                        rs.Scorer->Score());
                 if (sum < fastScoreThreshold_)
                 {
                     return sum;
@@ -326,13 +332,13 @@ namespace ConsensusCore
     MultiReadMutationScorer<R>::Scores(const Mutation& m, float unscoredValue) const
     {
         std::vector<float> scoreByRead;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            if (ReadScoresMutation(*kv.first, m))
+            if (rs.IsActive && ReadScoresMutation(*rs.Read, m))
             {
-                Mutation orientedMut = OrientedMutation(*kv.first, m);
-                scoreByRead.push_back(kv.second->ScoreMutation(orientedMut) -
-                                      kv.second->Score());
+                Mutation orientedMut = OrientedMutation(*rs.Read, m);
+                scoreByRead.push_back(rs.Scorer->ScoreMutation(orientedMut) -
+                                      rs.Scorer->Score());
             }
             else
             {
@@ -355,13 +361,13 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::IsFavorable(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            if (ReadScoresMutation(*kv.first, m))
+            if (rs.IsActive && ReadScoresMutation(*rs.Read, m))
             {
-                Mutation orientedMut = OrientedMutation(*kv.first, m);
-                sum += (kv.second->ScoreMutation(orientedMut) -
-                        kv.second->Score());
+                Mutation orientedMut = OrientedMutation(*rs.Read, m);
+                sum += (rs.Scorer->ScoreMutation(orientedMut) -
+                        rs.Scorer->Score());
             }
         }
         return (sum > MIN_FAVORABLE_SCOREDIFF);
@@ -371,13 +377,13 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::FastIsFavorable(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            if (ReadScoresMutation(*kv.first, m))
+            if (rs.IsActive && ReadScoresMutation(*rs.Read, m))
             {
-                Mutation orientedMut = OrientedMutation(*kv.first, m);
-                sum += (kv.second->ScoreMutation(orientedMut) -
-                        kv.second->Score());
+                Mutation orientedMut = OrientedMutation(*rs.Read, m);
+                sum += (rs.Scorer->ScoreMutation(orientedMut) -
+                        rs.Scorer->Score());
                 if (sum < fastScoreThreshold_)
                 {
                     return false;
@@ -392,16 +398,11 @@ namespace ConsensusCore
     std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
     {
         std::vector<int> allocatedCounts;
-
-        foreach(const item_t& kv, readsAndScorers_)
+        for (int i = 0; i < (int)reads_.size(); i++)
         {
-            int n = 0;
-            n += kv.second->Alpha()->AllocatedEntries();
-            n += kv.second->Beta()->AllocatedEntries();
-
+            int n = AlphaMatrix(i)->AllocatedEntries() + BetaMatrix(i)->AllocatedEntries() ;
             allocatedCounts.push_back(n);
         }
-
         return allocatedCounts;
     }
 
@@ -410,16 +411,11 @@ namespace ConsensusCore
     std::vector<int> MultiReadMutationScorer<R>::UsedMatrixEntries() const
     {
         std::vector<int> usedCounts;
-
-        foreach(const item_t& kv, readsAndScorers_)
+        for (int i = 0; i < (int)reads_.size(); i++)
         {
-            int n = 0;
-            n += kv.second->Alpha()->UsedEntries();
-            n += kv.second->Beta()->UsedEntries();
-
+            int n =  AlphaMatrix(i)->UsedEntries() + BetaMatrix(i)->UsedEntries();
             usedCounts.push_back(n);
         }
-
         return usedCounts;
     }
 
@@ -427,16 +423,14 @@ namespace ConsensusCore
     template<typename R>
     const AbstractMatrix* MultiReadMutationScorer<R>::AlphaMatrix(int i) const
     {
-        ScorerType* scorer = readsAndScorers_.at(i).second;
-        return scorer->Alpha();
+        return reads_[i].Scorer->Alpha();
     }
 
 
     template<typename R>
     const AbstractMatrix* MultiReadMutationScorer<R>::BetaMatrix(int i) const
     {
-        ScorerType* scorer = readsAndScorers_.at(i).second;
-        return scorer->Beta();
+        return reads_[i].Scorer->Beta();
     }
 
 
@@ -444,12 +438,10 @@ namespace ConsensusCore
     std::vector<int> MultiReadMutationScorer<R>::NumFlipFlops() const
     {
         std::vector<int> nFlipFlops;
-
-        foreach(const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            nFlipFlops.push_back(kv.second->NumFlipFlops());
+            nFlipFlops.push_back(rs.Scorer->NumFlipFlops());
         }
-
         return nFlipFlops;
     }
 
@@ -458,9 +450,9 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::BaselineScore() const
     {
         float sum = 0;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            sum += kv.second->Score();
+            if (rs.IsActive) sum += rs.Scorer->Score();
         }
         return sum;
     }
@@ -470,26 +462,26 @@ namespace ConsensusCore
     std::vector<float> MultiReadMutationScorer<R>::BaselineScores() const
     {
         std::vector<float> scoreByRead;
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            scoreByRead.push_back(kv.second->Score());
+            if (rs.IsActive) scoreByRead.push_back(rs.Scorer->Score());
         }
         return scoreByRead;
     }
-
 
     template<typename R>
     void MultiReadMutationScorer<R>::CheckInvariants() const
     {
 #ifndef NDEBUG
         assert(revTemplate_ == ReverseComplement(fwdTemplate_));
-        foreach (const item_t& kv, readsAndScorers_)
+        foreach (const ReadStateType& rs, reads_)
         {
-            assert((int)kv.second->Template().length() ==
-                   kv.first->TemplateEnd - kv.first->TemplateStart);
-            assert(kv.second->Template() == Template(kv.first->Strand,
-                                                     kv.first->TemplateStart,
-                                                     kv.first->TemplateEnd));
+            rs.CheckInvariants();
+            if (rs.IsActive) {
+                assert(rs.Scorer->Template() == Template(rs.Read->Strand,
+                                                         rs.Read->TemplateStart,
+                                                         rs.Read->TemplateEnd));
+            }
         }
 #endif  // !NDEBUG
     }
