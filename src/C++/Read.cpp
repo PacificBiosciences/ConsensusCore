@@ -67,8 +67,8 @@ namespace ConsensusCore {
 
     std::string Read::ToString() const
     {
-        return (boost::format("%s (%s) Data=%s")
-                % Name % Chemistry % Checksum::Of(Features)).str();
+        return (boost::format("%s (%s) Length=%d Data=%s")
+                % Name % Chemistry % Length() % Checksum::Of(Features)).str();
 
     }
 
