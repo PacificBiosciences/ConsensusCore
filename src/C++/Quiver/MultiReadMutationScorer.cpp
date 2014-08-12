@@ -40,7 +40,10 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <boost/format.hpp>
 
+
+#include "Checksum.hpp"
 #include "Quiver/MutationScorer.hpp"
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Mutation.hpp"
@@ -484,6 +487,83 @@ namespace ConsensusCore
             }
         }
 #endif  // !NDEBUG
+    }
+
+
+    template<typename R>
+    std::string MultiReadMutationScorer<R>::ToString() const
+    {
+        std::stringstream ss;
+
+        ss << "Template: " << Template() << std::endl;
+        ss << "Score: " << BaselineScore() << std::endl;
+
+        ss << "Reads:" << std::endl;
+        foreach (const ReadStateType& rs, reads_)
+        {
+            ss << "\t" << rs.ToString() << std::endl;
+        }
+        return ss.str();
+    }
+
+
+    namespace detail {
+
+        template<typename ScorerType>
+        ReadState<ScorerType>::ReadState(MappedRead* read,
+                                         ScorerType* scorer,
+                                         bool isActive)
+            : Read(read),
+              Scorer(scorer),
+              IsActive(isActive)
+        {
+            CheckInvariants();
+        }
+
+        template<typename ScorerType>
+        ReadState<ScorerType>::ReadState(const ReadState& other)
+            : Read(NULL),
+              Scorer(NULL),
+              IsActive(other.IsActive)
+        {
+            if (other.Read != NULL) Read = new MappedRead(*other.Read);
+            if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
+            CheckInvariants();
+        }
+
+        template<typename ScorerType>
+        ReadState<ScorerType>::~ReadState()
+        {
+            if (Read != NULL) delete Read;
+            if (Scorer != NULL) delete Scorer;
+        }
+
+        template<typename ScorerType>
+        void ReadState<ScorerType>::CheckInvariants() const
+        {
+            if (IsActive)
+            {
+                assert(Read != NULL && Scorer != NULL);
+                assert((int)Scorer->Template().length() ==
+                       Read->TemplateEnd - Read->TemplateStart);
+            }
+        }
+
+        template<typename ScorerType>
+        std::string ReadState<ScorerType>::ToString() const
+        {
+            std::string score;
+            if (IsActive)
+            {
+                score = (boost::format(" (Score= %0.2f)") % Scorer->Score()).str();
+            }
+            else
+            {
+                score = "*INACTIVE*";
+            }
+            return Read->ToString() + score;
+
+        }
     }
 
 

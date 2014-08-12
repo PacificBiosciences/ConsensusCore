@@ -114,6 +114,9 @@ namespace ConsensusCore {
         // the various "Score" functions clearer.
         virtual float BaselineScore() const = 0;
         virtual std::vector<float> BaselineScores() const = 0;
+
+
+        virtual std::string ToString() const = 0;
     };
 
 
@@ -121,8 +124,7 @@ namespace ConsensusCore {
     Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
 
 
-    namespace {
-
+    namespace detail {
         template<typename ScorerType>
         struct ReadState
         {
@@ -132,41 +134,13 @@ namespace ConsensusCore {
 
             ReadState(MappedRead* read,
                       ScorerType* scorer,
-                      bool isActive)
-                : Read(read),
-                  Scorer(scorer),
-                  IsActive(isActive)
-            {
-                CheckInvariants();
-            }
+                      bool isActive);
 
-            ReadState(const ReadState& other)
-                : Read(NULL),
-                  Scorer(NULL),
-                  IsActive(other.IsActive)
-            {
-                if (other.Read != NULL) Read = new MappedRead(*other.Read);
-                if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
-                CheckInvariants();
-            }
-
-            ~ReadState()
-            {
-                if (Read != NULL) delete Read;
-                if (Scorer != NULL) delete Scorer;
-            }
-
-            void CheckInvariants() const
-            {
-                if (IsActive)
-                {
-                    assert(Read != NULL && Scorer != NULL);
-                    assert((int)Scorer->Template().length() ==
-                           Read->TemplateEnd - Read->TemplateStart);
-                }
-            }
+            ReadState(const ReadState& other);
+            ~ReadState();
+            void CheckInvariants() const;
+            std::string ToString() const;
         };
-
     }
 
     template<typename R>
@@ -176,7 +150,7 @@ namespace ConsensusCore {
         typedef R                                         RecursorType;
         typedef typename R::EvaluatorType                 EvaluatorType;
         typedef typename ConsensusCore::MutationScorer<R> ScorerType;
-        typedef ReadState<ScorerType>                     ReadStateType;
+        typedef typename detail::ReadState<ScorerType>    ReadStateType;
 
     public:
         MultiReadMutationScorer(const QuiverConfigTable& paramsByChemistry, std::string tpl);
@@ -242,6 +216,9 @@ namespace ConsensusCore {
         // the various "Score" functions clearer.
         float BaselineScore() const;
         std::vector<float> BaselineScores() const;
+
+    public:
+        std::string ToString() const;
 
     private:
         void CheckInvariants() const;

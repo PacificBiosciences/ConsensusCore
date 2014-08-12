@@ -56,6 +56,7 @@ namespace ConsensusCore
         Read(const Read& other);
 
         int Length() const;
+        std::string ToString() const;
 
         static Read Null();
     };
@@ -82,5 +83,7 @@ namespace ConsensusCore
                    bool pinEnd = true);
 
         MappedRead(const MappedRead& other);
+
+        std::string ToString() const;
     };
 }

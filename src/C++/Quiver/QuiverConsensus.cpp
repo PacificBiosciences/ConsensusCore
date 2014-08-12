@@ -165,6 +165,9 @@ namespace ConsensusCore
 
         for (int iter = 0; iter < opts.MaximumIterations; iter++)
         {
+            LDEBUG << "Round " << iter;
+            LDEBUG << "State of MMS: " << std::endl << mms.ToString();
+
             if (tplHistory.find(hash(mms.Template())) != tplHistory.end())
             {
                 LDEBUG << "Cycle detected!";
@@ -226,7 +229,6 @@ namespace ConsensusCore
                 }
             }
 
-            LDEBUG << "Round " << iter << ": Score=" << score;
             LDEBUG << "Applying mutations:";
             foreach (const ScoredMutation& smut, bestSubset)
             {

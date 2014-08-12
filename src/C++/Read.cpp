@@ -36,7 +36,10 @@
 // Author: David Alexander
 
 #include <string>
+#include <sstream>
+#include <boost/format.hpp>
 
+#include "Checksum.hpp"
 #include "Features.hpp"
 #include "Types.hpp"
 #include "Read.hpp"
@@ -60,6 +63,13 @@ namespace ConsensusCore {
     int Read::Length() const
     {
         return Features.Length();
+    }
+
+    std::string Read::ToString() const
+    {
+        return (boost::format("%s (%s) Data=%s")
+                % Name % Chemistry % Checksum::Of(Features)).str();
+
     }
 
     Read Read::Null()
@@ -89,4 +99,14 @@ namespace ConsensusCore {
           PinStart(other.PinStart),
           PinEnd(other.PinEnd)
     {}
+
+    std::string MappedRead::ToString() const
+    {
+        std::stringstream ss;
+        ss << (PinStart ? "[" : "(");
+        ss << TemplateStart << "," << TemplateEnd;
+        ss << (PinEnd   ? "]" : ")");
+        return Read::ToString() + " @ " + ss.str();
+    }
+
 }
