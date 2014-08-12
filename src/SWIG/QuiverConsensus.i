@@ -29,6 +29,12 @@ using namespace ConsensusCore;
  // is an abstract class, so we have to tell it otherwise
 %feature("notabstract") MultiReadMutationScorer;
 
+#ifdef SWIGCSHARP
+%csmethodmodifiers *::ToString() const "public override"
+#endif // SWIGCSHARP
+
+
+
 %include "Sequence.hpp"
 %include "Mutation.hpp"
 %include "Read.hpp"
