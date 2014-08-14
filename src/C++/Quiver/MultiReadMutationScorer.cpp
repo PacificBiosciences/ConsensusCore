@@ -183,7 +183,7 @@ namespace ConsensusCore
     const MappedRead*
     MultiReadMutationScorer<R>::Read(int readIdx) const
     {
-        return reads_[readIdx].Read;
+        return reads_[readIdx].IsActive ? reads_[readIdx].Read : NULL;
     }
 
     template<typename R>
