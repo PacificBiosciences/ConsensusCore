@@ -484,6 +484,9 @@ namespace ConsensusCore
                 assert(rs.Scorer->Template() == Template(rs.Read->Strand,
                                                          rs.Read->TemplateStart,
                                                          rs.Read->TemplateEnd));
+                assert(0 <= rs.Read->TemplateStart && rs.Read->TemplateStart <= fwdTemplate_.size());
+                assert(0 <= rs.Read->TemplateEnd && rs.Read->TemplateEnd <= fwdTemplate_.size());
+                assert(rs.Read->TemplateStart <= rs.Read->TemplateEnd);
             }
         }
 #endif  // !NDEBUG
