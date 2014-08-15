@@ -541,12 +541,14 @@ namespace ConsensusCore
         template<typename ScorerType>
         void ReadState<ScorerType>::CheckInvariants() const
         {
+#ifndef NDEBUG
             if (IsActive)
             {
                 assert(Read != NULL && Scorer != NULL);
                 assert((int)Scorer->Template().length() ==
                        Read->TemplateEnd - Read->TemplateStart);
             }
+#endif  // !NDEBUG
         }
 
         template<typename ScorerType>
