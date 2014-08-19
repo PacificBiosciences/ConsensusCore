@@ -221,19 +221,24 @@ namespace ConsensusCore
 
         foreach (ReadStateType& rs, reads_)
         {
-            if (!rs.IsActive) continue;
             try {
                 int newTemplateStart = mtp[rs.Read->TemplateStart];
                 int newTemplateEnd   = mtp[rs.Read->TemplateEnd];
-                rs.Scorer->Template(Template(rs.Read->Strand,
-                                             newTemplateStart,
-                                             newTemplateEnd));
+
+                // reads (even inactive reads) will have their mapping coords updated
                 rs.Read->TemplateStart = newTemplateStart;
                 rs.Read->TemplateEnd   = newTemplateEnd;
+
+                if (rs.IsActive)
+                {
+                    rs.Scorer->Template(Template(rs.Read->Strand,
+                                                 newTemplateStart,
+                                                 newTemplateEnd));
+                }
             }
             catch (AlphaBetaMismatchException& e)
             {
-               rs.IsActive = false;
+                rs.IsActive = false;
             }
         }
         DEBUG_ONLY(CheckInvariants());
@@ -269,13 +274,14 @@ namespace ConsensusCore
                 scorer->Beta()->AllocatedEntries() >= maxSize)
             {
                 delete scorer;
-                return false;
+                scorer = NULL;
             }
         }
 
-        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, scorer != NULL));
+        bool isActive = scorer != NULL;
+        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, isActive));
         DEBUG_ONLY(CheckInvariants());
-        return true;
+        return isActive;
     }
 
     template<typename R>
