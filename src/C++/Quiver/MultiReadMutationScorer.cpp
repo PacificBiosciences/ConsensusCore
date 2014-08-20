@@ -248,7 +248,7 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
     {
         DEBUG_ONLY(CheckInvariants());
-        const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
+        const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
         EvaluatorType ev(mr,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
                          config->QvParams);
@@ -288,7 +288,7 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
     {
         DEBUG_ONLY(CheckInvariants());
-        const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
+        const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
         return AddRead(mr, config->AddThreshold);
     }
 

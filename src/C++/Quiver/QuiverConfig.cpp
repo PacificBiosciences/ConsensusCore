@@ -37,6 +37,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "Quiver/QuiverConfig.hpp"
 
@@ -65,7 +66,7 @@ namespace ConsensusCore {
     QuiverConfigTable::QuiverConfigTable()
     {}
 
-    bool QuiverConfigTable::insert(const std::string& name, const QuiverConfig& config)
+    bool QuiverConfigTable::Insert(const std::string& name, const QuiverConfig& config)
     {
         const_iterator it;
 
@@ -78,12 +79,12 @@ namespace ConsensusCore {
         return true;
     }
 
-    int QuiverConfigTable::size() const
+    int QuiverConfigTable::Size() const
     {
         return table.size();
     }
 
-    const QuiverConfig& QuiverConfigTable::at(const std::string& name) const
+    const QuiverConfig& QuiverConfigTable::At(const std::string& name) const
         throw(InvalidInputError)
     {
         const_iterator it;
@@ -99,6 +100,17 @@ namespace ConsensusCore {
                 return it->second;
 
         throw InvalidInputError("Chemistry not found in QuiverConfigTable");
+    }
+
+
+    std::vector<std::string> QuiverConfigTable::Keys() const
+    {
+        std::vector<std::string> keys;
+        for (const_iterator it = table.begin(); it != table.end(); it++)
+        {
+            keys.push_back(it->first);
+        }
+        return keys;
     }
 
     QuiverConfigTable::const_iterator QuiverConfigTable::begin() const

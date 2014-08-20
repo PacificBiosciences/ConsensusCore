@@ -40,6 +40,7 @@
 #include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "Utils.hpp"
 
@@ -180,11 +181,11 @@ namespace ConsensusCore
 
     struct QuiverConfig
     {
-        const QvModelParams QvParams;
-        const int MovesAvailable;
-        const BandingOptions Banding;
-        const float FastScoreThreshold;
-        const float AddThreshold;
+        QvModelParams QvParams;
+        int MovesAvailable;
+        BandingOptions Banding;
+        float FastScoreThreshold;
+        float AddThreshold;
 
         QuiverConfig(const QvModelParams& qvParams,
                      int movesAvailable,
@@ -201,18 +202,19 @@ namespace ConsensusCore
     {
     private:
         typedef std::pair<const std::string, const QuiverConfig> QuiverConfigTableEntry;
-
         std::list<QuiverConfigTableEntry> table;
 
     public:
-        QuiverConfigTable();
-
         typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
 
-        bool insert(const std::string& name, const QuiverConfig& config);
-        int size() const;
+        QuiverConfigTable();
 
-        const QuiverConfig& at(const std::string& name) const throw(InvalidInputError);
+        bool Insert(const std::string& name, const QuiverConfig& config);
+        int Size() const;
+
+        const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);
+
+        std::vector<std::string> Keys() const;
 
 #ifndef SWIG
         const_iterator begin() const;
