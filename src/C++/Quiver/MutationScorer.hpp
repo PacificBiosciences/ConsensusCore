@@ -59,13 +59,17 @@ namespace ConsensusCore
         typedef R                         RecursorType;
 
     public:
-        MutationScorer(const EvaluatorType& evaluator, const R& recursor);
+        MutationScorer(const EvaluatorType& evaluator, const R& recursor)
+            throw(AlphaBetaMismatchException);
+
         MutationScorer(const MutationScorer& other);
         virtual ~MutationScorer();
 
     public:
         std::string Template() const;
-        void Template(std::string tpl);
+        void Template(std::string tpl)
+            throw(AlphaBetaMismatchException);
+
         float Score() const;
         float ScoreMutation(const Mutation& m) const;
 

@@ -56,6 +56,7 @@ namespace ConsensusCore
     {}
 
     float ReadScorer::Score(const string& tpl, const Read& read) const
+        throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -71,6 +72,7 @@ namespace ConsensusCore
 
     const PairwiseAlignment*
     ReadScorer::Align(const string& tpl, const Read& read) const
+        throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -85,6 +87,7 @@ namespace ConsensusCore
 
     const SparseMatrix*
     ReadScorer::Alpha(const string& tpl, const Read& read) const
+        throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -100,6 +103,7 @@ namespace ConsensusCore
 
     const SparseMatrix*
     ReadScorer::Beta(const string& tpl, const Read& read) const
+        throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);

@@ -46,13 +46,6 @@
 
 namespace ConsensusCore {
 
-    /// \brief An exception indicating the Alpha and Beta matrices could
-    /// not be matched up by the Recursor
-    class AlphaBetaMismatchException : public ExceptionBase
-    {
-        std::string Message() const throw() { return "Alpha and beta could not be mated."; }
-    };
-
     namespace detail {
 
     /// \brief A base class for recursors, providing some functionality
