@@ -179,7 +179,7 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="BeforeBuild" BeforeTargets="PrepareForBuild">
-    <Exec Command="..\..\..\..\prebuilt.out\swigwin-2.0.4\swig -csharp -dllimport libConsensusCore -namespace ConsensusCore -c++ -Isrc/C++ -outdir build\CSharp -o build\CSharp\ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i" />
+    <Exec Command="..\..\..\..\..\ThirdParty\swigwin-2.0.4\swig -csharp -dllimport libConsensusCore -namespace ConsensusCore -c++ -Isrc/C++ -outdir build\CSharp -o build\CSharp\ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i" />
   </Target>
   <Target Name="AfterBuild" AfterTargets="Build">
     <Exec Command="type build\CSharp\*.cs &gt; build\CSharp\ConsensusCore.cs.pre" />
