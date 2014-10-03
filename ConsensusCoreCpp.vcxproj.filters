@@ -113,6 +113,9 @@
     <ClCompile Include="src\C++\Logging\Logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\C++\Checksum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\C++\AffineAlignment.hpp">
