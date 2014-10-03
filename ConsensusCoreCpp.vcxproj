@@ -51,13 +51,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)../../../../prebuilt.out/boost/boost_1_47_0;src/C++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../../../../prebuilt.out/boost/boost_1_55_0;src/C++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessToFile>false</PreprocessToFile>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <ShowIncludes>true</ShowIncludes>
+      <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="build\CSharp\ConsensusCore_wrap.cxx" />
     <ClCompile Include="src\C++\AffineAlignment.cpp" />
+    <ClCompile Include="src\C++\Checksum.cpp" />
     <ClCompile Include="src\C++\Coverage.cpp" />
     <ClCompile Include="src\C++\Feature.cpp" />
     <ClCompile Include="src\C++\Features.cpp" />

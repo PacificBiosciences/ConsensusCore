@@ -377,6 +377,7 @@ _PS_CONST(logAdd_a3, 0.002439664);
 /* natural logarithm computed for 4 simultaneous float 
    return NaN for x <= 0
 */
+#if FALSE
 inline v4sf logAddApprox_ps(v4sf x, v4sf y) {
 
   v4sf big = _mm_max_ps(x,y);
@@ -404,7 +405,7 @@ inline v4sf logAddApprox_ps(v4sf x, v4sf y) {
 	return _mm_add_ps(big, bn);
 }
 
-
+#endif
 
 
 
