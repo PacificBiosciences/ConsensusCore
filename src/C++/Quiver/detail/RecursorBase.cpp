@@ -239,7 +239,7 @@ namespace detail {
                 target     += '-';
                 query      += e.Basecalls()[i];
                 break;
-            case DELETE:
+            case DELETE_LOCAL:
                 target     += e.Template()[j];
                 query      += '-';
                 break;
