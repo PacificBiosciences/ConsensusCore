@@ -1,6 +1,7 @@
 THIS_DIRECTORY := $(dir $(lastword $(MAKEFILE_LIST)))
 PROJECT_ROOT   := $(abspath $(THIS_DIRECTORY)/..)
 BUILD_ROOT     ?= $(PROJECT_ROOT)/build
+GMOCK_ROOT     ?= $(PROJECT_ROOT)/external/gmock-1.7.0
 
 # Without this, rm -rf *.(o,so) fails
 SHELL=/bin/bash
@@ -61,12 +62,8 @@ else
     SHLIB_FLAGS = -pthread -shared -Wl,-O1
 endif
 
-GMOCK_INCLUDE := $(GMOCK)/include
-GMOCK_LIB     := $(GMOCK)/lib/.libs/libgmock.a
-
-GTEST_INCLUDE := $(GMOCK)/gtest/include
-GTEST_LIB     := $(GMOCK)/gtest/lib/.libs/libgtest.a
-GTEST_MAIN    := $(GMOCK)/gtest/lib/.libs/libgtest_main.a
+GMOCK_LIBSRC := $(GMOCK_ROOT)/gmock-gtest-all.cc
+GMOCK_MAIN   := $(GMOCK_ROOT)/gmock_main.cc
 
 PYTHON_BUILD_DIR := $(BUILD_ROOT)/Python
 CSHARP_BUILD_DIR := $(BUILD_ROOT)/CSharp

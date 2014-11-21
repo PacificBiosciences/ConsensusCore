@@ -5,7 +5,6 @@ SWIG=
 SWIG_LIB=
 PYTHON_INCLUDE=
 NUMPY_INCLUDE=
-GMOCK=
 DEBUG=
 
 
@@ -21,9 +20,6 @@ usage ()
     echo "    (Python only:)"
     echo "            [--python-include=PYTHON_INCLUDE]  # location of Python.h"
     echo "            [--numpy-include=NUMPY_INCLUDE]    # location of numpy/core/include"
-    echo
-    echo "    (For building tests:)"
-    echo "            [--gmock=GMOCK]                    # root of gmock install"
     echo ""
     echo
     echo "  configure --pbi                              # use PacBio perforce locations"
@@ -45,7 +41,6 @@ configure_pbi ()
     SWIG_LIB=$SOFTWARE/smrtanalysis/prebuilt.out/swig/swig-2.0.10/common/share/swig/2.0.10
     PYTHON_INCLUDE=
     NUMPY_INCLUDE=
-    GMOCK=$SOFTWARE/smrtanalysis/prebuilt.out/gmock-1.7.0/
     DEBUG=
 }
 
@@ -72,9 +67,6 @@ while test x$1 != x; do
             ;;
         --numpy-include=*)
             NUMPY_INCLUDE=`echo $1 | sed 's/--numpy-include=//'`
-            ;;
-        --gmock=*)
-            GMOCK=`echo $1 | sed 's/--gmock=//'`
             ;;
         --help)
             usage
@@ -111,7 +103,6 @@ echo "    SWIG_LIB       = $SWIG_LIB"
 echo "    PYTHON_INCLUDE = $PYTHON_INCLUDE"
 echo "    NUMPY_INCLUDE  = $NUMPY_INCLUDE"
 echo "    DEBUG          = $DEBUG"
-echo "    GMOCK          = $GMOCK"
 echo
 
 echo > make/Config.mk
@@ -121,4 +112,3 @@ echo "SWIG_LIB:=$SWIG_LIB"             >> make/Config.mk
 echo "PYTHON_INCLUDE:=$PYTHON_INCLUDE" >> make/Config.mk
 echo "NUMPY_INCLUDE:=$NUMPY_INCLUDE"   >> make/Config.mk
 echo "DEBUG?=$DEBUG"                   >> make/Config.mk
-echo "GMOCK:=$GMOCK"                   >> make/Config.mk

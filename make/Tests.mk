@@ -1,10 +1,6 @@
 include make/Config.mk
 include make/Defs.mk
 
-ifeq (,$(wildcard $(GMOCK_LIB)))
-$(error gmock not configured or built correctly, cannot build tests!)
-endif
-
 VPATH                   := $(PROJECT_ROOT)/src/Tests
 TEST_BUILD_ROOT         := $(BUILD_ROOT)/Tests
 TEST_SRCS               := $(notdir $(shell find $(PROJECT_ROOT)/src/Tests -name "*.cpp" | grep -v '\#'))
@@ -29,11 +25,11 @@ tests: $(TESTS_EXECUTABLE)
 # so we can set breakpoints in it.
 $(TEST_OBJS): CXX_OPT_FLAGS := $(CXX_OPT_FLAGS_DEBUG)
 
-$(TEST_OBJS): $(TEST_BUILD_ROOT)/%.o : %.cpp $(CXX_LIB) $(GMOCK_INCLUDE) $(GTEST_INCLUDE)
+$(TEST_OBJS): $(TEST_BUILD_ROOT)/%.o : %.cpp $(CXX_LIB)
 	-mkdir -p $(TEST_BUILD_ROOT)
-	$(CXX) -I $(GMOCK_INCLUDE) -I $(GTEST_INCLUDE) -c $< -o $@
+	$(CXX) -isystem $(GMOCK_ROOT) -c $< -o $@
 
-$(TESTS_EXECUTABLE): $(TEST_OBJS) $(CXX_LIB) $(GMOCK_LIB) $(GTEST_LIB) $(GTEST_MAIN)
-	$(CXX) --coverage $(TEST_OBJS) $(CXX_LIB) $(GMOCK_LIB) $(GTEST_LIB) $(GTEST_MAIN) -lpthread -o $@
+$(TESTS_EXECUTABLE): $(TEST_OBJS) $(CXX_LIB) $(GMOCK_LIBSRC) $(GMOCK_MAIN)
+	$(CXX) --coverage $(TEST_OBJS) $(CXX_LIB) -I$(GMOCK_ROOT) $(GMOCK_LIBSRC) $(GMOCK_MAIN) -lpthread -o $@
 
 .PHONY: run-tests tests
