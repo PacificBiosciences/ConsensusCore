@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "Utils.hpp"
+#include "Types.hpp"
 
 namespace ConsensusCore
 {
@@ -76,6 +77,8 @@ namespace ConsensusCore
     /// \brief A parameter vector for analysis using the QV model
     struct QvModelParams
     {
+        std::string ChemistryName;
+        std::string ModelName;
         float Match;
         float Mismatch;
         float MismatchS;
@@ -92,7 +95,9 @@ namespace ConsensusCore
         //
         // Constructor for single merge rate and merge rate slope
         //
-        QvModelParams(float Match,
+        QvModelParams(const std::string& ChemistryName,
+                      const std::string& ModelName,
+                      float Match,
                       float Mismatch,
                       float MismatchS,
                       float Branch,
@@ -104,7 +109,9 @@ namespace ConsensusCore
                       float NceS,
                       float Merge,
                       float MergeS)
-            : Match(Match)
+            : ChemistryName(ChemistryName)
+            , ModelName(ModelName)  
+            , Match(Match)
             , Mismatch(Mismatch)
             , MismatchS(MismatchS)
             , Branch(Branch)
@@ -125,7 +132,9 @@ namespace ConsensusCore
         //
         // Constructor for per-channel merge rate and merge rate slope
         //
-        QvModelParams(float Match,
+        QvModelParams(const std::string& ChemistryName,
+                      const std::string& ModelName,
+                      float Match,
                       float Mismatch,
                       float MismatchS,
                       float Branch,
@@ -143,7 +152,9 @@ namespace ConsensusCore
                       float MergeS_C,
                       float MergeS_G,
                       float MergeS_T)
-            : Match(Match)
+            : ChemistryName(ChemistryName)
+            , ModelName(ModelName)  
+            , Match(Match)
             , Mismatch(Mismatch)
             , MismatchS(MismatchS)
             , Branch(Branch)
@@ -202,14 +213,19 @@ namespace ConsensusCore
     {
     private:
         typedef std::pair<const std::string, const QuiverConfig> QuiverConfigTableEntry;
+
+    private:
         std::list<QuiverConfigTableEntry> table;
 
+        bool Insert(const std::string& name, const QuiverConfig& config);
+        
     public:
         typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
 
         QuiverConfigTable();
 
-        bool Insert(const std::string& name, const QuiverConfig& config);
+        bool Insert(const QuiverConfig& config) throw(InvalidInputError);
+        bool InsertDefault(const QuiverConfig& config);
         int Size() const;
 
         const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);

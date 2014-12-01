@@ -66,8 +66,17 @@ MappedRead AnonymousMappedRead(std::string seq, StrandEnum strand, int tStart, i
 }
 
 //
-// Tests for supporting code: OrientedMutation, ReadScoresMutation
+// Tests for supporting code: QuiverConfigTable, OrientedMutation, ReadScoresMutation
 //
+
+TEST(QuiverConfigTableTests, IllegalChemistry)
+{
+    QuiverConfig qc = TestingConfig("*");
+    QuiverConfigTable qt;
+
+    EXPECT_THROW(qt.Insert(qc), InvalidInputError);
+}
+
 
 TEST(MutationOrientationTests, ReadScoresMutation1)
 {
@@ -220,12 +229,12 @@ public:
 
 protected:
     MultiReadMutationScorerTest()
-        : testingConfig_(TestingParams<typename MMS::EvaluatorType::ParamsType>(),
+        : testingConfig_(TestingParams(),
                          ALL_MOVES,
                          BandingOptions(4, 200),
                          -500)
     {
-        testingConfigs_.Insert("unknown", testingConfig_);
+        testingConfigs_.InsertDefault(testingConfig_);
     }
 
     virtual ~MultiReadMutationScorerTest() {}

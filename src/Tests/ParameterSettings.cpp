@@ -35,16 +35,19 @@
 
 // Author: David Alexander
 
+#include <string>
+
 #include "ParameterSettings.hpp"
 #include "Quiver/QuiverConfig.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 
 
-template<>
-QvModelParams TestingParams<QvModelParams>()
+QvModelParams TestingParams(const std::string& chem)
 {
-    return QvModelParams(0.f,     // Match,
+    return QvModelParams(chem,    // Chemistry
+                         "test",  // Model
+                         0.f,     // Match,
                          -10.f,   // Mismatch,
                          -0.1f,   // MismatchS,
                          -5.f,    // Branch,
@@ -58,10 +61,9 @@ QvModelParams TestingParams<QvModelParams>()
                          0.f);    // MergeS
 }
 
-template<>
-QuiverConfig TestingConfig<QuiverConfig>()
+QuiverConfig TestingConfig(const std::string& chem)
 {
-    return QuiverConfig(TestingParams<QvModelParams>(),
+    return QuiverConfig(TestingParams(chem),
                         ALL_MOVES,
                         BandingOptions(4, 200),
                         -12.5);

@@ -76,7 +76,7 @@ protected:
     RecursorTest()
         : noBanding_(0, 1e9),
           standardBanding_(4, 200),
-          testingParams_(TestingParams<typename T::EvaluatorType::ParamsType>())
+          testingParams_(TestingParams())
     {}
 
     virtual ~RecursorTest() {}
@@ -300,7 +300,7 @@ class RecursorFuzzTest : public testing::Test
 protected:
     RecursorFuzzTest()
         : banding_(4, 200),
-          testingParams_(TestingParams<typename T::EvaluatorType::ParamsType>())
+          testingParams_(TestingParams())
     {}
 
     void SetUp()

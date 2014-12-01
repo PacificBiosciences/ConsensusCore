@@ -138,7 +138,7 @@ RandomQvEvaluator(RNG& rng, int length)
 
     bool pinStart = RandomBernoulliDraw(rng, 0.5);
     bool pinEnd = RandomBernoulliDraw(rng, 0.5);
-    return QvEvaluator(read, tpl, TestingParams<QvModelParams>(), pinStart, pinEnd);
+    return QvEvaluator(read, tpl, TestingParams(), pinStart, pinEnd);
 }
 
 template<typename RNG>

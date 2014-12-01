@@ -35,13 +35,9 @@
 
 // Author: David Alexander
 
+#include <string>
+
 #include "Quiver/QuiverConfig.hpp"
 
-template<typename T> T TestingParams();
-template<typename T> T TestingConfig();
-
-using ConsensusCore::QvModelParams;
-using ConsensusCore::QuiverConfig;
-
-template<> ConsensusCore::QvModelParams TestingParams<ConsensusCore::QvModelParams>();
-template<> ConsensusCore::QuiverConfig  TestingConfig<ConsensusCore::QuiverConfig>();
+ConsensusCore::QvModelParams TestingParams(const std::string& chem = "test");
+ConsensusCore::QuiverConfig  TestingConfig(const std::string& chem = "test");

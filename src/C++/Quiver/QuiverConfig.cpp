@@ -39,6 +39,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
+
 #include "Quiver/QuiverConfig.hpp"
 
 namespace ConsensusCore {
@@ -77,6 +79,24 @@ namespace ConsensusCore {
         table.push_front(std::make_pair(name, config));
 
         return true;
+    }
+
+    #define FALLBACK "*"
+
+    bool QuiverConfigTable::Insert(const QuiverConfig& config)
+        throw(InvalidInputError)
+    {
+        const std::string& name = config.QvParams.ChemistryName;
+
+        if (name.compare(FALLBACK) == 0)
+            throw InvalidInputError("Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
+
+        return Insert(name, config);
+    }
+
+    bool QuiverConfigTable::InsertDefault(const QuiverConfig& config)
+    {
+        return Insert(FALLBACK, config);
     }
 
     int QuiverConfigTable::Size() const

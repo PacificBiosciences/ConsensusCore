@@ -77,7 +77,7 @@ public:
 protected:
     MutationScorerTest()
         : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingConfig_(TestingConfig<QuiverConfig>())
+          testingConfig_(TestingConfig())
     {}
 
     virtual ~MutationScorerTest() {}
