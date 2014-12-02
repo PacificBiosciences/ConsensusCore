@@ -42,8 +42,8 @@
 #pragma once
 
 #define API_MAJOR 0
-#define API_MINOR 8
-#define API_PATCH 8
+#define API_MINOR 9
+#define API_PATCH 0
 
 namespace ConsensusCore
 {
