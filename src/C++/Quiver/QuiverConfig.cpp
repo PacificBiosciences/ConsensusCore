@@ -114,9 +114,9 @@ namespace ConsensusCore {
             if (it->first.compare(name) == 0)
                 return it->second;
 
-        // Fallback is "*"
+        // Fallback
         for (it = table.begin(); it != table.end(); it++)
-            if (it->first.compare("*") == 0)
+            if (it->first.compare(FALLBACK) == 0)
                 return it->second;
 
         throw InvalidInputError("Chemistry not found in QuiverConfigTable");
