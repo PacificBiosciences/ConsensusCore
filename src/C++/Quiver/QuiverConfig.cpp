@@ -68,7 +68,7 @@ namespace ConsensusCore {
     QuiverConfigTable::QuiverConfigTable()
     {}
 
-    bool QuiverConfigTable::Insert(const std::string& name, const QuiverConfig& config)
+    bool QuiverConfigTable::InsertAs_(const std::string& name, const QuiverConfig& config)
     {
         const_iterator it;
 
@@ -83,20 +83,25 @@ namespace ConsensusCore {
 
     #define FALLBACK "*"
 
+    bool QuiverConfigTable::InsertAs(const std::string& name, const QuiverConfig& config)
+        throw(InvalidInputError)
+
+    {
+        if (name.compare(FALLBACK) == 0)
+            throw InvalidInputError("Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
+        return InsertAs_(name, config);
+    }
+
     bool QuiverConfigTable::Insert(const QuiverConfig& config)
         throw(InvalidInputError)
     {
         const std::string& name = config.QvParams.ChemistryName;
-
-        if (name.compare(FALLBACK) == 0)
-            throw InvalidInputError("Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
-
-        return Insert(name, config);
+        return InsertAs(name, config);
     }
 
     bool QuiverConfigTable::InsertDefault(const QuiverConfig& config)
     {
-        return Insert(FALLBACK, config);
+        return InsertAs_(FALLBACK, config);
     }
 
     int QuiverConfigTable::Size() const
