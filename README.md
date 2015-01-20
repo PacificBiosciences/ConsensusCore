@@ -36,8 +36,3 @@ client tools to use the ``libConsensusCore.so``, the library needs to
 be copied to the bin/{Debug,Release} directory for every assembly that
 transitively depends on ConsensusCore and creates an executable.  You
 can do this using a pre-build rule.
-
-On OS X, the build uses ``clang++``, but we resort back to libstdc++
-to avoid some compatibility issues.  This means you will have to make
-sure to compile your gmock installation with ``-stdlib=libstdc++`` as
-well, if you are trying to run the tests.
