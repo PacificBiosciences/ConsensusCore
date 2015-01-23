@@ -30,6 +30,6 @@ $(TEST_OBJS): $(TEST_BUILD_ROOT)/%.o : %.cpp $(CXX_LIB)
 	$(CXX) -isystem $(GMOCK_ROOT) -c $< -o $@
 
 $(TESTS_EXECUTABLE): $(TEST_OBJS) $(CXX_LIB) $(GMOCK_LIBSRC) $(GMOCK_MAIN)
-	$(CXX) --coverage $(TEST_OBJS) $(CXX_LIB) -I$(GMOCK_ROOT) $(GMOCK_LIBSRC) $(GMOCK_MAIN) -lpthread -o $@
+	$(CXX) $(COVERAGE) $(TEST_OBJS) $(CXX_LIB) -I$(GMOCK_ROOT) $(GMOCK_LIBSRC) $(GMOCK_MAIN) -lpthread -o $@
 
 .PHONY: run-tests tests
