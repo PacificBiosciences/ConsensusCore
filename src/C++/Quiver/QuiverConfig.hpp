@@ -52,9 +52,9 @@ namespace ConsensusCore
         INVALID_MOVE = 0x0,
         INCORPORATE  = 0x1,
         EXTRA        = 0x2,
-        DELETE_LOCAL = 0x4,  // Has to be local because winnt.h defines a DELETE that would conflict
+        DELETE       = 0x4,
         MERGE        = 0x8,
-        BASIC_MOVES  = (INCORPORATE | EXTRA | DELETE_LOCAL),
+        BASIC_MOVES  = (INCORPORATE | EXTRA | DELETE),
         ALL_MOVES    = (BASIC_MOVES | MERGE)
     };
 

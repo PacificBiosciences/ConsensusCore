@@ -4,6 +4,7 @@
 
 #define NOMINMAX
 #include <windows.h>
+#undef DELETE
 
 template <class _Elem>
 class outputdebug_buf: public std::basic_stringbuf<_Elem>

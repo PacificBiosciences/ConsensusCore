@@ -142,7 +142,7 @@ namespace detail {
         float pathScore = 0;
 
         MoveSpec incMove   = { INCORPORATE, 1, 1 };
-        MoveSpec delMove   = { DELETE_LOCAL,      0, 1 };
+        MoveSpec delMove   = { DELETE,      0, 1 };
         MoveSpec extraMove = { EXTRA,       1, 0 };
         MoveSpec mergeMove = { MERGE,       1, 2 };
         std::vector<MoveSpec> moves;
@@ -240,7 +240,7 @@ namespace detail {
                 target     += '-';
                 query      += e.Basecalls()[i];
                 break;
-            case DELETE_LOCAL:
+            case DELETE:
                 target     += e.Template()[j];
                 query      += '-';
                 break;
