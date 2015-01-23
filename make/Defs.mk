@@ -6,7 +6,7 @@ GMOCK_ROOT     ?= $(PROJECT_ROOT)/external/gmock-1.7.0
 # Without this, rm -rf *.(o,so) fails
 SHELL=/bin/bash
 
-INCLUDES        := -I$(PROJECT_ROOT)/src/C++
+INCLUDES        := -I$(PROJECT_ROOT)/src/C++ -I$(PROJECT_ROOT)/external
 
 ifdef COVERAGE
 OBJDIR          := $(BUILD_ROOT)/C++/Coverage
