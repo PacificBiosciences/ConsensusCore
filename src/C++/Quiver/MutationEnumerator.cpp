@@ -35,36 +35,35 @@
 
 // Author: David Alexander
 
+#include "MutationEnumerator.hpp"
+
 #include <boost/range/as_array.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <Types.hpp>
-#include <Utils.hpp>
-#include <Mutation.hpp>
-
-#include "MutationEnumerator.hpp"
+#include "Types.hpp"
+#include "Utils.hpp"
+#include "Mutation.hpp"
 
 namespace ConsensusCore
 {
+    namespace {  // PRIVATE
+        const char BASES[] = { 'A', 'C', 'G', 'T' };
 
-    namespace { // PRIVATE
-    const char BASES[] = { 'A', 'C', 'G', 'T' };
+        inline
+        int BoundPosition(const std::string& tpl, int pos)
+        {
+            return pos < 0 ? 0 : (pos > static_cast<int>(tpl.length()) ? tpl.length() : pos);
+        }
 
-    inline
-    int BoundPosition(const std::string& tpl, int pos)
-    {
-        return pos < 0 ? 0 : (pos > static_cast<int>(tpl.length()) ? tpl.length() : pos);
-    }
-
-    inline
-    std::pair<int, int> BoundInterval(const std::string& tpl, int beginPos, int endPos)
-    {
-        return std::make_pair(BoundPosition(tpl, beginPos), BoundPosition(tpl, endPos));
-    }
-    } // PRIVATE
+        inline
+        std::pair<int, int> BoundInterval(const std::string& tpl, int beginPos, int endPos)
+        {
+            return std::make_pair(BoundPosition(tpl, beginPos), BoundPosition(tpl, endPos));
+        }
+    }  // PRIVATE
 
 
     namespace detail {
@@ -74,8 +73,7 @@ namespace ConsensusCore
         {}
 
         AbstractMutationEnumerator::~AbstractMutationEnumerator() {}
-
-    } // detail
+    }  // detail
 
 
     AllSingleBaseMutationEnumerator::AllSingleBaseMutationEnumerator(const std::string& tpl)
@@ -147,8 +145,8 @@ namespace ConsensusCore
     }
 
 
-    DinucleotideRepeatMutationEnumerator::DinucleotideRepeatMutationEnumerator(const std::string& tpl,
-                                                                 int minDinucRepeatElements)
+    DinucleotideRepeatMutationEnumerator::DinucleotideRepeatMutationEnumerator
+    (const std::string& tpl, int minDinucRepeatElements)
         : detail::AbstractMutationEnumerator(tpl)
         , minDinucRepeatElements_(minDinucRepeatElements)
     {}
@@ -188,7 +186,8 @@ namespace ConsensusCore
 
                 else if (tpl_[i] == x && tpl_[i + 1] == y)
                     numElements++;
-                else break;
+                else
+                    break;
             }
 
             if (numElements >= minDinucRepeatElements_)
@@ -207,7 +206,8 @@ namespace ConsensusCore
             //
             if (numElements > 1)
                 pos += 2 * numElements - 1;
-            else pos++;
+            else
+                pos++;
         }
 
         return result;

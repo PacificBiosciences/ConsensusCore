@@ -69,7 +69,6 @@ namespace ConsensusCore {
     {
         return (boost::format("%s (%s) Length=%d Data=%s")
                 % Name % Chemistry % Length() % Checksum::Of(Features)).str();
-
     }
 
     Read Read::Null()
@@ -108,5 +107,4 @@ namespace ConsensusCore {
         ss << (PinEnd   ? "]" : ")");
         return Read::ToString() + " @ " + ss.str();
     }
-
 }

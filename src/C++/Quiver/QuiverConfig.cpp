@@ -88,7 +88,8 @@ namespace ConsensusCore {
 
     {
         if (name.compare(FALLBACK) == 0)
-            throw InvalidInputError("Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
+            throw InvalidInputError(
+                "Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
         return InsertAs_(name, config);
     }
 

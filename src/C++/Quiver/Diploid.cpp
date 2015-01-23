@@ -94,7 +94,7 @@ float log1p(float x)
 namespace ConsensusCore {
 
     // This needs to be configurable.
-    DEBUG_ONLY( const int MUTATIONS_PER_SITE = 9; )
+    DEBUG_ONLY( const int MUTATIONS_PER_SITE = 9; ) // NOLINT
     const int LENGTH_DIFFS[] = { 0, 0, 0, 0, 1, 1, 1, 1, -1 };
 
     DiploidSite::DiploidSite(int allele0, int allele1,

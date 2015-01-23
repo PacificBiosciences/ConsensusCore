@@ -64,7 +64,6 @@ namespace ConsensusCore
         bool CheckInvariants() const;
 
     public:
-
         Mutation(MutationType type, int start, int end, std::string newBases);
         Mutation(MutationType type, int position, char base);
         Mutation(const Mutation& other);
@@ -126,7 +125,6 @@ namespace ConsensusCore
     };
 
     std::ostream& operator<<(std::ostream& out, const ScoredMutation& m);
-
 }
 
 #include "Mutation-inl.hpp"

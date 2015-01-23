@@ -52,7 +52,7 @@ namespace ConsensusCore
         INVALID_MOVE = 0x0,
         INCORPORATE  = 0x1,
         EXTRA        = 0x2,
-        DELETE_LOCAL = 0x4, // Has to be local because winnt.h defines a DELETE that would conflict
+        DELETE_LOCAL = 0x4,  // Has to be local because winnt.h defines a DELETE that would conflict
         MERGE        = 0x8,
         BASIC_MOVES  = (INCORPORATE | EXTRA | DELETE_LOCAL),
         ALL_MOVES    = (BASIC_MOVES | MERGE)
@@ -110,7 +110,7 @@ namespace ConsensusCore
                       float Merge,
                       float MergeS)
             : ChemistryName(ChemistryName)
-            , ModelName(ModelName)  
+            , ModelName(ModelName)
             , Match(Match)
             , Mismatch(Mismatch)
             , MismatchS(MismatchS)
@@ -153,7 +153,7 @@ namespace ConsensusCore
                       float MergeS_G,
                       float MergeS_T)
             : ChemistryName(ChemistryName)
-            , ModelName(ModelName)  
+            , ModelName(ModelName)
             , Match(Match)
             , Mismatch(Mismatch)
             , MismatchS(MismatchS)

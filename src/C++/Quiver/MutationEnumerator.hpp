@@ -40,30 +40,30 @@
 #include <vector>
 #include <string>
 
-#include <Types.hpp>
-#include <Utils.hpp>
-#include <Mutation.hpp>
+#include "Types.hpp"
+#include "Utils.hpp"
+#include "Mutation.hpp"
 
 namespace ConsensusCore
 {
     namespace detail {
-    struct AbstractMutationEnumerator
-    {
-        AbstractMutationEnumerator(const std::string& tpl);
-        virtual ~AbstractMutationEnumerator();
+        struct AbstractMutationEnumerator
+        {
+            explicit AbstractMutationEnumerator(const std::string& tpl);
+            virtual ~AbstractMutationEnumerator();
 
-        virtual std::vector<Mutation> Mutations() const = 0;
-        virtual std::vector<Mutation> Mutations(int beginPos, int endPos) const = 0;
+            virtual std::vector<Mutation> Mutations() const = 0;
+            virtual std::vector<Mutation> Mutations(int beginPos, int endPos) const = 0;
 
-    protected:
-        const std::string tpl_;
-    };
-    } // detail
+        protected:
+            const std::string tpl_;
+        };
+    }  // detail
 
     struct AllSingleBaseMutationEnumerator
         : detail::AbstractMutationEnumerator
     {
-        AllSingleBaseMutationEnumerator(const std::string& tpl);
+        explicit AllSingleBaseMutationEnumerator(const std::string& tpl);
 
         std::vector<Mutation> Mutations() const;
         std::vector<Mutation> Mutations(int beginPos, int endPos) const;
@@ -73,7 +73,7 @@ namespace ConsensusCore
     struct UniqueSingleBaseMutationEnumerator
         : detail::AbstractMutationEnumerator
     {
-        UniqueSingleBaseMutationEnumerator(const std::string& tpl);
+        explicit UniqueSingleBaseMutationEnumerator(const std::string& tpl);
 
         std::vector<Mutation> Mutations() const;
         std::vector<Mutation> Mutations(int beginPos, int endPos) const;

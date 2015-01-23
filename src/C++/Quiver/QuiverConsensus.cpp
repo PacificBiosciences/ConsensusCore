@@ -39,7 +39,10 @@
 #include <boost/functional/hash.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <cmath>
+#include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/QuiverConsensus.hpp"
@@ -55,12 +58,12 @@ namespace ConsensusCore
 {
     using std::vector;
 
-    namespace { // PRIVATE
+    namespace {  // PRIVATE
     using std::max_element;
 
     struct RefineDinucleotideRepeatOptions : RefineOptions
     {
-        RefineDinucleotideRepeatOptions(int minDinucleotideRepeatElements)
+        explicit RefineDinucleotideRepeatOptions(int minDinucleotideRepeatElements)
             : MinDinucleotideRepeatElements(minDinucleotideRepeatElements)
         {
             MaximumIterations = 1;
@@ -175,7 +178,7 @@ namespace ConsensusCore
 
             if (mms.BaselineScore() < score)
             {
-                LDEBUG << "Score decrease"; // Usually recoverable, so we allow iteration to continue
+                LDEBUG << "Score decrease";  // Usually recoverable
             }
             score = mms.BaselineScore();
 
@@ -188,7 +191,8 @@ namespace ConsensusCore
             if (iter == 0) {
                 mutationsToTry = mutationEnumerator.Mutations();
             }
-            else {
+            else
+            {
                 mutationsToTry = UniqueNearbyMutations(mutationEnumerator,
                                                        ProjectDown(favorableMutsAndScores),
                                                        opts.MutationNeighborhood);
@@ -214,7 +218,8 @@ namespace ConsensusCore
             //
             // Go with the "best" subset of well-separated high scoring mutations
             //
-            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
+            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores,
+                                                           opts.MutationSeparation);
 
             //
             // Attempt to avoid cycling.  We could do a better job here.
@@ -225,7 +230,8 @@ namespace ConsensusCore
                 if (tplHistory.find(hash(nextTpl)) != tplHistory.end())
                 {
                     LDEBUG << "Attempting to avoid cycle";
-                    bestSubset = std::vector<ScoredMutation>(bestSubset.begin(), bestSubset.begin() + 1);
+                    bestSubset = std::vector<ScoredMutation>(bestSubset.begin(),
+                                                             bestSubset.begin() + 1);
                 }
             }
 
@@ -241,7 +247,7 @@ namespace ConsensusCore
 
         return isConverged;
     }
-    } // PRIVATE
+    }  // PRIVATE
 
 
     bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
@@ -250,7 +256,8 @@ namespace ConsensusCore
     }
 
 
-    void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms, int minDinucleotideRepeatElements)
+    void RefineDinucleotideRepeats
+    (AbstractMultiReadMutationScorer& mms, int minDinucleotideRepeatElements)
     {
         RefineDinucleotideRepeatOptions opts(minDinucleotideRepeatElements);
         AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);

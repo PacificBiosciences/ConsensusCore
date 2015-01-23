@@ -47,7 +47,7 @@ namespace ConsensusCore
 #ifndef SWIG
         static cpplog::StdErrLogger *slog;
         static cpplog::FilteringLogger *flog;
-#endif // SWIG
+#endif  // SWIG
     };
 }
 
