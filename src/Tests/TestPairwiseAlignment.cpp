@@ -328,6 +328,7 @@ TEST(LinearAlignmentTests, BasicTest)
 }
 
 
+#if 0
 TEST(LinearAlignmentTests, SemiglobalTests)
 {
     NeedlemanWunschParams params(2, -1, -2, -2);
@@ -343,3 +344,4 @@ TEST(LinearAlignmentTests, SemiglobalTests)
     // GA-T---TACA----
 
 }
+#endif
