@@ -135,6 +135,28 @@ namespace ConsensusCore {
         std::string msg_;
     };
 
+
+    class UnsupportedFeatureError : public ErrorBase
+    {
+    public:
+        UnsupportedFeatureError()
+            : msg_("Unsupported feature!")
+        {}
+
+        explicit UnsupportedFeatureError(const std::string& msg)
+            : msg_(msg)
+        {}
+
+        std::string Message() const throw()
+        {
+            return msg_;
+        }
+
+    private:
+        std::string msg_;
+    };
+
+
     class NotYetImplementedException : public ErrorBase
     {
     public:

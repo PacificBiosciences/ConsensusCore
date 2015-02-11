@@ -40,6 +40,24 @@
 #include <string>
 #include <vector>
 
+namespace {
+
+    // Utility functions common to implementations of aligners
+
+    inline int Max3(int a, int b, int c)
+    {
+        return std::max((a), std::max((b), (c)));
+    }
+
+    inline int ArgMax3(int a, int b, int c)
+    {
+        if      (a >= b && a >= c) return 0;
+        else if (b >= c)           return 1;
+        else                       return 2;
+    }
+}
+
+
 namespace ConsensusCore {
     /// \brief A pairwise alignment
     class PairwiseAlignment {
@@ -70,30 +88,58 @@ namespace ConsensusCore {
     public:
         PairwiseAlignment(const std::string& target,
                           const std::string& query);
+
+        static PairwiseAlignment* FromTranscript(const std::string& transcript,
+                                                 const std::string& unalnTarget,
+                                                 const std::string& unalnQuery);
     };
 
     //
-    // We provide a crude Needleman-Wunsch implementations
-    //  - no suppport for a subsitution matrix,
-    //  - no support for affine gap penalties.
-
+    // Configuration for aligners
+    //
     struct NeedlemanWunschParams {
-        float MatchScore;
-        float MismatchScore;
-        float InsertScore;
-        float DeleteScore;
+        int MatchScore;
+        int MismatchScore;
+        int InsertScore;
+        int DeleteScore;
 
-        NeedlemanWunschParams(float matchScore,
-                              float mismatchScore,
-                              float insertScore,
-                              float deleteScore);
+        NeedlemanWunschParams(int matchScore,
+                              int mismatchScore,
+                              int insertScore,
+                              int deleteScore);
+
+        // Edit distance params
+        static NeedlemanWunschParams Default();
     };
 
-    NeedlemanWunschParams DefaultNeedlemanWunschParams();
+
+    enum AlignMode {
+         GLOBAL     = 0,  // Global in both sequences
+         SEMIGLOBAL = 1,  // Global in query, local in target
+         LOCAL      = 2   // Local in both sequences
+    };
+
+    struct AlignConfig {
+        NeedlemanWunschParams Params;
+        AlignMode Mode;
+
+        AlignConfig(NeedlemanWunschParams params, AlignMode mode);
+
+        // Default corresponds to global alignment mode, edit distance params
+        static AlignConfig Default();
+    };
+
 
     PairwiseAlignment* Align(const std::string& target,
                              const std::string& query,
-                             NeedlemanWunschParams params = DefaultNeedlemanWunschParams()); // NOLINT
+                             int* score,
+                             AlignConfig config = AlignConfig::Default());
+
+    PairwiseAlignment* Align(const std::string& target,
+                             const std::string& query,
+                             AlignConfig config = AlignConfig::Default());
+
+
 
     // These calls return an array, same len as target, containing indices into the query string.
     std::vector<int> TargetToQueryPositions(const std::string& transcript);

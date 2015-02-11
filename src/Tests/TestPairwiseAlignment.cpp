@@ -39,8 +39,10 @@
 #include <gtest/gtest.h>
 #include <boost/shared_ptr.hpp>
 
-#include "Align/PairwiseAlignment.hpp"
 #include "Align/AffineAlignment.hpp"
+#include "Align/LinearAlignment.hpp"
+#include "Align/PairwiseAlignment.hpp"
+
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAreArray;
@@ -262,4 +264,82 @@ TEST(IupacAlignmentTests, BasicTest)
     ASSERT_EQ("TTTTAG", a->Target());
     ASSERT_EQ("-TTTMG", a->Query());
     delete a;
+}
+
+
+// ---------------- Linear-space alignment tests -----------------------
+
+TEST(LinearAlignmentTests, BasicTest)
+{
+    NeedlemanWunschParams params(2, -1, -2, -2);
+    AlignConfig config(params, GLOBAL);
+
+    int score, peerScore;
+    PairwiseAlignment *a, *peerAlignment;
+
+    a = AlignLinear("GATTACA", "GATTACA", &score);
+    EXPECT_EQ("GATTACA", a->Target());
+    EXPECT_EQ("GATTACA", a->Query());
+    EXPECT_EQ("MMMMMMM", a->Transcript());
+    EXPECT_EQ(14, score);
+    delete a;
+
+    a = AlignLinear("TATGC", "AGTACGCA", &score);
+    EXPECT_EQ("--TATGC-", a->Target());
+    EXPECT_EQ("AGTACGCA", a->Query());
+    EXPECT_EQ("IIMMRMMI", a->Transcript());
+    EXPECT_EQ(1, score);
+    delete a;
+
+    a = AlignLinear("AGTACGCA", "TATGC", &score);
+    EXPECT_EQ("AGTACGCA", a->Target());
+    EXPECT_EQ("--TATGC-", a->Query());
+    EXPECT_EQ("DDMMRMMD", a->Transcript());
+    EXPECT_EQ(1, score);
+    delete a;
+
+
+    a = AlignLinear("GATT", "GATT");
+    EXPECT_FLOAT_EQ(1.0, a->Accuracy());
+    EXPECT_EQ("GATT", a->Target());
+    EXPECT_EQ("GATT", a->Query());
+    EXPECT_EQ("MMMM", a->Transcript());
+    delete a;
+
+    a = AlignLinear("GATT", "GAT");
+    EXPECT_FLOAT_EQ(0.75, a->Accuracy());
+    EXPECT_EQ("GATT", a->Target());
+    EXPECT_EQ("GA-T", a->Query());
+    EXPECT_EQ("MMDM", a->Transcript());
+    delete a;
+
+    a = AlignLinear("GATTACA", "TT");
+    EXPECT_EQ("GATTACA", a->Target());
+    EXPECT_EQ("--TT---", a->Query());
+    EXPECT_FLOAT_EQ(2./7, a->Accuracy());
+    delete a;
+
+    const char* ref = "GTATTTTAAATAAAAACATTAAGTTATGACGAAGAAGAACGGAAACGCCTTAAACCGGAAAATTTTCATAAATAGCGAAAACCCGCGAGGTCGCCGCCC";
+    const char* read = "GTATTTTAAATAAAAAAACATTATAGTTTAATGAACGAGAATGAACGGTAATACGCCTTTAAAGCCTGAAATATTTTTCCATAAATGTAATTTCTGTATATAATCTCCGCGAGTGTCTGCCGCCC";
+
+    a = AlignLinear(ref, read, &score);
+    peerAlignment = Align(ref, read, &peerScore, config);
+    EXPECT_EQ(score, peerScore);
+}
+
+
+TEST(LinearAlignmentTests, SemiglobalTests)
+{
+    NeedlemanWunschParams params(2, -1, -2, -2);
+    int score, peerScore;
+    PairwiseAlignment *a, *peerAlignment;
+
+    a = AlignLinear("AGTCGATACACCCC", "GATTACA");
+    EXPECT_EQ("AGTCGA-TACACCCC", a->Target());
+    EXPECT_EQ("----GATTACA----", a->Query());
+
+    // we got:
+    // -AGTCGATACACCCC
+    // GA-T---TACA----
+
 }

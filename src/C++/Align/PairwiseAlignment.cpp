@@ -122,44 +122,52 @@ namespace ConsensusCore {
         }
     }
 
-    NeedlemanWunschParams::NeedlemanWunschParams(float matchScore,
-                                                 float mismatchScore,
-                                                 float insertScore,
-                                                 float deleteScore)
+    NeedlemanWunschParams::NeedlemanWunschParams(int matchScore,
+                                                 int mismatchScore,
+                                                 int insertScore,
+                                                 int deleteScore)
         : MatchScore(matchScore),
           MismatchScore(mismatchScore),
           InsertScore(insertScore),
           DeleteScore(deleteScore)
     {}
 
-    NeedlemanWunschParams DefaultNeedlemanWunschParams()
+    NeedlemanWunschParams
+    NeedlemanWunschParams::Default()
     {
-        return NeedlemanWunschParams(0.0, -1.0, -1.0, -1.0);
+        return NeedlemanWunschParams(0, -1, -1, -1);
     }
 
 
-    static inline float MAX3(float a, float b, float c)
+    AlignConfig::AlignConfig(NeedlemanWunschParams params, AlignMode mode)
+        : Params(params), Mode(mode)
+    {}
+
+
+    AlignConfig
+    AlignConfig::Default()
     {
-        return std::max((a), std::max((b), (c)));
+        return AlignConfig(NeedlemanWunschParams::Default(), GLOBAL);
     }
 
-    static inline int ARGMAX3(float a, float b, float c)
-    {
-        if      (a >= b && a >= c) return 0;
-        else if (b >= c)           return 1;
-        else                       return 2;
-    }
 
     PairwiseAlignment*
     Align(const std::string& target,
           const std::string& query,
-          NeedlemanWunschParams params)
+          int* score,
+          AlignConfig config)
     {
         using boost::numeric::ublas::matrix;
 
+        const NeedlemanWunschParams& params = config.Params;
+        if (config.Mode != GLOBAL)
+        {
+            throw UnsupportedFeatureError("Only GLOBAL alignment supported at present");
+        }
+
         int I = query.length();
         int J = target.length();
-        matrix<float> Score(I + 1, J + 1);
+        matrix<int> Score(I + 1, J + 1);
 
         Score(0, 0) = 0;
         for (int i = 1; i <= I; i++) { Score(i, 0) = i * params.InsertScore; }
@@ -169,11 +177,15 @@ namespace ConsensusCore {
             for (int j = 1; j <= J; j++)
             {
                 bool isMatch = (query[i - 1] == target[j - 1]);
-                Score(i, j) = MAX3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
+                Score(i, j) = Max3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
                                                                     params.MismatchScore),
                                    Score(i - 1, j)     + params.InsertScore,
                                    Score(i,     j - 1) + params.DeleteScore);
             }
+        }
+        if (score != NULL)
+        {
+            *score = Score(I, J);
         }
 
         // Traceback, build up reversed aligned query, aligned target
@@ -188,7 +200,7 @@ namespace ConsensusCore {
                 move = 1;  // only insertion is possible
             } else {
                 bool isMatch = (query[i - 1] == target[j - 1]);
-                move = ARGMAX3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
+                move = ArgMax3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
                                                                 params.MismatchScore),
                                Score(i - 1, j)     + params.InsertScore,
                                Score(i,     j - 1) + params.DeleteScore);
@@ -218,6 +230,14 @@ namespace ConsensusCore {
         }
 
         return new PairwiseAlignment(Reverse(raTarget), Reverse(raQuery));
+    }
+
+    PairwiseAlignment*
+    Align(const std::string& target,
+          const std::string& query,
+          AlignConfig config)
+    {
+        return Align(target, query, NULL, config);
     }
 
 
@@ -310,4 +330,72 @@ namespace ConsensusCore {
     {
         return TargetToQueryPositions(aln.Transcript());
     }
+
+
+
+    // Build the alignment given the unaligned sequences and the transcript
+    // Returns NULL if transcript does not map unalnTarget into unalnQuery.
+    PairwiseAlignment*
+    PairwiseAlignment::FromTranscript(const std::string& transcript,
+                                      const std::string& unalnTarget,
+                                      const std::string& unalnQuery)
+    {
+        std::string alnTarget;
+        std::string alnQuery;
+        int tPos, qPos;
+        int tLen, qLen;
+
+        tLen = unalnTarget.length();
+        qLen = unalnQuery.length();
+        tPos = 0;
+        qPos = 0;
+        foreach (char x, transcript)
+        {
+            if (tPos > tLen || qPos > qLen) { return NULL; }
+
+            char t = (tPos < tLen ? unalnTarget[tPos] : '\0');
+            char q = (qPos < qLen ? unalnQuery[qPos]  : '\0');
+
+            switch (x)
+            {
+            case 'M':
+                if (t != q) { return NULL; }
+                alnTarget.push_back(t);
+                alnQuery.push_back(q);
+                tPos++;
+                qPos++;
+                break;
+            case 'R':
+                if (t == q) { return NULL; }
+                alnTarget.push_back(t);
+                alnQuery.push_back(q);
+                tPos++;
+                qPos++;
+                break;
+            case 'I':
+                alnTarget.push_back('-');
+                alnQuery.push_back(q);
+                qPos++;
+                break;
+            case 'D':
+                alnTarget.push_back(t);
+                alnQuery.push_back('-');
+                tPos++;
+                break;
+            default:
+                return NULL;
+            }
+        }
+        // Didn't consume all of one of the strings
+        if (tPos != tLen || qPos != qLen)
+        {
+            return NULL;
+        }
+
+        // Provide another constructor to inject transcript?  Calculate transcript on the fly?
+        return new PairwiseAlignment(alnTarget, alnQuery);
+    }
+
+
+
 }
