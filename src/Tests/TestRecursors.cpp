@@ -42,6 +42,7 @@
 #include <string>
 #include <vector>
 
+#include "Align/PairwiseAlignment.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/QvEvaluator.hpp"
@@ -49,7 +50,6 @@
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
 #include "Features.hpp"
-#include "PairwiseAlignment.hpp"
 
 #include "MatrixPrinting.hpp"
 #include "ParameterSettings.hpp"

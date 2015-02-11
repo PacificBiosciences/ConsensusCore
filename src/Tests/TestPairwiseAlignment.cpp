@@ -39,8 +39,8 @@
 #include <gtest/gtest.h>
 #include <boost/shared_ptr.hpp>
 
-#include "PairwiseAlignment.hpp"
-#include "AffineAlignment.hpp"
+#include "Align/PairwiseAlignment.hpp"
+#include "Align/AffineAlignment.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAreArray;

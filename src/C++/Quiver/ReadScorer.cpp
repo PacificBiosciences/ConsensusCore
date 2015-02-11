@@ -38,7 +38,7 @@
 #include <iostream>
 #include <string>
 
-#include "PairwiseAlignment.hpp"
+#include "Align/PairwiseAlignment.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/ReadScorer.hpp"

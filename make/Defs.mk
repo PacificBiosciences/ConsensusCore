@@ -15,13 +15,13 @@ OBJDIR          := $(BUILD_ROOT)/C++
 endif
 
 VPATH           := src/C++/                     \
+                  :src/C++/Align                \
                   :src/C++/Edna                 \
                   :src/C++/Matrix/              \
                   :src/C++/Quiver/              \
                   :src/C++/Quiver/detail        \
                   :src/C++/Poa/                 \
                   :src/C++/Statistics           \
-                  :src/C++/Simulation           \
                   :src/C++/Logging
 
 CXX_LIB         := $(abspath $(OBJDIR)/libConsensusCore.a)

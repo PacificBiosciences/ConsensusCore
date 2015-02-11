@@ -49,8 +49,8 @@
 #include <sstream>
 
 #include "Types.hpp"
-#include "PairwiseAlignment.hpp"
 #include "Utils.hpp"
+#include "Align/PairwiseAlignment.hpp"
 
 using std::max;
 

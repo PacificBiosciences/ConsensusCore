@@ -1,7 +1,7 @@
 %{
 /* Includes the header in the wrapper code */
-#include <PairwiseAlignment.hpp>
-#include <AffineAlignment.hpp>
+#include <Align/PairwiseAlignment.hpp>
+#include <Align/AffineAlignment.hpp>
 using namespace ConsensusCore;
 %}
 
@@ -11,5 +11,5 @@ using namespace ConsensusCore;
 %newobject AlignAffine;
 %newobject AlignAffineIupac;
 
-%include <PairwiseAlignment.hpp>
-%include <AffineAlignment.hpp>
+%include <Align/PairwiseAlignment.hpp>
+%include <Align/AffineAlignment.hpp>

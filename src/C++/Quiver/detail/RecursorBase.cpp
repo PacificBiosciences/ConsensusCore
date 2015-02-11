@@ -42,11 +42,11 @@
 #include <string>
 #include <vector>
 
+#include "Align/PairwiseAlignment.hpp"
 #include "LFloat.hpp"
 #include "Logging/Logging.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
-#include "PairwiseAlignment.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Edna/EdnaEvaluator.hpp"
 #include "Quiver/QuiverConfig.hpp"
