@@ -389,15 +389,12 @@ TEST(PoaConsensus, TestOverhangSecond)
     delete pc;
 }
 
-
-// TODO(dalexander): make a test that behaves differently under
-// local and global alignment, and test both
-TEST(PoaConsensus, SmallLocalTest)
+TEST(PoaConsensus, SmallSemiglobalTest)
 {
     vector<std::string> reads;
     reads +=  "GGTGG", "GGTGG", "T";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
-    plotGraph(pc->Graph(), "small-local");
+    plotGraph(pc->Graph(), "small-semiglobal");
     string expectedDot = \
                          "digraph G {"
                          "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -466,6 +463,7 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
     delete pc;
 }
 
+#if 0
 TEST(PoaConsensus, TestLocalStaggered)
 {
     // Adapted from Pat's C# test
@@ -484,7 +482,7 @@ TEST(PoaConsensus, TestLocalStaggered)
     EXPECT_EQ("ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGTAATT", pc->Sequence());
     delete pc;
 }
-
+#endif
 
 TEST(PoaConsensus, TestLongInsert)
 {

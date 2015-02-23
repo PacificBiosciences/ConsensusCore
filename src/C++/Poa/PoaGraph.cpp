@@ -80,6 +80,13 @@ namespace boost
 }
 
 
+namespace {
+    template<class T>
+    size_t ArgMaxVector(std::vector<T> v)
+    {
+        return std::max_element(v.begin(), v.end()) - v.begin();
+    }
+}
 
 namespace ConsensusCore
 {
@@ -321,10 +328,11 @@ namespace ConsensusCore
         float bestScore = -FLT_MAX;
         Vertex prevVertex = null_vertex;
 
-        // Under semiglobal alignment the vertex $ can be reached from
-        // any other vertex in one step via the End move--not just its
-        // predecessors in the graph
-        if (config.Mode == SEMIGLOBAL)
+        // Under local or semiglobal alignment the vertex $ can be
+        // "reached" in the dynamic programming from any other vertex
+        // in one step via the End move--not just its predecessors in
+        // the graph
+        if (config.Mode == SEMIGLOBAL || config.Mode == LOCAL)
         {
             foreach (Vertex u, vertices(g_))
             {
@@ -373,7 +381,7 @@ namespace ConsensusCore
                 getPredecessorColumns(g_, v, alignmentColumnForVertex);
 
         //
-        // handle read pos 0 separately:
+        // handle row 0 separately:
         //
         if (predecessorColumns.size() == 0)
         {
@@ -384,9 +392,9 @@ namespace ConsensusCore
             curCol->ReachingMove[0] = InvalidMove;
             curCol->PreviousVertex[0] = null_vertex;
         }
-        else if (config.Mode == SEMIGLOBAL)
+        else if (config.Mode == SEMIGLOBAL  || config.Mode == LOCAL)
         {
-            // under local alignment, we use the Start move
+            // under semiglobal or local alignment, we use the Start move
             curCol->Score[0] = 0;
             curCol->ReachingMove[0] = StartMove;
             curCol->PreviousVertex[0] = enterVertex_;
@@ -422,10 +430,22 @@ namespace ConsensusCore
         // readPos=i-1 represents position in read
         for (unsigned int i = 1, readPos = 0;  i <= sequence.length(); i++, readPos++)
         {
-            float candidateScore;
-            float bestScore = -FLT_MAX;
-            Vertex prevVertex = null_vertex;
-            MoveType reachingMove = InvalidMove;
+            float candidateScore, bestScore;
+            Vertex prevVertex;
+            MoveType reachingMove;
+
+            if (config.Mode == LOCAL)
+            {
+                bestScore = 0;
+                prevVertex = enterVertex_;
+                reachingMove = StartMove;
+            }
+            else
+            {
+                bestScore = -FLT_MAX;
+                prevVertex = null_vertex;
+                reachingMove = InvalidMove;
+            }
 
             foreach (const AlignmentColumn* prevCol, predecessorColumns)
             {
@@ -559,6 +579,7 @@ namespace ConsensusCore
         // so long as this object exists.
         sequences_.push_back(sequence);
 
+        // TODO(dalexander): factor out methods graphForSingleRead, tracebackAndThread
         if (seqNo == 0)
         {
             // first sequence in the alignment
@@ -590,7 +611,7 @@ namespace ConsensusCore
         }
         else
         {
-            // calculate alignment column of sequence vs. graph
+            // calculate alignment columns of sequence vs. graph
             AlignmentColumnMap alignmentColumnForVertex;
             vector<Vertex> sortedVertices(num_vertices(g_));
             topological_sort(g_, sortedVertices.rbegin());
@@ -613,22 +634,69 @@ namespace ConsensusCore
             // perform traceback from (I,$), threading the new sequence into the graph as
             // we go.
             int i = I;
-            Vertex v = exitVertex_, forkVertex = exitVertex_;
-            Vertex u = alignmentColumnForVertex[exitVertex_]->PreviousVertex[I];
-            Vertex startSpanVertex, endSpanVertex = u;
+            Vertex v = null_vertex, forkVertex = null_vertex;
+            Vertex u = exitVertex_;
+            Vertex startSpanVertex;
+            Vertex endSpanVertex = alignmentColumnForVertex[exitVertex_]->PreviousVertex[I];
+
             while ( !(u == enterVertex_ && i == 0) )
             {
                 // u -> v
                 // u: current vertex
                 // v: vertex last visited in traceback (could be == u)
                 // forkVertex: the vertex that will be the target of a new edge
-                int readPos = i - 1;
+                int readPos = i - 1; // (INVARIANT)
                 curCol = alignmentColumnForVertex.at(u);
                 assert(curCol != NULL);
                 PoaNode* curNodeInfo = vertexInfoMap_[u];
                 Vertex prevVertex = curCol->PreviousVertex[i];
+                MoveType reachingMove = curCol->ReachingMove[i];
 
-                if (curCol->ReachingMove[i] == MatchMove)
+                if (reachingMove == StartMove)
+                {
+                    assert (v != null_vertex);
+
+                    if (forkVertex == null_vertex)
+                    {
+                        forkVertex = v;
+                    }
+                    // In local model thread read bases, adjusting i (should stop at 0)
+                    while (i > 0)
+                    {
+                        assert(config.Mode == LOCAL);
+                        Vertex newForkVertex = add_vertex(g_);
+                        vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
+                        add_edge(newForkVertex, forkVertex, g_);
+                        forkVertex = newForkVertex;
+                        i--;
+                        readPos = i - 1;
+                    }
+                }
+                else if (reachingMove == EndMove)
+                {
+                    assert(forkVertex == null_vertex && u == exitVertex_ && v == null_vertex);
+
+                    forkVertex = exitVertex_;
+
+                    if (config.Mode == LOCAL) {
+                        // Find the row # we are coming from, walk
+                        // back to there, threading read bases onto
+                        // graph via forkVertex, adjusting i.
+                        const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
+                        int prevRow = ArgMaxVector(prevCol->Score);
+
+                        while (i > prevRow)
+                        {
+                            Vertex newForkVertex = add_vertex(g_);
+                            vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
+                            add_edge(newForkVertex, forkVertex, g_);
+                            forkVertex = newForkVertex;
+                            i--;
+                            readPos = i - 1;
+                        }
+                    }
+                }
+                else if (reachingMove == MatchMove)
                 {
                     // if there is an extant forkVertex, join it
                     if (forkVertex != null_vertex)
@@ -640,16 +708,15 @@ namespace ConsensusCore
                     curNodeInfo->Reads++;
                     i--;
                 }
-                else if (curCol->ReachingMove[i] == DeleteMove ||
-                         curCol->ReachingMove[i] == StartMove)
+                else if (reachingMove == DeleteMove)
                 {
                     if (forkVertex == null_vertex)
                     {
                         forkVertex = v;
                     }
                 }
-                else if (curCol->ReachingMove[i] == ExtraMove ||
-                         curCol->ReachingMove[i] == MismatchMove)
+                else if (reachingMove == ExtraMove ||
+                         reachingMove == MismatchMove)
                 {
                     // begin a new arc with this read base
                     Vertex newForkVertex = add_vertex(g_);
@@ -680,6 +747,7 @@ namespace ConsensusCore
             }
 
             // if there is an extant forkVertex, join it to enterVertex
+            // is this still desirable?
             if (forkVertex != null_vertex)
             {
                 add_edge(enterVertex_, forkVertex, g_);
