@@ -513,6 +513,38 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
     delete pc;
 }
 
+TEST(PoaConsensus, TestLocalStaggered)
+{
+    // Adapted from Pat's C# test
+    vector<std::string> reads;
+    reads += "TTTACAGGATAGTGCCGCCAATCTTCCAGT",
+                    "GATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC",
+                     "ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGTAATT",
+                                                                         "ACGTCTACACGTAATTTTGGAGAGCCCTCTCTCACG",
+                                                                               "ACACGTAATTTTGGAGAGCCCTCTCTTCACG",
+                  "AGGATAGTGCCGCCAATCTTCCAGTAATATACAGCACGGAGTAGCATCACGTACG",
+                     "ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGT";
+
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
+    // woops, we are getting this:
+    //"TTTACAGGATAGTGCCGCCAATCTTCCAGTAATATACAGCACGGAGTAGCATCACGTACGTACGTCTCACGTAATT"
+    EXPECT_EQ("ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGTAATT", pc->Sequence());
+    delete pc;
+}
+
+
+TEST(PoaConsensus, TestLongInsert)
+{
+    // Adapted from Pat's C# test
+    vector<std::string> reads;
+    reads +=  "TTTACAGGATAGTGCCGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGGTAGC", \
+              "TTTACAGGATAGTGCCGGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC",
+              "TTGTACAGGATAGTGCCGCCAATCTTCCAGTGATGGGGGGGGGGGGGGGGGGGGGGGGGGGACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC";
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
+    EXPECT_EQ("TTTACAGGATAGTGCCGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC", pc->Sequence());
+    delete pc;
+}
+
 
 TEST(PoaConsensus, TestMutations)
 {
