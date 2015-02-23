@@ -56,10 +56,10 @@
 #include <utility>
 #include <vector>
 
-#include "Poa/PoaConfig.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
 #include "Mutation.hpp"
+#include "Align/AlignConfig.hpp"
 
 using std::string;
 using std::vector;
@@ -224,22 +224,22 @@ namespace ConsensusCore
         makeAlignmentColumn(Vertex v,
                             const AlignmentColumnMap& alignmentColumnForVertex,
                             const std::string& sequence,
-                            const PoaConfig& config);
+                            const AlignConfig& config);
 
         const AlignmentColumn*
         makeAlignmentColumnForExit(Vertex v,
                                    const AlignmentColumnMap& alignmentColumnForVertex,
                                    const std::string& sequence,
-                                   const PoaConfig& config);
+                                   const AlignConfig& config);
 
     public:
         Impl();
         ~Impl();
-        void AddSequence(const std::string& sequence, const PoaConfig& config);
+        void AddSequence(const std::string& sequence, const AlignConfig& config);
 
         // TODO(dalexander): make this const
         tuple<string, float, vector<ScoredMutation>*>
-        FindConsensus(const PoaConfig& config);
+        FindConsensus(const AlignConfig& config);
 
         int NumSequences() const;
         string ToGraphViz(int flags) const;
@@ -310,7 +310,7 @@ namespace ConsensusCore
     PoaGraph::Impl::makeAlignmentColumnForExit(Vertex v,
                                                const AlignmentColumnMap& alignmentColumnForVertex,
                                                const std::string& sequence,
-                                               const PoaConfig& config)
+                                               const AlignConfig& config)
     {
         assert(out_degree(v, g_) == 0);
 
@@ -321,10 +321,10 @@ namespace ConsensusCore
         float bestScore = -FLT_MAX;
         Vertex prevVertex = null_vertex;
 
-        // Under local alignment the vertex $ can be reached from
+        // Under semiglobal alignment the vertex $ can be reached from
         // any other vertex in one step via the End move--not just its
         // predecessors in the graph
-        if (config.UseLocalAlignment)
+        if (config.Mode == SEMIGLOBAL)
         {
             foreach (Vertex u, vertices(g_))
             {
@@ -365,7 +365,7 @@ namespace ConsensusCore
     PoaGraph::Impl::makeAlignmentColumn(Vertex v,
                                         const AlignmentColumnMap& alignmentColumnForVertex,
                                         const std::string& sequence,
-                                        const PoaConfig& config)
+                                        const AlignConfig& config)
     {
         AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
         const PoaNode* vertexInfo = vertexInfoMap_[v];
@@ -384,7 +384,7 @@ namespace ConsensusCore
             curCol->ReachingMove[0] = InvalidMove;
             curCol->PreviousVertex[0] = null_vertex;
         }
-        else if (config.UseLocalAlignment)
+        else if (config.Mode == SEMIGLOBAL)
         {
             // under local alignment, we use the Start move
             curCol->Score[0] = 0;
@@ -401,7 +401,7 @@ namespace ConsensusCore
 
             foreach (const AlignmentColumn * prevCol, predecessorColumns)
             {
-                candidateScore = prevCol->Score[0] + config.Params.Missing;
+                candidateScore = prevCol->Score[0] + config.Params.Delete;
                 if (candidateScore > bestScore)
                 {
                     bestScore = candidateScore;
@@ -441,7 +441,7 @@ namespace ConsensusCore
                     reachingMove = (isMatch ? MatchMove : MismatchMove);
                 }
                 // Delete
-                candidateScore = prevCol->Score[i] + config.Params.Missing;
+                candidateScore = prevCol->Score[i] + config.Params.Delete;
                 if (candidateScore > bestScore)
                 {
                     bestScore = candidateScore;
@@ -450,7 +450,7 @@ namespace ConsensusCore
                 }
             }
             // Extra
-            candidateScore = curCol->Score[i - 1] + config.Params.Extra;
+            candidateScore = curCol->Score[i - 1] + config.Params.Insert;
             if (candidateScore > bestScore)
             {
                 bestScore = candidateScore;
@@ -491,7 +491,7 @@ namespace ConsensusCore
     }
 
     static std::vector<Vertex>
-    maxPath(BoostGraph& g, int totalReads, bool isLocal)
+    maxPath(BoostGraph& g, int totalReads, AlignMode mode)
     {
         std::list<Vertex> path;
         VertexInfoMap vertexInfoMap = get(vertex_info, g);
@@ -512,7 +512,7 @@ namespace ConsensusCore
             const PoaNode* vertexInfo = vertexInfoMap[v];
             int containingReads = vertexInfo->Reads;
             int spanningReads = vertexInfo->SpanningReads;
-            float score = isLocal ?
+            float score = (mode != GLOBAL) ?
                           (2 * containingReads - 1 * spanningReads - 0.0001f) :
                           (2 * containingReads - 1 * totalReads - 0.0001f);
             vertexInfoMap[v]->Score = score;
@@ -546,7 +546,7 @@ namespace ConsensusCore
         return std::vector<Vertex>(path.begin(), path.end());
     }
 
-    void PoaGraph::Impl::AddSequence(const std::string& sequence, const PoaConfig& config)
+    void PoaGraph::Impl::AddSequence(const std::string& sequence, const AlignConfig& config)
     {
         DEBUG_ONLY(repCheck());
         assert(sequence.length() > 0);
@@ -618,6 +618,7 @@ namespace ConsensusCore
             Vertex startSpanVertex, endSpanVertex = u;
             while ( !(u == enterVertex_ && i == 0) )
             {
+                // u -> v
                 // u: current vertex
                 // v: vertex last visited in traceback (could be == u)
                 // forkVertex: the vertex that will be the target of a new edge
@@ -722,10 +723,10 @@ namespace ConsensusCore
 
 
     tuple<string, float, vector<ScoredMutation>* >
-    PoaGraph::Impl::FindConsensus(const PoaConfig& config)
+    PoaGraph::Impl::FindConsensus(const AlignConfig& config)
     {
         std::stringstream ss;
-        std::vector<Vertex> bestPath = maxPath(g_, NumSequences(), config.UseLocalAlignment);
+        std::vector<Vertex> bestPath = maxPath(g_, NumSequences(), config.Mode);
         foreach (Vertex v, bestPath)
         {
             PoaNode* consensusNode = vertexInfoMap_[v];
@@ -738,7 +739,7 @@ namespace ConsensusCore
         // will be deallocated by PoaConsensus destructor.
         vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
-        if (true)  // TODO(dalexander): Add a flag to PoaConfig
+        if (true)  // TODO(dalexander): Add a flag to AlignConfig
         {
             for (int i = 2; i < (int)bestPath.size() - 2; i++) // NOLINT
             {
@@ -855,7 +856,7 @@ namespace ConsensusCore
     // PIMPL idiom delegation
 
     void
-    PoaGraph::AddSequence(const std::string& sequence, const PoaConfig& config)
+    PoaGraph::AddSequence(const std::string& sequence, const AlignConfig& config)
     {
         impl->AddSequence(sequence, config);
     }
@@ -867,7 +868,7 @@ namespace ConsensusCore
     }
 
     tuple<string, float, std::vector<ScoredMutation>* >
-    PoaGraph::FindConsensus(const PoaConfig& config) const
+    PoaGraph::FindConsensus(const AlignConfig& config) const
     {
         return impl->FindConsensus(config);
     }

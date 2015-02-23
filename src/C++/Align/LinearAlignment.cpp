@@ -62,7 +62,7 @@
 #include <vector>
 
 using ConsensusCore::PairwiseAlignment;
-using ConsensusCore::NeedlemanWunschParams;
+using ConsensusCore::AlignParams;
 using ConsensusCore::AlignConfig;
 using ConsensusCore::Align;
 using ConsensusCore::GLOBAL;
@@ -89,7 +89,7 @@ namespace {
     int MISMATCH_SCORE = -1;
     int MATCH_SCORE    = +2;
 
-    const NeedlemanWunschParams params(MATCH_SCORE, MISMATCH_SCORE, INSERT_SCORE, DELETE_SCORE);
+    const AlignParams params(MATCH_SCORE, MISMATCH_SCORE, INSERT_SCORE, DELETE_SCORE);
     const AlignConfig config(params, GLOBAL);
 
     //
@@ -157,7 +157,7 @@ namespace {
 
         std::string x, x1, x2;
         int segmentScore;
-        const NeedlemanWunschParams& params = config.Params;
+        const AlignParams& params = config.Params;
 
         //
         // Base case
@@ -187,21 +187,21 @@ namespace {
             Sm(j1 - 1) = 0;
             for (int j = j1; j <= j2; j++)
             {
-                Sm(j) = Sm(j - 1) + params.DeleteScore;
+                Sm(j) = Sm(j - 1) + params.Delete;
             }
             for (int i = i1; i <= mid; i++)
             {
                 int s, c;
                 s = Sm(j1 - 1);
-                c = Sm(j1 - 1) + params.InsertScore;
+                c = Sm(j1 - 1) + params.Insert;
                 Sm(j1 - 1) = c;
                 for (int j = j1; j <= j2; j++)
                 {
                     char t = target[j - 1];
                     char q = query[i - 1];
-                    c = Max3(Sm(j) + params.InsertScore,
-                             s + (t == q ? params.MatchScore : params.MismatchScore),
-                             c + params.DeleteScore);
+                    c = Max3(Sm(j) + params.Insert,
+                             s + (t == q ? params.Match : params.Mismatch),
+                             c + params.Delete);
                     s = Sm(j);
                     Sm(j) = c;
                 }
@@ -214,21 +214,21 @@ namespace {
             Sp(j2) = 0;
             for (int j = j2 - 1; j >= j1 - 1; j--)
             {
-                Sp(j) = Sp(j + 1) + params.DeleteScore;
+                Sp(j) = Sp(j + 1) + params.Delete;
             }
             for (int i = i2 - 1; i >= mid; i--)
             {
                 int s, c;
                 s = Sp(j2);
-                c = Sp(j2) + params.DeleteScore;
+                c = Sp(j2) + params.Delete;
                 Sp(j2) = c;
                 for (int j = j2 - 1; j >= j1 - 1; j--)
                 {
                     char t = target[j];  // j + 1 - 1
                     char q = query[i];   // i + 1 - 1
-                    c = Max3(Sp(j) + params.InsertScore,
-                             s + (t == q ? params.MatchScore : params.MismatchScore),
-                             c + params.DeleteScore);
+                    c = Max3(Sp(j) + params.Insert,
+                             s + (t == q ? params.Match : params.Mismatch),
+                             c + params.Delete);
                     s = Sp(j);
                     Sp(j) = c;
                 }

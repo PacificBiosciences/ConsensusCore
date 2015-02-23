@@ -44,14 +44,29 @@
 #include <utility>
 #include <vector>
 
-#include "Poa/PoaConfig.hpp"
+#include "Align/AlignConfig.hpp"
 #include "Utils.hpp"
 
 using boost::tie;
 
+namespace {
+
+    using namespace ConsensusCore;
+
+    // TODO(dalexander): these weird numbers are historical.  I think we
+    // could just switch to 1, -1, -1, -1 and it would be fine.
+    AlignConfig DefaultPoaConfig(AlignMode mode = GLOBAL)
+    {
+        AlignParams params(3, -5, -4, -4);
+        AlignConfig config(params, mode);
+        return config;
+    }
+
+}
+
 namespace ConsensusCore
 {
-    PoaConsensus::PoaConsensus(const PoaConfig& config)
+    PoaConsensus::PoaConsensus(const AlignConfig& config)
         : config_(config),
           variants_(NULL)
     {
@@ -68,7 +83,7 @@ namespace ConsensusCore
     }
 
     const PoaConsensus*
-    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, const PoaConfig& config)
+    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, const AlignConfig& config)
     {
         // do we need to filter zero-length reads here?
         PoaConsensus* pc = new PoaConsensus(config);
@@ -86,15 +101,15 @@ namespace ConsensusCore
     }
 
     const PoaConsensus*
-    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, bool global)
+    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, AlignMode mode)
     {
-        return FindConsensus(reads, PoaConfig(global));
+        return FindConsensus(reads, DefaultPoaConfig(mode));
     }
 
     const PoaConsensus*
     PoaConsensus::FindConsensus(const std::vector<std::string>& reads)
     {
-        return PoaConsensus::FindConsensus(reads, PoaConfig());
+        return PoaConsensus::FindConsensus(reads, DefaultPoaConfig());
     }
 
     const PoaGraph*

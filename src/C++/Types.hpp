@@ -45,12 +45,12 @@
 // Forward declarations
 //
 namespace ConsensusCore {
+    struct AlignConfig;
     struct BandingOptions;
     class DenseMatrix;
     struct QuiverConfig;
     class PairwiseAlignment;
     class AnnotatedPairwiseAlignment;
-    struct PoaConfig;
     struct QvModelParams;
     struct EdnaModelParams;
     struct ChannelSequenceFeatures;

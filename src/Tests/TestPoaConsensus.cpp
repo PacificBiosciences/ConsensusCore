@@ -48,7 +48,7 @@
 #include <utility>
 #include <vector>
 
-#include "Poa/PoaConfig.hpp"
+#include "Align/AlignConfig.hpp"
 #include "Poa/PoaConsensus.hpp"
 #include "Utils.hpp"
 #include "Mutation.hpp"
@@ -92,7 +92,7 @@ TEST(PoaGraph, SmallBasicTest)
     // Test that it works with a single sequence
     vector<std::string> reads;
     reads += "GGG";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
     string dot = pc->Graph()->ToGraphViz();
     string expectedDot = \
                          "digraph G {"
@@ -118,7 +118,7 @@ TEST(PoaGraph, SmallExtraTests)
     {
         vector<std::string> reads;
         reads += "GGG", "TGGG";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -145,7 +145,7 @@ TEST(PoaGraph, SmallExtraTests)
     {
         vector<std::string> reads;
         reads += "GGG", "GTGG";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         // this would be easier if we could use the C++0x raw
         // strings feature (in g++ 4.5+)
@@ -174,7 +174,7 @@ TEST(PoaGraph, SmallExtraTests)
     {
         vector<std::string> reads;
         reads += "GGG", "GGGT";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -205,7 +205,7 @@ TEST(PoaGraph, SmallMismatchTests)
     {
         vector<std::string> reads;
         reads += "GGG", "TGG";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -232,7 +232,7 @@ TEST(PoaGraph, SmallMismatchTests)
     {
         vector<std::string> reads;
         reads += "GGG", "GTG", "GTG";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -259,7 +259,7 @@ TEST(PoaGraph, SmallMismatchTests)
     {
         vector<std::string> reads;
         reads += "GGG", "GGT";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -289,7 +289,7 @@ TEST(PoaGraph, SmallDeletionTests)
     {
         vector<std::string> reads;
         reads += "GAT", "AT";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -314,7 +314,7 @@ TEST(PoaGraph, SmallDeletionTests)
     {
         vector<std::string> reads;
         reads += "GAT", "GT";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot =
             "digraph G {"
@@ -338,7 +338,7 @@ TEST(PoaGraph, SmallDeletionTests)
     {
         vector<std::string> reads;
         reads += "GAT", "GA";
-        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+        const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
@@ -371,7 +371,7 @@ TEST(PoaConsensus, TestSimple)
              "TTTACAGGATTAGTCCAGT",
              "TTTACAGGATTAGGTCCCAGT",
              "TTTACAGGATAGTCCAGT";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
     plotGraph(pc->Graph(), "simple");
     EXPECT_EQ("TTTACAGGATAGTCCAGT", pc->Sequence());
     delete pc;
@@ -384,12 +384,11 @@ TEST(PoaConsensus, TestOverhangSecond)
              "TTTACAGGATAGTCCAGT",
              "TTTACAGGATAGTCCAGTAAA",
              "TTTACAGGATAGTCCAGTAAA";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
     EXPECT_EQ("TTTACAGGATAGTCCAGTAAA", pc->Sequence());
     delete pc;
 }
 
-// This won't work until local alignment is properly implemented
 TEST(PoaConsensus, Tiling)
 {
     vector<std::string> reads;
@@ -431,8 +430,7 @@ TEST(PoaConsensus, Tiling)
                             "AGAGTTGAGGCTCTGTCCCCCAAGAAAGCGCGGCTTGGAC"
                             "TTCTTTACCAACCCTGCGCCTTTCA";
 
-    // change this to local alignment:
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::LOCAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
     //    plotGraph(pc->getGraph(), "tiling", true);
     // EXPECT_EQ(expectedResult, pc->getSequence());
     delete pc;
@@ -445,7 +443,7 @@ TEST(PoaConsensus, SmallLocalTest)
 {
     vector<std::string> reads;
     reads +=  "GGTGG", "GGTGG", "T";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::LOCAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
     plotGraph(pc->Graph(), "small-local");
     string expectedDot = \
                          "digraph G {"
@@ -479,7 +477,7 @@ TEST(PoaConsensus, SmallTilingTest)
             "AAAATTTT",
             "TTTTCCCC",
             "CCCCAGGA";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::LOCAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
     plotGraph(pc->Graph(), "small-tiling");
     EXPECT_EQ("GGGGAAAATTTTCCCCAGGA", pc->Sequence());
     delete pc;
@@ -490,7 +488,7 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
 {
     vector<std::string> reads;
     reads += "GGG", "TGGG";
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
     string dot = pc->Graph()->ToGraphViz(PoaGraph::COLOR_NODES | PoaGraph::VERBOSE_NODES);
 
     string expectedDot = \
@@ -527,7 +525,7 @@ TEST(PoaConsensus, TestMutations)
              "TGATTATAT",   // Substitution @ 6
              "TGATTGACAT";  // Insertion @ 5
 
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
 
     const std::vector<ScoredMutation>* scoredMutations = pc->Mutations();
     std::vector<string> variantDescriptions;

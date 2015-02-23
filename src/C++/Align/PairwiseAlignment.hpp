@@ -40,6 +40,8 @@
 #include <string>
 #include <vector>
 
+#include "AlignConfig.hpp"
+
 namespace {
 
     // Utility functions common to implementations of aligners
@@ -92,41 +94,6 @@ namespace ConsensusCore {
         static PairwiseAlignment* FromTranscript(const std::string& transcript,
                                                  const std::string& unalnTarget,
                                                  const std::string& unalnQuery);
-    };
-
-    //
-    // Configuration for aligners
-    //
-    struct NeedlemanWunschParams {
-        int MatchScore;
-        int MismatchScore;
-        int InsertScore;
-        int DeleteScore;
-
-        NeedlemanWunschParams(int matchScore,
-                              int mismatchScore,
-                              int insertScore,
-                              int deleteScore);
-
-        // Edit distance params
-        static NeedlemanWunschParams Default();
-    };
-
-
-    enum AlignMode {
-         GLOBAL     = 0,  // Global in both sequences
-         SEMIGLOBAL = 1,  // Global in query, local in target
-         LOCAL      = 2   // Local in both sequences
-    };
-
-    struct AlignConfig {
-        NeedlemanWunschParams Params;
-        AlignMode Mode;
-
-        AlignConfig(NeedlemanWunschParams params, AlignMode mode);
-
-        // Default corresponds to global alignment mode, edit distance params
-        static AlignConfig Default();
     };
 
 

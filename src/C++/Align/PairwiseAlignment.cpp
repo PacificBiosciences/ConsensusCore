@@ -122,35 +122,6 @@ namespace ConsensusCore {
         }
     }
 
-    NeedlemanWunschParams::NeedlemanWunschParams(int matchScore,
-                                                 int mismatchScore,
-                                                 int insertScore,
-                                                 int deleteScore)
-        : MatchScore(matchScore),
-          MismatchScore(mismatchScore),
-          InsertScore(insertScore),
-          DeleteScore(deleteScore)
-    {}
-
-    NeedlemanWunschParams
-    NeedlemanWunschParams::Default()
-    {
-        return NeedlemanWunschParams(0, -1, -1, -1);
-    }
-
-
-    AlignConfig::AlignConfig(NeedlemanWunschParams params, AlignMode mode)
-        : Params(params), Mode(mode)
-    {}
-
-
-    AlignConfig
-    AlignConfig::Default()
-    {
-        return AlignConfig(NeedlemanWunschParams::Default(), GLOBAL);
-    }
-
-
     PairwiseAlignment*
     Align(const std::string& target,
           const std::string& query,
@@ -159,7 +130,7 @@ namespace ConsensusCore {
     {
         using boost::numeric::ublas::matrix;
 
-        const NeedlemanWunschParams& params = config.Params;
+        const AlignParams& params = config.Params;
         if (config.Mode != GLOBAL)
         {
             throw UnsupportedFeatureError("Only GLOBAL alignment supported at present");
@@ -170,17 +141,17 @@ namespace ConsensusCore {
         matrix<int> Score(I + 1, J + 1);
 
         Score(0, 0) = 0;
-        for (int i = 1; i <= I; i++) { Score(i, 0) = i * params.InsertScore; }
-        for (int j = 1; j <= J; j++) { Score(0, j) = j * params.DeleteScore; }
+        for (int i = 1; i <= I; i++) { Score(i, 0) = i * params.Insert; }
+        for (int j = 1; j <= J; j++) { Score(0, j) = j * params.Delete; }
         for (int i = 1; i <= I; i++)
         {
             for (int j = 1; j <= J; j++)
             {
                 bool isMatch = (query[i - 1] == target[j - 1]);
-                Score(i, j) = Max3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
-                                                                    params.MismatchScore),
-                                   Score(i - 1, j)     + params.InsertScore,
-                                   Score(i,     j - 1) + params.DeleteScore);
+                Score(i, j) = Max3(Score(i - 1, j - 1) + (isMatch ? params.Match :
+                                                                    params.Mismatch),
+                                   Score(i - 1, j)     + params.Insert,
+                                   Score(i,     j - 1) + params.Delete);
             }
         }
         if (score != NULL)
@@ -200,10 +171,10 @@ namespace ConsensusCore {
                 move = 1;  // only insertion is possible
             } else {
                 bool isMatch = (query[i - 1] == target[j - 1]);
-                move = ArgMax3(Score(i - 1, j - 1) + (isMatch ? params.MatchScore :
-                                                                params.MismatchScore),
-                               Score(i - 1, j)     + params.InsertScore,
-                               Score(i,     j - 1) + params.DeleteScore);
+                move = ArgMax3(Score(i - 1, j - 1) + (isMatch ? params.Match :
+                                                                params.Mismatch),
+                               Score(i - 1, j)     + params.Insert,
+                               Score(i,     j - 1) + params.Delete);
             }
             // Incorporate:
             if (move == 0)

@@ -42,7 +42,7 @@
 #include <utility>
 #include <vector>
 
-#include "Poa/PoaConfig.hpp"
+#include "Align/AlignConfig.hpp"
 #include "Poa/PoaGraph.hpp"
 
 namespace ConsensusCore
@@ -53,20 +53,20 @@ namespace ConsensusCore
     class PoaConsensus : private noncopyable
     {
         std::string consensusSequence_;
-        PoaConfig config_;
+        AlignConfig config_;
         std::vector<ScoredMutation>* variants_;
         PoaGraph* poaGraph_;
         float score_;
 
     public:
-        explicit PoaConsensus(const PoaConfig& config);
+        explicit PoaConsensus(const AlignConfig& config);
         ~PoaConsensus();
 
     public:
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads,
-                                                 const PoaConfig& config);
+                                                 const AlignConfig& config);
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads,
-                                                 bool global);
+                                                 AlignMode mode);
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads);
 
     public:

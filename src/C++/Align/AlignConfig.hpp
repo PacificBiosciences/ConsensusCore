@@ -35,46 +35,42 @@
 
 // Author: David Alexander
 
+#pragma once
 
-#include "Poa/PoaConfig.hpp"
+namespace ConsensusCore {
+    //
+    // Scoring params for Needleman-Wunsch or Smith-Waterman style aligners
+    //
+    struct AlignParams {
+        int Match;
+        int Mismatch;
+        int Insert;
+        int Delete;
 
-namespace ConsensusCore
-{
-    PoaParameterSet PoaParameterSet::DefaultParameters()
-    {
-        PoaParameterSet p;
-        p.Extra    = -4;
-        p.Missing  = -4;
-        p.Mismatch = -5;
-        p.Match    =  3;
-        p.Branch   = -2;
-        return p;
-    }
+        AlignParams(int match,
+                    int mismatch,
+                    int insert,
+                    int delete_);
 
-    void PoaConfig::init(PoaParameterSet params, bool useLocalAlignment, bool useMergeMove)
-    {
-        this->Params = params;
-        this->UseLocalAlignment = useLocalAlignment;
-        this->UseMergeMove = useMergeMove;
-    }
+        // Edit distance params
+        static AlignParams Default();
+    };
 
-    PoaConfig::PoaConfig(PoaParameterSet params, bool useLocalAlignment, bool useMergeMove)
-    {
-        init(params, useLocalAlignment, useMergeMove);
-    }
 
-    PoaConfig::PoaConfig(PoaParameterSet params, bool useLocalAlignment)
-    {
-        init(params, useLocalAlignment, false);
-    }
+    enum AlignMode {
+         GLOBAL     = 0,  // Global in both sequences
+         SEMIGLOBAL = 1,  // Global in query, local in target
+         LOCAL      = 2   // Local in both sequences
+    };
 
-    PoaConfig::PoaConfig(bool useLocalAlignment)
-    {
-        init(PoaParameterSet::DefaultParameters(), useLocalAlignment, false);
-    }
 
-    PoaConfig::PoaConfig()
-    {
-        init(PoaParameterSet::DefaultParameters(), false, false);
-    }
+    struct AlignConfig {
+        AlignParams Params;
+        AlignMode Mode;
+
+        AlignConfig(AlignParams params, AlignMode mode);
+
+        // Default corresponds to global alignment mode, edit distance params
+        static AlignConfig Default();
+    };
 }

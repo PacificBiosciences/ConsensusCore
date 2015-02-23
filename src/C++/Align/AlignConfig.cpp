@@ -1,3 +1,9 @@
+/*
+
+ *
+ *  Created on: Feb 12, 2015
+ *      Author: dalexander
+ */
 // Copyright (c) 2011-2013, Pacific Biosciences of California, Inc.
 //
 // All rights reserved.
@@ -35,44 +41,36 @@
 
 // Author: David Alexander
 
-#pragma once
+#include "AlignConfig.hpp"
 
-namespace ConsensusCore
-{
-    struct PoaParameterSet
+namespace ConsensusCore {
+
+    AlignParams::AlignParams(int match,
+                             int mismatch,
+                             int insert,
+                             int delete_)
+        : Match(match),
+          Mismatch(mismatch),
+          Insert(insert),
+          Delete(delete_)
+    {}
+
+    AlignParams
+    AlignParams::Default()
     {
-        float Extra;
-        float Missing;
-        float Mismatch;
-        float Match;
-        float Branch;
+        return AlignParams(0, -1, -1, -1);
+    }
 
-        static PoaParameterSet DefaultParameters();
-    };
 
-    struct PoaConfig
+    AlignConfig::AlignConfig(AlignParams params, AlignMode mode)
+        : Params(params), Mode(mode)
+    {}
+
+
+    AlignConfig
+    AlignConfig::Default()
     {
-        enum
-        {
-            GLOBAL_ALIGNMENT = false,
-            LOCAL_ALIGNMENT = true
-        };
-        enum
-        {
-            USE_MERGE_MOVE = true,
-            NO_MERGE_MOVE = false
-        };
+        return AlignConfig(AlignParams::Default(), GLOBAL);
+    }
 
-        PoaParameterSet Params;
-        bool UseMergeMove;
-        bool UseLocalAlignment;
-
-        PoaConfig(PoaParameterSet params, bool useLocalAlignment, bool useMergeMove);
-        PoaConfig(PoaParameterSet params, bool useLocalAlignment);
-        explicit PoaConfig(bool useLocalAlignment);
-        PoaConfig();
-
-    private:
-        void init(PoaParameterSet params, bool useLocalAlignment, bool useMergeMove);
-    };
 }

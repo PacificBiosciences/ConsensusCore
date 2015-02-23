@@ -271,7 +271,7 @@ TEST(IupacAlignmentTests, BasicTest)
 
 TEST(LinearAlignmentTests, BasicTest)
 {
-    NeedlemanWunschParams params(2, -1, -2, -2);
+    AlignParams params(2, -1, -2, -2);
     AlignConfig config(params, GLOBAL);
 
     int score, peerScore;
@@ -331,7 +331,7 @@ TEST(LinearAlignmentTests, BasicTest)
 #if 0
 TEST(LinearAlignmentTests, SemiglobalTests)
 {
-    NeedlemanWunschParams params(2, -1, -2, -2);
+    AlignParams params(2, -1, -2, -2);
     int score, peerScore;
     PairwiseAlignment *a, *peerAlignment;
 

@@ -45,6 +45,8 @@
 #include "Types.hpp"
 #include "Mutation.hpp"
 
+
+
 namespace ConsensusCore
 {
     /// \brief An object representing a Poa (partial-order alignment) graph
@@ -60,13 +62,13 @@ namespace ConsensusCore
         };
 
     public:
-        void AddSequence(const std::string& sequence, const PoaConfig& config);
+        void AddSequence(const std::string& sequence, const AlignConfig& config);
 
         // TODO(dalexander): move this method to PoaConsensus so we don't have to use a tuple
         // interface here (which was done to avoid a circular dep on PoaConsensus).
 #ifndef SWIG
         boost::tuple<std::string, float, std::vector<ScoredMutation>* >
-        FindConsensus(const PoaConfig& config) const;
+        FindConsensus(const AlignConfig& config) const;
 #endif  // !SWIG
 
         int NumSequences() const;
