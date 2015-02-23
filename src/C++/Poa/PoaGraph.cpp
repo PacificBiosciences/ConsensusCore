@@ -335,7 +335,8 @@ namespace ConsensusCore
         // Under local or semiglobal alignment the vertex $ can be
         // "reached" in the dynamic programming from any other vertex
         // in one step via the End move--not just its predecessors in
-        // the graph
+        // the graph.  In local alignment, it may have been from any
+        // row, not necessarily I.
         if (config.Mode == SEMIGLOBAL || config.Mode == LOCAL)
         {
             foreach (Vertex u, vertices(g_))
@@ -343,9 +344,11 @@ namespace ConsensusCore
                 if (u != exitVertex_)
                 {
                     const AlignmentColumn* predCol = alignmentColumnForVertex.at(u);
-                    if (predCol->Score[I] > bestScore)
+                    int prevRow = (config.Mode == LOCAL ? ArgMaxVector(predCol->Score) : I);
+
+                    if (predCol->Score[prevRow] > bestScore)
                     {
-                        bestScore = predCol->Score[I];
+                        bestScore = predCol->Score[prevRow];
                         prevVertex = predCol->CurrentVertex;
                     }
                 }
