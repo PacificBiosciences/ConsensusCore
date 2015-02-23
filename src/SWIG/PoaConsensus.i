@@ -1,7 +1,6 @@
 
 %{
 /* Includes the header in the wrapper code */
-#include <Poa/PoaConfig.hpp>
 #include <Poa/PoaGraph.hpp>
 #include <Poa/PoaConsensus.hpp>
 using namespace ConsensusCore;
@@ -13,7 +12,6 @@ using namespace ConsensusCore;
 %csmethodmodifiers ConsensusCore::PoaConsensus::ToString() const "public override"
 #endif // SWIGCSHARP
 
-%include <Poa/PoaConfig.hpp>
 %include <Poa/PoaGraph.hpp>
 
 %newobject *::FindConsensus(const std::vector<std::string>& reads, const PoaConfig& config);
