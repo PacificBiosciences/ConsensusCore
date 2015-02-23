@@ -1,5 +1,6 @@
 %{
 /* Includes the header in the wrapper code */
+#include <Align/AlignConfig.hpp>
 #include <Align/PairwiseAlignment.hpp>
 #include <Align/AffineAlignment.hpp>
 #include <Align/LinearAlignment.hpp>
@@ -13,6 +14,7 @@ using namespace ConsensusCore;
 %newobject AlignAffineIupac;
 %newobject AlignLinear;
 
+%include <Align/AlignConfig.hpp>
 %include <Align/PairwiseAlignment.hpp>
 %include <Align/AffineAlignment.hpp>
 %include <Align/LinearAlignment.hpp>
