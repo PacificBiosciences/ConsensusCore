@@ -81,10 +81,14 @@ namespace boost
 
 
 namespace {
+    using std::max_element;
+    using std::distance;
+
+    // Note this is left-biased, which may not be what we want!
     template<class T>
-    size_t ArgMaxVector(std::vector<T> v)
+    size_t ArgMaxVector(const std::vector<T>& v)
     {
-        return std::max_element(v.begin(), v.end()) - v.begin();
+        return distance(v.begin(), max_element(v.begin(), v.end()));
     }
 }
 
