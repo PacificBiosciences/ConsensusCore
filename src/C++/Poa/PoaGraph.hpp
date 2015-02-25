@@ -45,20 +45,21 @@
 #include "Types.hpp"
 #include "Mutation.hpp"
 
-
-
 namespace ConsensusCore
 {
+    namespace detail {
+        class PoaGraphImpl;
+    }
+
     /// \brief An object representing a Poa (partial-order alignment) graph
     class PoaGraph
     {
-        class Impl;
-        Impl* impl;
+        detail::PoaGraphImpl* impl;
 
     public:  // Flags enums for specifying GraphViz output features
         enum {
             COLOR_NODES    = 0x1,
-            VERBOSE_NODES = 0x2
+            VERBOSE_NODES  = 0x2
         };
 
     public:
@@ -78,4 +79,3 @@ namespace ConsensusCore
         ~PoaGraph();
     };
 }
-
