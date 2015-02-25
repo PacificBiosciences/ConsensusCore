@@ -274,14 +274,11 @@ namespace detail {
                 // begin a new arc with this read base
                 Vertex newForkVertex = add_vertex(g_);
                 vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
-                if (forkVertex != null_vertex)
+                if (forkVertex == null_vertex)
                 {
-                    add_edge(newForkVertex, forkVertex, g_);
+                    forkVertex = v;
                 }
-                else
-                {
-                    add_edge(newForkVertex, v, g_);
-                }
+                add_edge(newForkVertex, forkVertex, g_);
                 forkVertex = newForkVertex;
                 i--;
             }
