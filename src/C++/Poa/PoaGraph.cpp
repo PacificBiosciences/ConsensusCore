@@ -40,28 +40,6 @@
 #include "Poa/PoaGraph.hpp"
 #include "Poa/PoaGraphImpl.hpp"
 
-#include <cassert>
-#include <cfloat>
-#include <fstream>
-#include <iostream>
-#include <list>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "Types.hpp"
-#include "Utils.hpp"
-#include "Mutation.hpp"
-#include "Align/AlignConfig.hpp"
-
-using std::string;
-using std::vector;
-using std::pair;
-using std::make_pair;
-using std::cout;
-using std::endl;
-
-
 namespace ConsensusCore
 {
     //
