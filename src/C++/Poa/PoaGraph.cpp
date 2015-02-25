@@ -692,7 +692,7 @@ namespace ConsensusCore
                         const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
                         int prevRow = ArgMaxVector(prevCol->Score);
 
-                        while (i > prevRow)
+                        while (i > static_cast<int>(prevRow))
                         {
                             Vertex newForkVertex = add_vertex(g_);
                             vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
