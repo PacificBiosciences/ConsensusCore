@@ -18,6 +18,7 @@
 #include <boost/graph/topological_sort.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/utility.hpp>
+#include <cfloat>
 #include <vector>
 
 using std::string;
