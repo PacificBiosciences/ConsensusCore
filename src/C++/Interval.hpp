@@ -38,9 +38,9 @@
 #pragma once
 
 #include <algorithm>
-#include <utility>
-
 #include <boost/tuple/tuple.hpp>
+#include <climits>
+#include <utility>
 
 #include "Utils.hpp"
 
