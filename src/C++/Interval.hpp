@@ -41,6 +41,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <climits>
 #include <utility>
+#include <vector>
 
 #include "Utils.hpp"
 
