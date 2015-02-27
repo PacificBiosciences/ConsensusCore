@@ -39,6 +39,8 @@ namespace boost
 namespace ConsensusCore {
 namespace detail {
 
+    class SdpRangeFinder;
+
     enum MoveType
     {
         InvalidMove,  // Invalid move reaching ^ (start)
@@ -110,6 +112,8 @@ namespace detail {
 
     class PoaGraphImpl
     {
+        friend class SdpRangeFinder;
+
         BoostGraph g_;
         VertexInfoMap vertexInfoMap_;
         Vertex enterVertex_;
@@ -139,7 +143,7 @@ namespace detail {
         //
         void tagSpan(Vertex start, Vertex end);
 
-        std::vector<Vertex> maxPath(AlignMode mode) const;
+        std::vector<Vertex> consensusPath(AlignMode mode) const;
 
         void threadFirstRead(std::string sequence);
 
@@ -154,11 +158,14 @@ namespace detail {
     public:
         PoaGraphImpl();
         ~PoaGraphImpl();
-        void AddSequence(const std::string& sequence, const AlignConfig& config);
+
+        void AddSequence(const std::string& sequence,
+                         const AlignConfig& config,
+                         SdpRangeFinder* rangeFinder=NULL);
 
         // TODO(dalexander): make this const
         tuple<string, float, vector<ScoredMutation>*>
-        FindConsensus(const AlignConfig& config);
+        FindConsensus(const AlignConfig& config, bool findVariants=true);
 
         int NumSequences() const;
         string ToGraphViz(int flags) const;
@@ -172,6 +179,11 @@ namespace detail {
     {
         return std::distance(v.begin(), std::max_element(v.begin(), v.end()));
     }
+
+    // free functions, we should put these all in traversals
+    std::string sequenceAlongPath(const BoostGraph& g,
+                                  const VertexInfoMap& vertexInfoMap,
+                                  std::vector<Vertex> path);
 
 
 }} // ConsensusCore::detail

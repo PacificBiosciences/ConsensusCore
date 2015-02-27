@@ -42,6 +42,8 @@
 
 #include <boost/tuple/tuple.hpp>
 
+#include "Utils.hpp"
+
 namespace ConsensusCore {
 
     struct Interval
@@ -93,5 +95,16 @@ namespace ConsensusCore {
     {
         return RangeUnion(RangeUnion(range1, range2),
                           RangeUnion(range3, range4));
+    }
+
+    inline Interval
+    RangeUnion(const std::vector<Interval> ranges)
+    {
+        Interval result = Interval(INT_MAX/2, -INT_MAX/2);
+        foreach (const Interval& r, ranges)
+        {
+            result = RangeUnion(result, r);
+        }
+        return result;
     }
 }

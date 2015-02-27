@@ -1,5 +1,6 @@
 #include "PoaGraphImpl.hpp"
 #include "PoaGraph.hpp"
+#include "RangeFinder.hpp"
 
 #include "Align/AlignConfig.hpp"
 #include "Utils.hpp"
@@ -117,27 +118,31 @@ namespace detail {
 
 
     tuple<string, float, vector<ScoredMutation>* >
-    PoaGraphImpl::FindConsensus(const AlignConfig& config)
+    PoaGraphImpl::FindConsensus(const AlignConfig& config, bool findVariants)
     {
-       std::stringstream ss;
-       std::vector<Vertex> bestPath = maxPath(config.Mode);
+       std::vector<Vertex> bestPath = consensusPath(config.Mode);
+       std::string consensusSequence = sequenceAlongPath(g_, vertexInfoMap_, bestPath);
+
+       // This is awkward.
        foreach (Vertex v, bestPath)
        {
-           PoaNode* consensusNode = vertexInfoMap_[v];
-           consensusNode->IsInConsensus = true;
-           ss << consensusNode->Base;
+           vertexInfoMap_[v]->IsInConsensus = true;
        }
 
-       // if requested, identify likely sequence variants
-       std::vector<ScoredMutation>* variants = findPossibleVariants(bestPath);
-       return boost::make_tuple(ss.str(), 0.0f, variants);
+       std::vector<ScoredMutation>* variants;
+       if (findVariants) {
+           variants = findPossibleVariants(bestPath);
+       } else {
+           variants = NULL;
+       }
+       return boost::make_tuple(consensusSequence, 0.0f, variants);
     }
 
     const AlignmentColumn*
     PoaGraphImpl::makeAlignmentColumnForExit(Vertex v,
-                                               const AlignmentColumnMap& alignmentColumnForVertex,
-                                               const std::string& sequence,
-                                               const AlignConfig& config)
+                                             const AlignmentColumnMap& alignmentColumnForVertex,
+                                             const std::string& sequence,
+                                             const AlignConfig& config)
     {
         assert(out_degree(v, g_) == 0);
 
@@ -193,9 +198,9 @@ namespace detail {
 
     const AlignmentColumn*
     PoaGraphImpl::makeAlignmentColumn(Vertex v,
-                                        const AlignmentColumnMap& alignmentColumnForVertex,
-                                        const std::string& sequence,
-                                        const AlignConfig& config)
+                                      const AlignmentColumnMap& alignmentColumnForVertex,
+                                      const std::string& sequence,
+                                      const AlignConfig& config)
     {
         AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
         const PoaNode* vertexInfo = vertexInfoMap_[v];
@@ -308,25 +313,36 @@ namespace detail {
         return curCol;
     }
 
-    void PoaGraphImpl::AddSequence(const std::string& sequence, const AlignConfig& config)
+    void PoaGraphImpl::AddSequence(const std::string& readSeq,
+                                   const AlignConfig& config,
+                                   SdpRangeFinder* rangeFinder)
     {
         DEBUG_ONLY(repCheck());
-        assert(sequence.length() > 0);
+        assert(readSeq.length() > 0);
 
         int seqNo = sequences_.size();
 
         // Yes, it's true!  We need to retain a COPY of the SequenceFeatures
         // so that the shared_ptr's within will always have positive usage count
         // so long as this object exists.
-        sequences_.push_back(sequence);
+        sequences_.push_back(readSeq);
 
         if (seqNo == 0)
         {
-            threadFirstRead(sequence);
+            threadFirstRead(readSeq);
         }
         else
         {
-            // calculate alignment columns of sequence vs. graph
+            // Prepare the range finder, if applicable
+            if (rangeFinder != NULL)
+            {
+                std::vector<Vertex> cssPath = consensusPath(config.Mode);
+                std::string cssSeq = sequenceAlongPath(g_, vertexInfoMap_, cssPath);
+                rangeFinder->InitRangeFinder(*this, cssPath, cssSeq, readSeq);
+            }
+
+            // Calculate alignment columns of sequence vs. graph, using sparsity if
+            // we have a range finder.
             AlignmentColumnMap alignmentColumnForVertex;
             vector<Vertex> sortedVertices(num_vertices(g_));
             topological_sort(g_, sortedVertices.rbegin());
@@ -336,17 +352,17 @@ namespace detail {
                 if (v != exitVertex_)
                 {
                     curCol = makeAlignmentColumn(v, alignmentColumnForVertex,
-                                                 sequence, config);
+                                                 readSeq, config);
                 }
                 else
                 {
                     curCol = makeAlignmentColumnForExit(v, alignmentColumnForVertex,
-                                                        sequence, config);
+                                                        readSeq, config);
                 }
                 alignmentColumnForVertex[v] = curCol;
             }
 
-            tracebackAndThread(sequence, alignmentColumnForVertex, config.Mode);
+            tracebackAndThread(readSeq, alignmentColumnForVertex, config.Mode);
 
             // Clean up the mess we created.  Might be nicer to use scoped ptrs.
             foreach (AlignmentColumnMap::value_type& kv, alignmentColumnForVertex)

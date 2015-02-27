@@ -42,28 +42,16 @@
 namespace ConsensusCore {
 namespace detail {
 
-    static boost::unordered_set<Vertex>
-    childVertices(Vertex v,
-                  const BoostGraph& g)
+    std::string sequenceAlongPath(const BoostGraph& g,
+                                  const VertexInfoMap& vertexInfoMap,
+                                  std::vector<Vertex> path)
     {
-        boost::unordered_set<Vertex> result;
-        foreach (Edge e, out_edges(v, g))
+        std::stringstream ss;
+        foreach (Vertex v, path)
         {
-            result.insert(target(e, g));
+            ss << vertexInfoMap[v]->Base;
         }
-        return result;
-    }
-
-    static boost::unordered_set<Vertex>
-    parentVertices(Vertex v,
-                   const BoostGraph& g)
-    {
-        boost::unordered_set<Vertex> result;
-        foreach (Edge e, in_edges(v, g))
-        {
-            result.insert(source(e, g));
-        }
-        return result;
+        return ss.str();
     }
 
     void PoaGraphImpl::tagSpan(Vertex start, Vertex end)
@@ -90,7 +78,7 @@ namespace detail {
     }
 
     std::vector<Vertex>
-    PoaGraphImpl::maxPath(AlignMode mode) const
+    PoaGraphImpl::consensusPath(AlignMode mode) const
     {
         int totalReads = NumSequences();
 
@@ -304,6 +292,31 @@ namespace detail {
             forkVertex = null_vertex;
         }
     }
+
+    static boost::unordered_set<Vertex>
+    childVertices(Vertex v,
+                  const BoostGraph& g)
+    {
+        boost::unordered_set<Vertex> result;
+        foreach (Edge e, out_edges(v, g))
+        {
+            result.insert(target(e, g));
+        }
+        return result;
+    }
+
+    static boost::unordered_set<Vertex>
+    parentVertices(Vertex v,
+                   const BoostGraph& g)
+    {
+        boost::unordered_set<Vertex> result;
+        foreach (Edge e, in_edges(v, g))
+        {
+            result.insert(source(e, g));
+        }
+        return result;
+    }
+
 
     vector<ScoredMutation>*
     PoaGraphImpl::findPossibleVariants(const std::vector<Vertex>& bestPath) const
