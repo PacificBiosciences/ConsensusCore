@@ -3,6 +3,7 @@
 #include "RangeFinder.hpp"
 
 #include "Align/AlignConfig.hpp"
+#include "Interval.hpp"
 #include "Utils.hpp"
 
 namespace boost
@@ -102,14 +103,14 @@ namespace detail {
     static inline vector<const AlignmentColumn*>
     getPredecessorColumns(BoostGraph& g,
                           Vertex v,
-                          const AlignmentColumnMap& alignmentColumnForVertex)
+                          const AlignmentColumnMap& colMap)
     {
         vector<const AlignmentColumn*> predecessorColumns;
         const AlignmentColumn* predCol;
         foreach (Edge e, in_edges(v, g))
         {
             Vertex u = source(e, g);
-            predCol = alignmentColumnForVertex.at(u);
+            predCol = colMap.at(u);
             assert(predCol != NULL);
             predecessorColumns.push_back(predCol);
         }
@@ -140,7 +141,7 @@ namespace detail {
 
     const AlignmentColumn*
     PoaGraphImpl::makeAlignmentColumnForExit(Vertex v,
-                                             const AlignmentColumnMap& alignmentColumnForVertex,
+                                             const AlignmentColumnMap& colMap,
                                              const std::string& sequence,
                                              const AlignConfig& config)
     {
@@ -164,8 +165,8 @@ namespace detail {
             {
                 if (u != exitVertex_)
                 {
-                    const AlignmentColumn* predCol = alignmentColumnForVertex.at(u);
-                    int prevRow = (config.Mode == LOCAL ? ArgMaxVector(predCol->Score) : I);
+                    const AlignmentColumn* predCol = colMap.at(u);
+                    int prevRow = (config.Mode == LOCAL ? ArgMax(predCol->Score) : I);
 
                     if (predCol->Score[prevRow] > bestScore)
                     {
@@ -179,7 +180,7 @@ namespace detail {
         {
             // regular predecessors
             vector<const AlignmentColumn*> predecessorColumns  =
-                    getPredecessorColumns(g_, v, alignmentColumnForVertex);
+                    getPredecessorColumns(g_, v, colMap);
             foreach (const AlignmentColumn * predCol, predecessorColumns)
             {
                 if (predCol->Score[I] > bestScore)
@@ -198,14 +199,16 @@ namespace detail {
 
     const AlignmentColumn*
     PoaGraphImpl::makeAlignmentColumn(Vertex v,
-                                      const AlignmentColumnMap& alignmentColumnForVertex,
+                                      const AlignmentColumnMap& colMap,
                                       const std::string& sequence,
-                                      const AlignConfig& config)
+                                      const AlignConfig& config,
+                                      int beginRow,
+                                      int endRow)
     {
         AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
         const PoaNode* vertexInfo = vertexInfoMap_[v];
         vector<const AlignmentColumn*> predecessorColumns =
-                getPredecessorColumns(g_, v, alignmentColumnForVertex);
+                getPredecessorColumns(g_, v, colMap);
 
         //
         // handle row 0 separately:
@@ -343,7 +346,7 @@ namespace detail {
 
             // Calculate alignment columns of sequence vs. graph, using sparsity if
             // we have a range finder.
-            AlignmentColumnMap alignmentColumnForVertex;
+            AlignmentColumnMap colMap;
             vector<Vertex> sortedVertices(num_vertices(g_));
             topological_sort(g_, sortedVertices.rbegin());
             const AlignmentColumn* curCol;
@@ -351,21 +354,24 @@ namespace detail {
             {
                 if (v != exitVertex_)
                 {
-                    curCol = makeAlignmentColumn(v, alignmentColumnForVertex,
-                                                 readSeq, config);
+                    Interval rowRange;
+                    if (rangeFinder) {
+                        rowRange = rangeFinder->FindAlignableRange(v);
+                    } else {
+                        rowRange = Interval(0, readSeq.size());
+                    }
+                    curCol = makeAlignmentColumn(v, colMap, readSeq, config, rowRange.Begin, rowRange.End);
                 }
-                else
-                {
-                    curCol = makeAlignmentColumnForExit(v, alignmentColumnForVertex,
-                                                        readSeq, config);
+                else {
+                    curCol = makeAlignmentColumnForExit(v, colMap, readSeq, config);
                 }
-                alignmentColumnForVertex[v] = curCol;
+                colMap[v] = curCol;
             }
 
-            tracebackAndThread(readSeq, alignmentColumnForVertex, config.Mode);
+            tracebackAndThread(readSeq, colMap, config.Mode);
 
             // Clean up the mess we created.  Might be nicer to use scoped ptrs.
-            foreach (AlignmentColumnMap::value_type& kv, alignmentColumnForVertex)
+            foreach (AlignmentColumnMap::value_type& kv, colMap)
             {
                 delete kv.second;
             }

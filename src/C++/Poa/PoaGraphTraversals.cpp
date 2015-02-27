@@ -38,6 +38,7 @@
 #include "PoaGraph.hpp"
 #include "PoaGraphImpl.hpp"
 #include "Utils.hpp"
+#include "VectorL.hpp"
 
 namespace ConsensusCore {
 namespace detail {
@@ -224,7 +225,7 @@ namespace detail {
                     // back to there, threading read bases onto
                     // graph via forkVertex, adjusting i.
                     const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
-                    int prevRow = ArgMaxVector(prevCol->Score);
+                    int prevRow = ArgMax(prevCol->Score);
 
                     while (i > static_cast<int>(prevRow))
                     {

@@ -7,8 +7,9 @@
 #error "PoaGraphImpl.hpp is not an API-facing header!"
 #endif  // SWIG
 
-#include "PoaGraph.hpp"
 #include "Align/AlignConfig.hpp"
+#include "PoaGraph.hpp"
+#include "VectorL.hpp"
 
 #include <boost/config.hpp>
 #include <boost/foreach.hpp>
@@ -92,19 +93,29 @@ namespace detail {
     struct AlignmentColumn : noncopyable
     {
         Vertex CurrentVertex;
-        vector<float> Score;
-        vector<MoveType> ReachingMove;
-        vector<Vertex> PreviousVertex;
+        VectorL<float> Score;
+        VectorL<MoveType> ReachingMove;
+        VectorL<Vertex> PreviousVertex;
 
         AlignmentColumn(Vertex vertex, int len)
             : CurrentVertex(vertex),
-              Score(len, -FLT_MAX),
-              ReachingMove(len, InvalidMove),
-              PreviousVertex(len, null_vertex)
+              Score(0, len, -FLT_MAX),
+              ReachingMove(0, len, InvalidMove),
+              PreviousVertex(0, len, null_vertex)
+        {}
+
+        AlignmentColumn(Vertex vertex, int beginRow, int endRow)
+            : CurrentVertex(vertex),
+              Score(beginRow, endRow, -FLT_MAX),
+              ReachingMove(beginRow, endRow, InvalidMove),
+              PreviousVertex(beginRow, endRow, null_vertex)
         {}
 
         ~AlignmentColumn()
         {}
+
+        int BeginRow() const { return Score.BeginRow(); }
+        int EndRow()   const { return Score.EndRow();   }
     };
 
     typedef unordered_map<Vertex, const AlignmentColumn*> AlignmentColumnMap;
@@ -129,7 +140,8 @@ namespace detail {
         makeAlignmentColumn(Vertex v,
                             const AlignmentColumnMap& alignmentColumnForVertex,
                             const std::string& sequence,
-                            const AlignConfig& config);
+                            const AlignConfig& config,
+                            int beginRow, int endRow);
 
         const AlignmentColumn*
         makeAlignmentColumnForExit(Vertex v,
