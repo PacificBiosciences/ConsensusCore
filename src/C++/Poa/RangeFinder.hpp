@@ -1,4 +1,5 @@
 
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
@@ -8,9 +9,8 @@
 
 namespace ConsensusCore {
 namespace detail {
-
     // an Anchor represents a point (cssPos, readPos)
-    typedef std::pair<int, int>    SdpAnchor;
+    typedef std::pair<size_t, size_t>    SdpAnchor;
     typedef std::vector<SdpAnchor> SdpAnchorVector;
 
     //

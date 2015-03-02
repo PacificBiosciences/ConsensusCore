@@ -73,13 +73,13 @@ namespace detail {
 
         // Find the "direct ranges" implied by the anchors between the
         // css and this read.  Possibly null.
-        for (int cssPos = 0; cssPos < consensusPath.size(); cssPos++)
+        for (size_t cssPos = 0; cssPos < consensusPath.size(); cssPos++)
         {
             Vertex v = consensusPath[cssPos];
             const SdpAnchor* anchor = binarySearchAnchors(anchors, cssPos);
             if (anchor != NULL) {
-                directRanges[v] = Interval(max(anchor->second - WIDTH, 0),
-                                           min(anchor->second + WIDTH, readLength));
+                directRanges[v] = Interval(max(int(anchor->second) - WIDTH, 0),
+                                           min(int(anchor->second) + WIDTH, readLength));
             } else {
                 directRanges[v] = boost::none;
             }
