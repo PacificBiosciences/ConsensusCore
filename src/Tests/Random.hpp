@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#pragma once
+
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/poisson_distribution.hpp>
@@ -43,11 +45,13 @@
 #include <string>
 #include <vector>
 
-#include "Mutation.hpp"
-#include "Features.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Read.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Features.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Read.hpp>
+#include <ConsensusCore/Utils.hpp>
+
+#include "ParameterSettings.hpp"
 
 using ConsensusCore::Mutation;
 using ConsensusCore::MutationType;

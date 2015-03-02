@@ -35,6 +35,14 @@
 
 // Author: David Alexander, Lance Hepler
 
+#include <ConsensusCore/Quiver/QuiverConsensus.hpp>
+
+#include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
+#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Logging.hpp>
+
 #include <algorithm>
 #include <boost/functional/hash.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -43,15 +51,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "Quiver/MultiReadMutationScorer.hpp"
-#include "Quiver/QuiverConsensus.hpp"
-#include "Quiver/MutationEnumerator.hpp"
-#include "Mutation.hpp"
-
-#include "Utils.hpp"
-
-#include "Logging/Logging.hpp"
 
 
 namespace ConsensusCore

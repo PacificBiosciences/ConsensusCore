@@ -35,7 +35,9 @@
 
 // Author: David Alexander
 
-#include "Diploid.hpp"
+#include <ConsensusCore/Quiver/Diploid.hpp>
+
+#include <ConsensusCore/Mutation.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -51,7 +53,7 @@
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-#include "Mutation.hpp"
+
 
 using std::vector;
 using std::accumulate;

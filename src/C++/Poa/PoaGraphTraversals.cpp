@@ -35,10 +35,10 @@
 
 // Author: David Alexander
 
-#include "PoaGraph.hpp"
-#include "PoaGraphImpl.hpp"
-#include "Utils.hpp"
-#include "VectorL.hpp"
+#include <ConsensusCore/Matrix/VectorL.hpp>
+#include <ConsensusCore/Poa/PoaGraph.hpp>
+#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 namespace ConsensusCore {
 namespace detail {

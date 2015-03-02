@@ -35,7 +35,7 @@
 
 // Author: Patrick Marks, David Alexander
 
-#include "Mutation.hpp"
+#include <ConsensusCore/Mutation.hpp>
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -48,9 +48,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "Types.hpp"
-#include "Utils.hpp"
-#include "Align/PairwiseAlignment.hpp"
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
 
 using std::max;
 

@@ -48,10 +48,10 @@
 #include <utility>
 #include <vector>
 
-#include "Align/AlignConfig.hpp"
-#include "Poa/PoaConsensus.hpp"
-#include "Utils.hpp"
-#include "Mutation.hpp"
+#include <ConsensusCore/Align/AlignConfig.hpp>
+#include <ConsensusCore/Poa/PoaConsensus.hpp>
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Mutation.hpp>
 
 using std::string;
 using std::vector;

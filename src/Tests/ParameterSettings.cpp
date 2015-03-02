@@ -37,8 +37,9 @@
 
 #include <string>
 
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+
 #include "ParameterSettings.hpp"
-#include "Quiver/QuiverConfig.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 

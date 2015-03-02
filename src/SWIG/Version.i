@@ -1,7 +1,7 @@
 %{
 /* Includes the header in the wrapper code */
-#include "Version.hpp"
+#include <ConsensusCore/Version.hpp>
 using namespace ConsensusCore;
 %}
 
-%include "Version.hpp"
+%include <ConsensusCore/Version.hpp>

@@ -35,13 +35,13 @@
 
 // Author: David Alexander
 
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
-
-#include "Quiver/QuiverConfig.hpp"
 
 namespace ConsensusCore {
     QuiverConfig::QuiverConfig(const QvModelParams& qvParams,

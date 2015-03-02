@@ -48,9 +48,9 @@
 // For the affine (Gotoh) variation, not yet implemented, see Myers & Miller 1988
 //
 
-#include "LinearAlignment.hpp"
-#include "PairwiseAlignment.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Align/LinearAlignment.hpp>
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

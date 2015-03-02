@@ -35,14 +35,15 @@
 
 // Author: David Alexander
 
+#include <ConsensusCore/Quiver/ReadScorer.hpp>
+
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
+
 #include <iostream>
 #include <string>
-
-#include "Align/PairwiseAlignment.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Quiver/ReadScorer.hpp"
-#include "Quiver/SseRecursor.hpp"
 
 
 using std::string;

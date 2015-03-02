@@ -35,7 +35,7 @@
 
 // Author: David Alexander, and complement array from Mark Chaisson
 
-#include "Utils.hpp"
+#include <ConsensusCore/Utils.hpp>
 
 #include <cassert>
 #include <cstdlib>

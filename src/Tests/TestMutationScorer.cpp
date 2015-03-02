@@ -40,16 +40,16 @@
 #include <string>
 #include <vector>
 
-#include "Features.hpp"
-#include "Mutation.hpp"
-#include "Read.hpp"
-#include "Sequence.hpp"
-#include "Quiver/MutationScorer.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Quiver/ReadScorer.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Quiver/SseRecursor.hpp"
+#include <ConsensusCore/Features.hpp>
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Read.hpp>
+#include <ConsensusCore/Sequence.hpp>
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Quiver/ReadScorer.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
 
 #include "ParameterSettings.hpp"
 

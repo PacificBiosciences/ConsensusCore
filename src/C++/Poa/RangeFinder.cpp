@@ -1,5 +1,7 @@
 
-#include "RangeFinder.hpp"
+#include <ConsensusCore/Poa/RangeFinder.hpp>
+#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
+#include <ConsensusCore/Interval.hpp>
 
 #include <algorithm>
 #include <boost/optional.hpp>
@@ -8,8 +10,6 @@
 #include <vector>
 #include <utility>
 
-#include "PoaGraphImpl.hpp"
-#include "Interval.hpp"
 
 #define WIDTH 30
 

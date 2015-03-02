@@ -4,8 +4,8 @@
 
 %{
 /* Includes the header in the wrapper code */
-#include "Interval.hpp"
-#include "Types.hpp"
+#include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/Types.hpp>
 using namespace ConsensusCore;
 %}
 
@@ -15,14 +15,14 @@ using namespace ConsensusCore;
 %include <std_map.i>
 %include "stdint.i"
 
-%include "Types.hpp"
+%include <ConsensusCore/Types.hpp>
 
 // Need to see this definition before we see intervals.
 namespace std {
   %template(IntPair)                std::pair<int, int>;
 };
 
-%include "Interval.hpp"
+%include <ConsensusCore/Interval.hpp>
 
 namespace std {
   %template(IntervalVector)         std::vector<ConsensusCore::Interval>;

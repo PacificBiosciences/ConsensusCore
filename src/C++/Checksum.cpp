@@ -40,10 +40,8 @@
 
 #include <string>
 
-#include "Checksum.hpp"
-#include "Features.hpp"
-
-
+#include <ConsensusCore/Checksum.hpp>
+#include <ConsensusCore/Features.hpp>
 
 namespace ConsensusCore {
 

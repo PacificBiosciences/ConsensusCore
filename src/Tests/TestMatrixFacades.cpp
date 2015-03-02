@@ -45,9 +45,9 @@
 #include <typeinfo>
 #include <vector>
 
-#include "LFloat.hpp"
-#include "Matrix/DenseMatrix.hpp"
-#include "Matrix/SparseMatrix.hpp"
+#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
 
 using std::cout;
 using std::endl;

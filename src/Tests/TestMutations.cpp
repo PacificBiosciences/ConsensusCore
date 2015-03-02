@@ -47,8 +47,8 @@
 #include <string>
 #include <vector>
 
-#include "Utils.hpp"
-#include "Mutation.hpp"
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Mutation.hpp>
 
 using std::string;
 using std::vector;

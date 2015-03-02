@@ -35,7 +35,7 @@
 
 // Author: David Alexander
 
-#include "Poa/PoaConsensus.hpp"
+#include <ConsensusCore/Poa/PoaConsensus.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
@@ -44,8 +44,8 @@
 #include <utility>
 #include <vector>
 
-#include "Align/AlignConfig.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Align/AlignConfig.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using boost::tie;
 

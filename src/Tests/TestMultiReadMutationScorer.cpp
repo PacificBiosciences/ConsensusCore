@@ -40,12 +40,12 @@
 #include <string>
 #include <vector>
 
-#include "Quiver/MultiReadMutationScorer.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/ReadScorer.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Quiver/SseRecursor.hpp"
-#include "Sequence.hpp"
+#include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/ReadScorer.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Sequence.hpp>
 
 #include "ParameterSettings.hpp"
 

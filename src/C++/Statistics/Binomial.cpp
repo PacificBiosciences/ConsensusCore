@@ -35,7 +35,7 @@
 
 // Author: David Alexander
 
-#include "Binomial.hpp"
+#include <ConsensusCore/Statistics/Binomial.hpp>
 
 #include <cmath>
 #include <boost/math/distributions/binomial.hpp>

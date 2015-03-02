@@ -1,12 +1,12 @@
 %{
 /* Includes the header in the wrapper code */
-#include "Utils.hpp"
-#include "Coverage.hpp"
-#include "Logging/Logging.hpp"
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Coverage.hpp>
+#include <ConsensusCore/Logging.hpp>
 using namespace ConsensusCore;
 %}
 
-%include "Types.hpp"
+%include <ConsensusCore/Types.hpp>
 
 #ifdef SWIGPYTHON
     %apply (int DIM1, int* IN_ARRAY1)
@@ -16,6 +16,6 @@ using namespace ConsensusCore;
          { (int winLen, int* coverage) };
 #endif // SWIGPYTHON
 
-%include "Utils.hpp"
-%include "Coverage.hpp"
-%include "Logging/Logging.hpp"
+%include <ConsensusCore/Utils.hpp>
+%include <ConsensusCore/Coverage.hpp>
+%include <ConsensusCore/Logging.hpp>

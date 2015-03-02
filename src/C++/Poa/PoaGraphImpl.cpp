@@ -1,10 +1,10 @@
-#include "PoaGraphImpl.hpp"
-#include "PoaGraph.hpp"
-#include "RangeFinder.hpp"
+#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
 
-#include "Align/AlignConfig.hpp"
-#include "Interval.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Align/AlignConfig.hpp>
+#include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/Poa/PoaGraph.hpp>
+#include <ConsensusCore/Poa/RangeFinder.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 namespace boost
 {

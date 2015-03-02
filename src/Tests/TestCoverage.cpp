@@ -38,8 +38,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "Coverage.hpp"
-#include "Interval.hpp"
+#include <ConsensusCore/Coverage.hpp>
+#include <ConsensusCore/Interval.hpp>
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAre;

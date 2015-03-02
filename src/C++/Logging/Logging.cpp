@@ -35,8 +35,8 @@
 
 // Author: David Alexander
 
-#include "Logging.hpp"
-#include "cpplog/cpplog.hpp"
+#include <ConsensusCore/Logging.hpp>
+#include <cpplog/cpplog.hpp>
 
 namespace ConsensusCore
 {

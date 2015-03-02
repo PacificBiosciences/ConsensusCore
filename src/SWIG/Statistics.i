@@ -1,9 +1,8 @@
 
 %{
 /* Includes the header in the wrapper code */
-#include <Statistics/Binomial.hpp>
+#include <ConsensusCore/Statistics/Binomial.hpp>
 using namespace ConsensusCore;
 %}
 
-%include <Statistics/Binomial.hpp>
-
+%include <ConsensusCore/Statistics/Binomial.hpp>

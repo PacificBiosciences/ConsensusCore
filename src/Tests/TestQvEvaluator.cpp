@@ -43,13 +43,13 @@
 #include <string>
 #include <vector>
 
-#include "Quiver/QvEvaluator.hpp"
-#include "Features.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Features.hpp>
+#include <ConsensusCore/Utils.hpp>
 
-#include "ParameterSettings.hpp"
 #include "Random.hpp"
 #include "SseTestingUtils.hpp"
+#include "ParameterSettings.hpp"
 
 using namespace ConsensusCore; // NOLINT
 using std::cout;

@@ -40,7 +40,7 @@
 #include <limits>
 #include <vector>
 
-#include "Matrix/SparseMatrix.hpp"
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
 
 namespace ConsensusCore {
     // Performance insensitive routines are not inlined

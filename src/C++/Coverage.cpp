@@ -39,7 +39,7 @@
 #include <cassert>
 #include <vector>
 
-#include "Coverage.hpp"
+#include <ConsensusCore/Coverage.hpp>
 
 using std::vector;
 

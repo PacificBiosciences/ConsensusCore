@@ -35,17 +35,16 @@
 
 // Author: David Alexander
 
-#include "MutationEnumerator.hpp"
+#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Mutation.hpp>
 
 #include <boost/range/as_array.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "Types.hpp"
-#include "Utils.hpp"
-#include "Mutation.hpp"
 
 namespace ConsensusCore
 {

@@ -35,21 +35,21 @@
 
 // Author: David Alexander
 
-#include "Quiver/SimpleRecursor.hpp"
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+
+#include <ConsensusCore/Edna/EdnaEvaluator.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Quiver/detail/Combiner.hpp>
+#include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
 #include <climits>
 #include <utility>
-
-#include "Edna/EdnaEvaluator.hpp"
-#include "Matrix/DenseMatrix.hpp"
-#include "Matrix/SparseMatrix.hpp"
-#include "Quiver/detail/Combiner.hpp"
-#include "Quiver/detail/RecursorBase.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Interval.hpp"
-#include "Utils.hpp"
 
 using std::min;
 using std::max;

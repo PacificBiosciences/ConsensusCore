@@ -35,15 +35,14 @@
 
 // Author: David Alexander
 
-
-#include "Matrix/DenseMatrix.hpp"
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
 
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
 #include <cassert>
 #include <vector>
 
-#include "LFloat.hpp"
+#include <ConsensusCore/LFloat.hpp>
 
 using boost::numeric::ublas::matrix;
 using boost::numeric::ublas::row_major;

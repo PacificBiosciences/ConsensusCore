@@ -45,19 +45,19 @@
 #include <climits>
 #include <utility>
 
-#include "EdnaCounts.hpp"
-#include "EdnaEvaluator.hpp"
-#include "Features.hpp"
-#include "Interval.hpp"
-#include "LFloat.hpp"
-#include "Matrix/SparseMatrix.hpp"
-#include "Quiver/detail/Combiner.hpp"
-#include "Quiver/detail/RecursorBase.hpp"
-#include "Quiver/MutationScorer.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Types.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Edna/EdnaCounts.hpp>
+#include <ConsensusCore/Edna/EdnaEvaluator.hpp>
+#include <ConsensusCore/Features.hpp>
+#include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Quiver/detail/Combiner.hpp>
+#include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using std::min;
 using std::max;

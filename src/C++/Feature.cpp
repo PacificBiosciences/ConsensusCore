@@ -35,7 +35,7 @@
 
 // Author: David Alexander
 
-#include "Feature.hpp"
+#include <ConsensusCore/Feature.hpp>
 
 #include <string>
 
@@ -66,5 +66,3 @@ namespace ConsensusCore {
     template class ConsensusCore::Feature<float>;
     template class ConsensusCore::Feature<int>;
 }
-
-

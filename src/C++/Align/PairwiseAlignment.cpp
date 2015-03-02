@@ -35,16 +35,16 @@
 
 // Author: David Alexander
 
-#include "PairwiseAlignment.hpp"
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
 
 #include <algorithm>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <string>
 #include <vector>
 
-#include "Types.hpp"
-#include "Sequence.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Sequence.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 namespace ConsensusCore {
 

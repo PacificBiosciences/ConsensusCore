@@ -47,9 +47,9 @@
 #include <string>
 #include <vector>
 
-#include "Utils.hpp"
-#include "Mutation.hpp"
-#include "Quiver/MutationEnumerator.hpp"
+#include <ConsensusCore/Utils.hpp>
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
 
 using std::string;
 using std::vector;

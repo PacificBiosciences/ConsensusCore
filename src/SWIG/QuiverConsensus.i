@@ -1,16 +1,16 @@
 %{
 /* Includes the header in the wrapper code */
-#include "Sequence.hpp"
-#include "Mutation.hpp"
-#include "Read.hpp"
-#include "Quiver/MultiReadMutationScorer.hpp"
-#include "Quiver/MutationScorer.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Quiver/SseRecursor.hpp"
-#include "Quiver/ReadScorer.hpp"
-#include "Quiver/Diploid.hpp"
-#include "Quiver/QuiverConsensus.hpp"
+#include <ConsensusCore/Sequence.hpp>
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Read.hpp>
+#include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Quiver/ReadScorer.hpp>
+#include <ConsensusCore/Quiver/Diploid.hpp>
+#include <ConsensusCore/Quiver/QuiverConsensus.hpp>
 
 using namespace ConsensusCore;
 %}
@@ -34,20 +34,19 @@ using namespace ConsensusCore;
 #endif // SWIGCSHARP
 
 
-
-%include "Sequence.hpp"
-%include "Mutation.hpp"
-%include "Read.hpp"
-%include "Quiver/detail/Combiner.hpp"
-%include "Quiver/detail/RecursorBase.hpp"
-%include "Quiver/MultiReadMutationScorer.hpp"
-%include "Quiver/MutationScorer.hpp"
-%include "Quiver/QuiverConfig.hpp"
-%include "Quiver/SimpleRecursor.hpp"
-%include "Quiver/SseRecursor.hpp"
-%include "Quiver/ReadScorer.hpp"
-%include "Quiver/Diploid.hpp"
-%include "Quiver/QuiverConsensus.hpp"
+%include <ConsensusCore/Sequence.hpp>
+%include <ConsensusCore/Mutation.hpp>
+%include <ConsensusCore/Read.hpp>
+%include <ConsensusCore/Quiver/detail/Combiner.hpp>
+%include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
+%include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
+%include <ConsensusCore/Quiver/MutationScorer.hpp>
+%include <ConsensusCore/Quiver/QuiverConfig.hpp>
+%include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+%include <ConsensusCore/Quiver/SseRecursor.hpp>
+%include <ConsensusCore/Quiver/ReadScorer.hpp>
+%include <ConsensusCore/Quiver/Diploid.hpp>
+%include <ConsensusCore/Quiver/QuiverConsensus.hpp>
 
  
 namespace ConsensusCore {

@@ -35,14 +35,14 @@
 
 // Author: David Alexander
 
+#include <ConsensusCore/Checksum.hpp>
+#include <ConsensusCore/Features.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Read.hpp>
+
 #include <string>
 #include <sstream>
 #include <boost/format.hpp>
-
-#include "Checksum.hpp"
-#include "Features.hpp"
-#include "Types.hpp"
-#include "Read.hpp"
 
 namespace ConsensusCore {
 

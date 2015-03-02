@@ -1,6 +1,6 @@
 %{
-#include "Mutation.hpp"
-#include "Quiver/MutationEnumerator.hpp"
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
 using namespace ConsensusCore;
 %}
 
@@ -26,5 +26,5 @@ namespace std {
     %template(ScoredMutationVector)  std::vector<ConsensusCore::ScoredMutation>;
 };
 
-%include "Mutation.hpp"
-%include "Quiver/MutationEnumerator.hpp"
+%include <ConsensusCore/Mutation.hpp>
+%include <ConsensusCore/Quiver/MutationEnumerator.hpp>

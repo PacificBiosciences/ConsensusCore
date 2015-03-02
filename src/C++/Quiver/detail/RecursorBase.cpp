@@ -35,24 +35,24 @@
 
 // Author: David Alexander
 
-#include "Quiver/detail/RecursorBase.hpp"
+#include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
+
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
+#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/Logging.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Quiver/detail/Combiner.hpp>
+#include <ConsensusCore/Edna/EdnaEvaluator.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 #include <algorithm>
 #include <boost/type_traits.hpp>
 #include <string>
 #include <vector>
-
-#include "Align/PairwiseAlignment.hpp"
-#include "LFloat.hpp"
-#include "Logging/Logging.hpp"
-#include "Matrix/DenseMatrix.hpp"
-#include "Matrix/SparseMatrix.hpp"
-#include "Quiver/detail/Combiner.hpp"
-#include "Edna/EdnaEvaluator.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Types.hpp"
-#include "Utils.hpp"
 
 
 // TODO(dalexander): put these into a RecursorConfig struct

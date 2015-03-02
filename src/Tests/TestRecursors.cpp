@@ -42,14 +42,14 @@
 #include <string>
 #include <vector>
 
-#include "Align/PairwiseAlignment.hpp"
-#include "Matrix/DenseMatrix.hpp"
-#include "Matrix/SparseMatrix.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Quiver/QuiverConfig.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Quiver/SseRecursor.hpp"
-#include "Features.hpp"
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Features.hpp>
 
 #include "MatrixPrinting.hpp"
 #include "ParameterSettings.hpp"

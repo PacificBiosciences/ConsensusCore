@@ -2,11 +2,11 @@
 %{
 /* Includes the header in the wrapper code */
 #include <iostream>
-#include "Types.hpp"
+#include <ConsensusCore/Types.hpp>
 using namespace ConsensusCore;
 %}
 
-%include "Types.hpp"
+%include <ConsensusCore/Types.hpp>
 
 %include <exception.i>
 

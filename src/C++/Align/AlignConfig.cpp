@@ -41,7 +41,7 @@
 
 // Author: David Alexander
 
-#include "AlignConfig.hpp"
+#include <ConsensusCore/Align/AlignConfig.hpp>
 
 namespace ConsensusCore {
 

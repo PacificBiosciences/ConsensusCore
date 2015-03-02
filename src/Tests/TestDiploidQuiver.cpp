@@ -39,7 +39,8 @@
 #include <gtest/gtest.h>
 
 #include <utility>
-#include "Quiver/Diploid.hpp"
+
+#include <ConsensusCore/Quiver/Diploid.hpp>
 
 using namespace ConsensusCore;  // NOLINT
 using std::pair;

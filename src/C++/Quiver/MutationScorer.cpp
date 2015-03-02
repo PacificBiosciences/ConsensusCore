@@ -35,17 +35,17 @@
 
 // Author: Patrick Marks and David Alexander
 
-#include "Quiver/MutationScorer.hpp"
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+
+#include <ConsensusCore/Edna/EdnaEvaluator.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Quiver/SimpleRecursor.hpp>
+#include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Mutation.hpp>
 
 #include <string>
-
-#include "Edna/EdnaEvaluator.hpp"
-#include "Matrix/DenseMatrix.hpp"
-#include "Matrix/SparseMatrix.hpp"
-#include "Quiver/QvEvaluator.hpp"
-#include "Quiver/SimpleRecursor.hpp"
-#include "Quiver/SseRecursor.hpp"
-#include "Mutation.hpp"
 
 #define EXTEND_BUFFER_COLUMNS 8
 

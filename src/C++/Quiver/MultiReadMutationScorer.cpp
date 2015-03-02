@@ -35,20 +35,19 @@
 
 // Author: David Alexander
 
+#include <ConsensusCore/Checksum.hpp>
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
+#include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Sequence.hpp>
+#include <ConsensusCore/Utils.hpp>
+
 #include <algorithm>
 #include <cfloat>
 #include <map>
 #include <string>
 #include <vector>
 #include <boost/format.hpp>
-
-
-#include "Checksum.hpp"
-#include "Quiver/MutationScorer.hpp"
-#include "Quiver/MultiReadMutationScorer.hpp"
-#include "Mutation.hpp"
-#include "Sequence.hpp"
-#include "Utils.hpp"
 
 #define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 

@@ -1,7 +1,7 @@
 %{
 /* Includes the header in the wrapper code */
-#include "Feature.hpp"
-#include "Features.hpp"
+#include <ConsensusCore/Feature.hpp>
+#include <ConsensusCore/Features.hpp>
 using namespace ConsensusCore;
 %}
 
@@ -22,8 +22,8 @@ using namespace ConsensusCore;
 #endif // SWIGCSHARP
 
 
-%include "Feature.hpp"
-%include "Features.hpp"
+%include <ConsensusCore/Feature.hpp>
+%include <ConsensusCore/Features.hpp>
 
 namespace ConsensusCore {
     %template(CharFeature) Feature<char>;

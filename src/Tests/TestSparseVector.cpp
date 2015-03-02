@@ -42,7 +42,7 @@
 #include <string>
 #include <vector>
 
-#include "Matrix/SparseVector.hpp"
+#include <ConsensusCore/Matrix/SparseVector.hpp>
 
 using namespace ConsensusCore; // NOLINT
 

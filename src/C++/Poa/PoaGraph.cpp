@@ -37,8 +37,8 @@
 // (Based on the original "Partial Order Aligner" by Lee, Grasso, and Sharlow,
 //  and an implementation in C# by Patrick Marks)
 
-#include "Poa/PoaGraph.hpp"
-#include "Poa/PoaGraphImpl.hpp"
+#include <ConsensusCore/Poa/PoaGraph.hpp>
+#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
 
 namespace ConsensusCore
 {

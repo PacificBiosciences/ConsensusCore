@@ -1,13 +1,13 @@
 %{
 /* Includes the header in the wrapper code */
-#include <Types.hpp>
-#include <Matrix/AbstractMatrix.hpp>
-#include <Matrix/DenseMatrix.hpp>
-#include <Matrix/SparseMatrix.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Matrix/AbstractMatrix.hpp>
+#include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
 using namespace ConsensusCore;
 %}
 
-%include <Types.hpp>
+%include <ConsensusCore/Types.hpp>
 
 #ifdef SWIGPYTHON
         // apply this typemap to ToHostMatrix
@@ -18,6 +18,6 @@ using namespace ConsensusCore;
 %newobject *::UsedRowRange;
 
 
-%include <Matrix/AbstractMatrix.hpp>
-%include <Matrix/DenseMatrix.hpp>
-%include <Matrix/SparseMatrix.hpp>
+%include <ConsensusCore/Matrix/AbstractMatrix.hpp>
+%include <ConsensusCore/Matrix/DenseMatrix.hpp>
+%include <ConsensusCore/Matrix/SparseMatrix.hpp>

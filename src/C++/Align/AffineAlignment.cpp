@@ -35,7 +35,11 @@
 
 // Author: David Alexander
 
-#include "AffineAlignment.hpp"
+#include <ConsensusCore/Align/AffineAlignment.hpp>
+
+#include <ConsensusCore/Align/PairwiseAlignment.hpp>
+#include <ConsensusCore/Sequence.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 #include <algorithm>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -45,9 +49,6 @@
 #include <string>
 #include <vector>
 
-#include "PairwiseAlignment.hpp"
-#include "Sequence.hpp"
-#include "Utils.hpp"
 
 namespace CC = ConsensusCore;
 

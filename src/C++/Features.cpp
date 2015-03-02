@@ -35,15 +35,15 @@
 
 // Author: David Alexander
 
-#include "Features.hpp"
+#include <ConsensusCore/Features.hpp>
 
 #include <algorithm>
 #include <string>
 #include <vector>
 
-#include "Feature.hpp"
-#include "Types.hpp"
-#include "Utils.hpp"
+#include <ConsensusCore/Feature.hpp>
+#include <ConsensusCore/Types.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 
 ConsensusCore::SequenceFeatures::SequenceFeatures(const std::string& seq)
