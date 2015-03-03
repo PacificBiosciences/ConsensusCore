@@ -6,6 +6,7 @@ SWIG_LIB=
 PYTHON_INCLUDE=
 NUMPY_INCLUDE=
 DEBUG=
+CPP_ABI=c++98
 
 
 usage ()
@@ -16,6 +17,7 @@ usage ()
     echo "            [--swig=SWIG]                      # location of swig executable"
     echo "            [--swig-lib=SWIG_LIB]              # location of swig library"
     echo "            [--debug]                          # build debug library (1)"
+    echo "            [--c++11]                          # build using C++11 ABI"
     echo
     echo "    (Python only:)"
     echo "            [--python-include=PYTHON_INCLUDE]  # location of Python.h"
@@ -62,6 +64,9 @@ while test x$1 != x; do
         --debug)
             DEBUG=1
             ;;
+        --c++11)
+            CPP_ABI=c++11
+            ;;
         --python-include=*)
             PYTHON_INCLUDE=`echo $1 | sed 's/--python-include=//'`
             ;;
@@ -103,6 +108,7 @@ echo "    SWIG_LIB       = $SWIG_LIB"
 echo "    PYTHON_INCLUDE = $PYTHON_INCLUDE"
 echo "    NUMPY_INCLUDE  = $NUMPY_INCLUDE"
 echo "    DEBUG          = $DEBUG"
+echo "    CPP_ABI        = $CPP_ABI"
 echo
 
 echo > make/Config.mk
@@ -112,3 +118,4 @@ echo "SWIG_LIB:=$SWIG_LIB"             >> make/Config.mk
 echo "PYTHON_INCLUDE:=$PYTHON_INCLUDE" >> make/Config.mk
 echo "NUMPY_INCLUDE:=$NUMPY_INCLUDE"   >> make/Config.mk
 echo "DEBUG?=$DEBUG"                   >> make/Config.mk
+echo "CPP_ABI:=$CPP_ABI"               >> make/Config.mk
