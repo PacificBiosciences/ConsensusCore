@@ -60,7 +60,7 @@ namespace ConsensusCore {
     class Mutation;
     class ScoredMutation;
     struct Interval;
-    class Read;
+    struct Read;
 }
 
 namespace ConsensusCore {
