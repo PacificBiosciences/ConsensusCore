@@ -90,9 +90,9 @@ namespace ConsensusCore
 
 
     public:
-        std::string ToGraphViz(int flags = 0);
+        std::string ToGraphViz(int flags = 0) const;
 
         void WriteGraphVizFile(std::string filename,
-                               int flags = 0);
+                               int flags = 0) const;
     };
 }
