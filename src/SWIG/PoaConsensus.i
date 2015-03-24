@@ -14,8 +14,6 @@ using namespace ConsensusCore;
 
 %include <ConsensusCore/Poa/PoaGraph.hpp>
 
-%newobject *::FindConsensus(const std::vector<std::string>& reads, const PoaConfig& config);
-%newobject *::FindConsensus(const std::vector<std::string>& reads, bool global);
-%newobject *::FindConsensus(const std::vector<std::string>& reads);
+%newobject ConsensusCore::PoaConsensus::FindConsensus;
 
 %include <ConsensusCore/Poa/PoaConsensus.hpp>

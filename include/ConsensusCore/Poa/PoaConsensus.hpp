@@ -76,6 +76,8 @@ namespace ConsensusCore
 
         ~PoaConsensus();
 
+        static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads);
+
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads,
                                                  const AlignConfig& config,
                                                  int minCoverage=-INT_MAX);
