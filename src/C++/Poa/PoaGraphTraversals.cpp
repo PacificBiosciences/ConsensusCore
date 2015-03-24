@@ -37,8 +37,11 @@
 
 #include <ConsensusCore/Matrix/VectorL.hpp>
 #include <ConsensusCore/Poa/PoaGraph.hpp>
-#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
 #include <ConsensusCore/Utils.hpp>
+
+#include <boost/graph/topological_sort.hpp>
+
+#include "PoaGraphImpl.hpp"
 
 namespace ConsensusCore {
 namespace detail {
@@ -50,7 +53,7 @@ namespace detail {
         std::stringstream ss;
         foreach (Vertex v, path)
         {
-            ss << vertexInfoMap[v]->Base;
+            ss << vertexInfoMap[v].Base;
         }
         return ss.str();
     }
@@ -73,14 +76,28 @@ namespace detail {
             }
             if (spanning)
             {
-                vertexInfoMap_[v]->SpanningReads++;
+                vertexInfoMap_[v].SpanningReads++;
             }
         }
     }
 
     std::vector<Vertex>
-    PoaGraphImpl::consensusPath(AlignMode mode) const
+    PoaGraphImpl::consensusPath(AlignMode mode, int minCoverage) const
     {
+        // Pat's note on the approach here:
+        //
+        // "A node gets a score of NumReads if all reads go through
+        //  it, and a score of -NumReads if no reads go through it The
+        //  shift of -0.0001 breaks ties in favor of skipping
+        //  half-full nodes.  In the 2 reads case this will get rid of
+        //  insertions which are the more common error."
+        //
+        // The interpretation of minCoverage (which is applicable only
+        // for LOCAL, SEMIGLOBAL modes) is that it represents
+        // application-specific knowledge of the basal coverage level
+        // of reads in the template, such that if a node is contained
+        // in fewer than minCoverage reads, it will be penalized
+        // against inclusion in the consensus.
         int totalReads = NumSequences();
 
         std::list<Vertex> path;
@@ -90,7 +107,7 @@ namespace detail {
 
         // ignore ^ and $
         // TODO(dalexander): find a cleaner way to do this
-        vertexInfoMap_[sortedVertices.front()]->ReachingScore = 0;
+        vertexInfoMap_[sortedVertices.front()].ReachingScore = 0;
         sortedVertices.pop_back();
         sortedVertices.pop_front();
 
@@ -98,22 +115,22 @@ namespace detail {
         float bestReachingScore = -FLT_MAX;
         foreach (Vertex v, sortedVertices)
         {
-            const PoaNode* vertexInfo = vertexInfoMap_[v];
-            int containingReads = vertexInfo->Reads;
-            int spanningReads = vertexInfo->SpanningReads;
+            PoaNode& vInfo = vertexInfoMap_[v];
+            int containingReads = vInfo.Reads;
+            int spanningReads = vInfo.SpanningReads;
             float score = (mode != GLOBAL) ?
-                          (2 * containingReads - 1 * spanningReads - 0.0001f) :
-                          (2 * containingReads - 1 * totalReads - 0.0001f);
-            vertexInfoMap_[v]->Score = score;
-            vertexInfoMap_[v]->ReachingScore = score;
+                (2 * containingReads - 1 * std::max(spanningReads, minCoverage) - 0.0001f) :
+                (2 * containingReads - 1 * totalReads - 0.0001f);
+            vInfo.Score = score;
+            vInfo.ReachingScore = score;
             bestPrevVertex[v] = null_vertex;
             foreach (Edge e, in_edges(v, g_))
             {
                 Vertex sourceVertex = source(e, g_);
-                float rsc = score + vertexInfoMap_[sourceVertex]->ReachingScore;
-                if (rsc > vertexInfoMap_[v]->ReachingScore)
+                float rsc = score + vertexInfoMap_[sourceVertex].ReachingScore;
+                if (rsc > vInfo.ReachingScore)
                 {
-                    vertexInfoMap_[v]->ReachingScore = rsc;
+                    vInfo.ReachingScore = rsc;
                     bestPrevVertex[v] = sourceVertex;
                 }
                 if (rsc > bestReachingScore)
@@ -145,7 +162,7 @@ namespace detail {
         foreach (char base, sequence)
         {
             v = add_vertex(g_);
-            vertexInfoMap_[v] = new PoaNode(base);
+            vertexInfoMap_[v] = PoaNode(base);
             if (readPos == 0)
             {
                 add_edge(enterVertex_, v, g_);
@@ -190,7 +207,7 @@ namespace detail {
             int readPos = i - 1; // (INVARIANT)
             curCol = alignmentColumnForVertex.at(u);
             assert(curCol != NULL);
-            PoaNode* curNodeInfo = vertexInfoMap_[u];
+            PoaNode& curNodeInfo = vertexInfoMap_[u];
             Vertex prevVertex = curCol->PreviousVertex[i];
             MoveType reachingMove = curCol->ReachingMove[i];
 
@@ -207,7 +224,7 @@ namespace detail {
                 {
                     assert(alignMode == LOCAL);
                     Vertex newForkVertex = add_vertex(g_);
-                    vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
+                    vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
                     add_edge(newForkVertex, forkVertex, g_);
                     forkVertex = newForkVertex;
                     i--;
@@ -230,7 +247,7 @@ namespace detail {
                     while (i > static_cast<int>(prevRow))
                     {
                         Vertex newForkVertex = add_vertex(g_);
-                        vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
+                        vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
                         add_edge(newForkVertex, forkVertex, g_);
                         forkVertex = newForkVertex;
                         i--;
@@ -247,7 +264,7 @@ namespace detail {
                     forkVertex = null_vertex;
                 }
                 // add to existing node
-                curNodeInfo->Reads++;
+                curNodeInfo.Reads++;
                 i--;
             }
             else if (reachingMove == DeleteMove)
@@ -262,7 +279,7 @@ namespace detail {
             {
                 // begin a new arc with this read base
                 Vertex newForkVertex = add_vertex(g_);
-                vertexInfoMap_[newForkVertex] = new PoaNode(sequence[readPos]);
+                vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
                 if (forkVertex == null_vertex)
                 {
                     forkVertex = v;
@@ -335,7 +352,7 @@ namespace detail {
             // the consensus sequence.
             if (children.find(bestPath[i + 2]) != children.end())
             {
-                float score = -vertexInfoMap_[bestPath[i + 1]]->Score;
+                float score = -vertexInfoMap_[bestPath[i + 1]].Score;
                 variants->push_back(Mutation(DELETION, i + 1, '-').WithScore(score));
             }
 
@@ -356,7 +373,7 @@ namespace detail {
                 boost::unordered_set<Vertex>::iterator found = lookBack.find(v);
                 if (found != lookBack.end())
                 {
-                    float score = vertexInfoMap_[*found]->Score;
+                    float score = vertexInfoMap_[*found].Score;
                     if (score > bestInsertScore)
                     {
                         bestInsertScore = score;
@@ -367,7 +384,7 @@ namespace detail {
 
             if (bestInsertVertex != null_vertex)
             {
-                char base = vertexInfoMap_[bestInsertVertex]->Base;
+                char base = vertexInfoMap_[bestInsertVertex].Base;
                 variants->push_back(
                         Mutation(INSERTION, i + 1, base).WithScore(bestInsertScore));
             }
@@ -388,7 +405,7 @@ namespace detail {
                 boost::unordered_set<Vertex>::iterator found = lookBack.find(v);
                 if (found != lookBack.end())
                 {
-                    float score = vertexInfoMap_[*found]->Score;
+                    float score = vertexInfoMap_[*found].Score;
                     if (score > bestMismatchScore)
                     {
                         bestMismatchScore = score;
@@ -402,7 +419,7 @@ namespace detail {
                 // TODO(dalexander): As implemented (compatibility), this returns
                 // the score of the mismatch node. I think it should return the score
                 // difference, no?
-                char base = vertexInfoMap_[bestMismatchVertex]->Base;
+                char base = vertexInfoMap_[bestMismatchVertex].Base;
                 variants->push_back(
                         Mutation(SUBSTITUTION, i + 1, base).WithScore(bestMismatchScore));
             }

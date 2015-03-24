@@ -38,17 +38,22 @@
 //  and an implementation in C# by Patrick Marks)
 
 #include <ConsensusCore/Poa/PoaGraph.hpp>
-#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
+
+#include "PoaGraphImpl.hpp"
 
 namespace ConsensusCore
 {
+    struct PoaConsensus;
+
     //
     // PIMPL idiom delegation
     //
     void
-    PoaGraph::AddSequence(const std::string& sequence, const AlignConfig& config)
+    PoaGraph::AddSequence(const std::string& sequence,
+                          const AlignConfig& config,
+                          detail::SdpRangeFinder* rangeFinder)
     {
-        impl->AddSequence(sequence, config);
+        impl->AddSequence(sequence, config, rangeFinder);
     }
 
     int
@@ -57,27 +62,37 @@ namespace ConsensusCore
         return impl->NumSequences();
     }
 
-    tuple<string, float, std::vector<ScoredMutation>* >
-    PoaGraph::FindConsensus(const AlignConfig& config) const
+    const PoaConsensus*
+    PoaGraph::FindConsensus(const AlignConfig& config, int minCoverage) const
     {
-        return impl->FindConsensus(config);
+        return impl->FindConsensus(config, minCoverage);
     }
 
     string
-    PoaGraph::ToGraphViz(int flags) const
+    PoaGraph::ToGraphViz(int flags, const PoaConsensus* pc) const
     {
-        return impl->ToGraphViz(flags);
+        return impl->ToGraphViz(flags, pc);
     }
 
     void
-    PoaGraph::WriteGraphVizFile(string filename, int flags) const
+    PoaGraph::WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const
     {
-        impl->WriteGraphVizFile(filename, flags);
+        impl->WriteGraphVizFile(filename, flags, pc);
     }
 
     PoaGraph::PoaGraph()
     {
         impl = new detail::PoaGraphImpl();
+    }
+
+    PoaGraph::PoaGraph(const PoaGraph& other)
+    {
+        impl = new detail::PoaGraphImpl(*other.impl);
+    }
+
+    PoaGraph::PoaGraph(const detail::PoaGraphImpl& o)
+    {
+        impl = new detail::PoaGraphImpl(o);
     }
 
     PoaGraph::~PoaGraph()

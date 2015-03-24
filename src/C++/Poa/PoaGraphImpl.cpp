@@ -1,37 +1,55 @@
-#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
+#include "PoaGraphImpl.hpp"
 
 #include <ConsensusCore/Align/AlignConfig.hpp>
 #include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/Poa/PoaConsensus.hpp>
 #include <ConsensusCore/Poa/PoaGraph.hpp>
 #include <ConsensusCore/Poa/RangeFinder.hpp>
 #include <ConsensusCore/Utils.hpp>
 
+#include <boost/graph/copy.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/graphviz.hpp>
+#include <boost/unordered_set.hpp>
+
+#include <iostream>
+
+
 namespace boost
 {
     using ConsensusCore::detail::VertexInfoMap;
+    using ConsensusCore::PoaConsensus;
+    using ConsensusCore::PoaGraph;
     using boost::format;
 
     class my_label_writer
     {
     public:
-        my_label_writer(VertexInfoMap map, bool color, bool verbose)
+        my_label_writer(VertexInfoMap map, bool color, bool verbose, const PoaConsensus* pc = NULL)
             : map_(map),
+              cssVtxs_(),
               color_(color),
               verbose_(verbose)
-        {}
+        {
+            if (pc != NULL)
+            {
+                cssVtxs_.insert(pc->Path.begin(), pc->Path.end());
+            }
+        }
 
         template <class VertexOrEdge>
         void operator()(std::ostream& out, const VertexOrEdge& v) const
         {
             std::string nodeColoringAttribute =
-                (color_ && map_[v]->IsInConsensus?
+                (color_ && isInConsensus(v) ?
                  " style=\"filled\", fillcolor=\"lightblue\" ," : "");
+
             if (!verbose_)
             {
                 out << format("[shape=Mrecord,%s label=\"{ %c | %d }\"]")
                     % nodeColoringAttribute
-                    % map_[v]->Base
-                    % map_[v]->Reads;
+                    % map_[v].Base
+                    % map_[v].Reads;
             }
             else
             {
@@ -40,13 +58,20 @@ namespace boost
                                "{ %d | %d } |"
                                "{ %0.2f | %0.2f } }\"]")
                     % nodeColoringAttribute
-                    % v % map_[v]->Base
-                    % map_[v]->Reads % map_[v]->SpanningReads
-                    % map_[v]->Score % map_[v]->ReachingScore;
+                    % v % map_[v].Base
+                    % map_[v].Reads % map_[v].SpanningReads
+                    % map_[v].Score % map_[v].ReachingScore;
             }
         }
     private:
+
+        bool isInConsensus(PoaGraph::Vertex v) const
+        {
+            return cssVtxs_.find(v) != cssVtxs_.end();
+        }
+
         VertexInfoMap map_;
+        boost::unordered_set<PoaGraph::Vertex> cssVtxs_;
         bool color_;
         bool verbose_;
     };
@@ -59,21 +84,26 @@ namespace detail {
     //
 
     PoaGraphImpl::PoaGraphImpl()
+        : g_(),
+          vertexInfoMap_(get(vertex_info, g_)),
+          numSequences_(0)
     {
-        vertexInfoMap_ = get(vertex_info, g_);
         enterVertex_ = add_vertex(g_);
-        vertexInfoMap_[enterVertex_] = new PoaNode('^', 0);
+        vertexInfoMap_[enterVertex_] = PoaNode('^', 0);
         exitVertex_ = add_vertex(g_);
-        vertexInfoMap_[exitVertex_] = new PoaNode('$', 0);
+        vertexInfoMap_[exitVertex_] = PoaNode('$', 0);
     }
 
+    PoaGraphImpl::PoaGraphImpl(const PoaGraphImpl& other)
+        : g_(other.g_),
+          vertexInfoMap_(get(vertex_info, g_)),
+          enterVertex_(other.enterVertex_),
+          exitVertex_(other.exitVertex_),
+          numSequences_(other.numSequences_)
+    {}
+
     PoaGraphImpl::~PoaGraphImpl()
-    {
-        foreach (Vertex v, vertices(g_))
-        {
-            delete vertexInfoMap_[v];
-        }
-    }
+    {}
 
     void PoaGraphImpl::repCheck()
     {
@@ -95,7 +125,6 @@ namespace detail {
                 assert(in_degree(v, g_) > 0);
                 assert(out_degree(v, g_) > 0);
             }
-            assert(vertexInfoMap_[v] != NULL);
         }
     }
 
@@ -118,25 +147,13 @@ namespace detail {
     }
 
 
-    tuple<string, float, vector<ScoredMutation>* >
-    PoaGraphImpl::FindConsensus(const AlignConfig& config, bool findVariants)
+    PoaConsensus*
+    PoaGraphImpl::FindConsensus(const AlignConfig& config, int minCoverage)
     {
-       std::vector<Vertex> bestPath = consensusPath(config.Mode);
-       std::string consensusSequence = sequenceAlongPath(g_, vertexInfoMap_, bestPath);
-
-       // This is awkward.
-       foreach (Vertex v, bestPath)
-       {
-           vertexInfoMap_[v]->IsInConsensus = true;
-       }
-
-       std::vector<ScoredMutation>* variants;
-       if (findVariants) {
-           variants = findPossibleVariants(bestPath);
-       } else {
-           variants = NULL;
-       }
-       return boost::make_tuple(consensusSequence, 0.0f, variants);
+        std::vector<Vertex> bestPath = consensusPath(config.Mode, minCoverage);
+        std::string consensusSequence = sequenceAlongPath(g_, vertexInfoMap_, bestPath);
+        PoaConsensus* pc = new PoaConsensus(consensusSequence, *this, bestPath);
+        return pc;
     }
 
     const AlignmentColumn*
@@ -206,7 +223,7 @@ namespace detail {
                                       int endRow)
     {
         AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
-        const PoaNode* vertexInfo = vertexInfoMap_[v];
+        const PoaNode& vertexInfo = vertexInfoMap_[v];
         vector<const AlignmentColumn*> predecessorColumns =
                 getPredecessorColumns(g_, v, colMap);
 
@@ -215,7 +232,7 @@ namespace detail {
         //
         if (predecessorColumns.size() == 0)
         {
-            // if this vertex doesn't have any in-edges (^), then it has
+            // if this vertex doesn't have any in-edges it is ^; has
             // no reaching move
             assert(v == enterVertex_);
             curCol->Score[0] = 0;
@@ -280,7 +297,7 @@ namespace detail {
             foreach (const AlignmentColumn* prevCol, predecessorColumns)
             {
                 // Incorporate (Match or Mismatch)
-                bool isMatch = sequence[readPos] == vertexInfo->Base;
+                bool isMatch = sequence[readPos] == vertexInfo.Base;
                 candidateScore = prevCol->Score[i - 1] + (isMatch ?
                                                              config.Params.Match :
                                                              config.Params.Mismatch);
@@ -323,22 +340,19 @@ namespace detail {
         DEBUG_ONLY(repCheck());
         assert(readSeq.length() > 0);
 
-        int seqNo = sequences_.size();
-
-        // Yes, it's true!  We need to retain a COPY of the SequenceFeatures
-        // so that the shared_ptr's within will always have positive usage count
-        // so long as this object exists.
-        sequences_.push_back(readSeq);
-
-        if (seqNo == 0)
+        if (numSequences_ == 0)
         {
             threadFirstRead(readSeq);
+            numSequences_++;
         }
         else
         {
             // Prepare the range finder, if applicable
             if (rangeFinder != NULL)
             {
+                // NB: no minCoverage applicable here; this
+                // intermediate "consensus" may include extra sequence
+                // at either end
                 std::vector<Vertex> cssPath = consensusPath(config.Mode);
                 std::string cssSeq = sequenceAlongPath(g_, vertexInfoMap_, cssPath);
                 rangeFinder->InitRangeFinder(*this, cssPath, cssSeq, readSeq);
@@ -369,6 +383,7 @@ namespace detail {
             }
 
             tracebackAndThread(readSeq, colMap, config.Mode);
+            numSequences_++;
 
             // Clean up the mess we created.  Might be nicer to use scoped ptrs.
             foreach (AlignmentColumnMap::value_type& kv, colMap)
@@ -380,26 +395,26 @@ namespace detail {
         DEBUG_ONLY(repCheck());
     }
 
-
     int PoaGraphImpl::NumSequences() const
     {
-       return sequences_.size();
+       return numSequences_;
     }
 
-    string PoaGraphImpl::ToGraphViz(int flags) const
+    string PoaGraphImpl::ToGraphViz(int flags, const PoaConsensus* pc) const
     {
        std::stringstream ss;
        write_graphviz(ss, g_, my_label_writer(vertexInfoMap_,
                                               flags & PoaGraph::COLOR_NODES,
-                                              flags & PoaGraph::VERBOSE_NODES));
+                                              flags & PoaGraph::VERBOSE_NODES,
+                                              pc));
        return ss.str();
     }
 
    void
-   PoaGraphImpl::WriteGraphVizFile(string filename, int flags) const
+   PoaGraphImpl::WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const
    {
        std::ofstream outfile(filename.c_str());
-       outfile << ToGraphViz(flags);
+       outfile << ToGraphViz(flags, pc);
        outfile.close();
    }
 

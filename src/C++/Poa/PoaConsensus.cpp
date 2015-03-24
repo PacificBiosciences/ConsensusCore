@@ -49,96 +49,64 @@
 
 using boost::tie;
 
-namespace {
-
-    using namespace ConsensusCore;
-
-    // TODO(dalexander): these weird numbers are historical.  I think we
-    // could just switch to 1, -1, -1, -1 and it would be fine.
-    AlignConfig DefaultPoaConfig(AlignMode mode = GLOBAL)
+namespace ConsensusCore
+{
+    AlignConfig DefaultPoaConfig(AlignMode mode)
     {
         AlignParams params(3, -5, -4, -4);
         AlignConfig config(params, mode);
         return config;
     }
 
-}
+    PoaConsensus::PoaConsensus(const std::string& css,
+                               const PoaGraph& g,
+                               const std::vector<size_t>& cssPath)
+        : Sequence(css), Graph(g), Path(cssPath)
+    {}
 
-namespace ConsensusCore
-{
-    PoaConsensus::PoaConsensus(const AlignConfig& config)
-        : config_(config),
-          variants_(NULL)
-    {
-        poaGraph_ = new PoaGraph();
-    }
+    PoaConsensus::PoaConsensus(const std::string& css,
+                               const detail::PoaGraphImpl& gi,
+                               const std::vector<size_t>& cssPath)
+        : Sequence(css), Graph(gi), Path(cssPath)
+    {}
 
     PoaConsensus::~PoaConsensus()
-    {
-        delete poaGraph_;
-        if (variants_ != NULL)
-        {
-            delete variants_;
-        }
-    }
+    {}
 
     const PoaConsensus*
-    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, const AlignConfig& config)
+    PoaConsensus::FindConsensus(const std::vector<std::string>& reads,
+                                const AlignConfig& config,
+                                int minCoverage)
     {
-        // do we need to filter zero-length reads here?
-        PoaConsensus* pc = new PoaConsensus(config);
+        PoaGraph pg;
         foreach (const std::string& read, reads)
         {
             if (read.length() == 0)
             {
                 throw InvalidInputError("Input sequences must have nonzero length.");
             }
-            pc->poaGraph_->AddSequence(read, config);
+            pg.AddSequence(read, config);
         }
-        boost::tie(pc->consensusSequence_, pc->score_, pc->variants_) =
-            pc->poaGraph_->FindConsensus(config);
-        return pc;
+        return pg.FindConsensus(config, minCoverage);
     }
 
     const PoaConsensus*
-    PoaConsensus::FindConsensus(const std::vector<std::string>& reads, AlignMode mode)
+    PoaConsensus::FindConsensus(const std::vector<std::string>& reads,
+                                AlignMode mode,
+                                int minCoverage)
     {
-        return FindConsensus(reads, DefaultPoaConfig(mode));
-    }
-
-    const PoaConsensus*
-    PoaConsensus::FindConsensus(const std::vector<std::string>& reads)
-    {
-        return PoaConsensus::FindConsensus(reads, DefaultPoaConfig());
-    }
-
-    const PoaGraph*
-    PoaConsensus::Graph() const
-    {
-        return poaGraph_;
-    }
-
-    float
-    PoaConsensus::Score() const
-    {
-        return score_;
+        return FindConsensus(reads, DefaultPoaConfig(mode), minCoverage);
     }
 
     std::string
-    PoaConsensus::Sequence() const
+    PoaConsensus::ToGraphViz(int flags)
     {
-        return consensusSequence_;
+        return Graph.ToGraphViz(flags, this);
     }
 
-    std::string
-    PoaConsensus::ToString() const
+    void
+    PoaConsensus::WriteGraphVizFile(std::string filename, int flags)
     {
-        return "Poa Consensus: " + Sequence();
-    }
-
-    const std::vector<ScoredMutation>*
-    PoaConsensus::Mutations() const
-    {
-        return variants_;
+        Graph.WriteGraphVizFile(filename, flags, this);
     }
 }

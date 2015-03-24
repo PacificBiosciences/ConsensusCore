@@ -64,15 +64,16 @@ using namespace ConsensusCore; // NOLINT
 
 #define MAKE_ALL_PLOTS false
 
-static void plotGraph(const PoaGraph* g, string description, bool REALLY_MAKE_THIS_ONE = false)
+static void plotConsensus(const PoaConsensus* pc, string description, bool REALLY_MAKE_THIS_ONE = false)
 {
     if (MAKE_ALL_PLOTS || REALLY_MAKE_THIS_ONE)
     {
         string dotFname = description + ".dot";
         string pngFname = description + ".png";
         string cmd = string("dot -Tpng ") + dotFname + " > " + pngFname;
-        g->WriteGraphVizFile(description + ".dot",
-                             (PoaGraph::COLOR_NODES | PoaGraph::VERBOSE_NODES));
+        pc->Graph.WriteGraphVizFile(description + ".dot",
+                                    (PoaGraph::COLOR_NODES | PoaGraph::VERBOSE_NODES),
+                                    pc);
         cout << cmd << endl;
         system(cmd.c_str());
     }
@@ -93,7 +94,7 @@ TEST(PoaGraph, SmallBasicTest)
     vector<std::string> reads;
     reads += "GGG";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-    string dot = pc->Graph()->ToGraphViz();
+    string dot = pc->Graph.ToGraphViz();
     string expectedDot = \
                          "digraph G {"
                          "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -106,11 +107,12 @@ TEST(PoaGraph, SmallBasicTest)
                          "3->4 ;"
                          "4->1 ;"
                          "}";
-    plotGraph(pc->Graph(), "small-basic");
+    plotConsensus(pc, "small-basic");
     EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-    EXPECT_EQ("GGG", pc->Sequence());
+    EXPECT_EQ("GGG", pc->Sequence);
     delete pc;
 }
+
 
 TEST(PoaGraph, SmallExtraTests)
 {
@@ -119,7 +121,7 @@ TEST(PoaGraph, SmallExtraTests)
         vector<std::string> reads;
         reads += "GGG", "TGGG";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -135,9 +137,9 @@ TEST(PoaGraph, SmallExtraTests)
                              "5->2 ;"
                              "0->5 ;"
                              "}";
-        plotGraph(pc->Graph(), "extra-at-beginning");
+        plotConsensus(pc, "extra-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GGG", pc->Sequence());
+        EXPECT_EQ("GGG", pc->Sequence);
         delete pc;
     }
 
@@ -146,7 +148,7 @@ TEST(PoaGraph, SmallExtraTests)
         vector<std::string> reads;
         reads += "GGG", "GTGG";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         // this would be easier if we could use the C++0x raw
         // strings feature (in g++ 4.5+)
         string expectedDot = \
@@ -164,9 +166,9 @@ TEST(PoaGraph, SmallExtraTests)
                              "5->3 ;"
                              "2->5 ;"
                              "}";
-        // plotGraph(pc->getGraph(), "extra-in-middle");
+        plotConsensus(pc, "extra-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GGG", pc->Sequence());
+        EXPECT_EQ("GGG", pc->Sequence);
         delete pc;
     }
 
@@ -175,7 +177,7 @@ TEST(PoaGraph, SmallExtraTests)
         vector<std::string> reads;
         reads += "GGG", "GGGT";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -191,9 +193,9 @@ TEST(PoaGraph, SmallExtraTests)
                              "5->1 ;"
                              "4->5 ;"
                              "}";
-        plotGraph(pc->Graph(), "extra-at-end");
+        plotConsensus(pc, "extra-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GGG", pc->Sequence());
+        EXPECT_EQ("GGG", pc->Sequence);
         delete pc;
     }
 }
@@ -206,7 +208,7 @@ TEST(PoaGraph, SmallMismatchTests)
         vector<std::string> reads;
         reads += "GGG", "TGG";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -222,9 +224,9 @@ TEST(PoaGraph, SmallMismatchTests)
                              "5->3 ;"
                              "0->5 ;"
                              "}";
-        plotGraph(pc->Graph(), "mismatch-at-beginning");
+        plotConsensus(pc, "mismatch-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GG", pc->Sequence());
+        EXPECT_EQ("GG", pc->Sequence);
         delete pc;
     }
 
@@ -233,7 +235,7 @@ TEST(PoaGraph, SmallMismatchTests)
         vector<std::string> reads;
         reads += "GGG", "GTG", "GTG";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -249,9 +251,9 @@ TEST(PoaGraph, SmallMismatchTests)
                              "5->4 ;"
                              "2->5 ;"
                              "}";
-        plotGraph(pc->Graph(), "mismatch-in-middle");
+        plotConsensus(pc, "mismatch-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GTG", pc->Sequence());
+        EXPECT_EQ("GTG", pc->Sequence);
         delete pc;
     }
 
@@ -260,7 +262,7 @@ TEST(PoaGraph, SmallMismatchTests)
         vector<std::string> reads;
         reads += "GGG", "GGT";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -276,9 +278,9 @@ TEST(PoaGraph, SmallMismatchTests)
                              "5->1 ;"
                              "3->5 ;"
                              "}";
-        plotGraph(pc->Graph(), "mismatch-at-end");
+        plotConsensus(pc, "mismatch-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GG", pc->Sequence());
+        EXPECT_EQ("GG", pc->Sequence);
         delete pc;
     }
 }
@@ -290,7 +292,7 @@ TEST(PoaGraph, SmallDeletionTests)
         vector<std::string> reads;
         reads += "GAT", "AT";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -304,9 +306,9 @@ TEST(PoaGraph, SmallDeletionTests)
                              "4->1 ;"
                              "0->3 ;"
                              "}";
-        plotGraph(pc->Graph(), "deletion-at-beginning");
+        plotConsensus(pc, "deletion-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("AT", pc->Sequence());
+        EXPECT_EQ("AT", pc->Sequence);
         delete pc;
     }
 
@@ -315,7 +317,7 @@ TEST(PoaGraph, SmallDeletionTests)
         vector<std::string> reads;
         reads += "GAT", "GT";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot =
             "digraph G {"
             "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -329,7 +331,7 @@ TEST(PoaGraph, SmallDeletionTests)
             "4->1 ;"
             "2->4 ;"
             "}";
-        plotGraph(pc->Graph(), "deletion-in-middle");
+        plotConsensus(pc, "deletion-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         delete pc;
     }
@@ -339,7 +341,7 @@ TEST(PoaGraph, SmallDeletionTests)
         vector<std::string> reads;
         reads += "GAT", "GA";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-        string dot = pc->Graph()->ToGraphViz();
+        string dot = pc->Graph.ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -353,9 +355,9 @@ TEST(PoaGraph, SmallDeletionTests)
                              "4->1 ;"
                              "3->1 ;"
                              "}";
-        plotGraph(pc->Graph(), "deletion-at-end");
+        plotConsensus(pc, "deletion-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-        EXPECT_EQ("GA", pc->Sequence());
+        EXPECT_EQ("GA", pc->Sequence);
         delete pc;
     }
 }
@@ -372,8 +374,8 @@ TEST(PoaConsensus, TestSimple)
              "TTTACAGGATTAGGTCCCAGT",
              "TTTACAGGATAGTCCAGT";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-    plotGraph(pc->Graph(), "simple");
-    EXPECT_EQ("TTTACAGGATAGTCCAGT", pc->Sequence());
+    plotConsensus(pc, "simple");
+    EXPECT_EQ("TTTACAGGATAGTCCAGT", pc->Sequence);
     delete pc;
 }
 
@@ -385,7 +387,7 @@ TEST(PoaConsensus, TestOverhangSecond)
              "TTTACAGGATAGTCCAGTAAA",
              "TTTACAGGATAGTCCAGTAAA";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-    EXPECT_EQ("TTTACAGGATAGTCCAGTAAA", pc->Sequence());
+    EXPECT_EQ("TTTACAGGATAGTCCAGTAAA", pc->Sequence);
     delete pc;
 }
 
@@ -394,7 +396,7 @@ TEST(PoaConsensus, SmallSemiglobalTest)
     vector<std::string> reads;
     reads +=  "GGTGG", "GGTGG", "T";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
-    plotGraph(pc->Graph(), "small-semiglobal");
+    plotConsensus(pc, "small-semiglobal");
     string expectedDot = \
                          "digraph G {"
                          "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
@@ -413,9 +415,9 @@ TEST(PoaConsensus, SmallSemiglobalTest)
                          "4->1 ;"
                          "0->4 ;"
                          "}";
-    string dot = pc->Graph()->ToGraphViz();
+    string dot = pc->Graph.ToGraphViz();
     EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
-    EXPECT_EQ("GGTGG", pc->Sequence());
+    EXPECT_EQ("GGTGG", pc->Sequence);
     delete pc;
 }
 
@@ -428,8 +430,8 @@ TEST(PoaConsensus, SmallTilingTest)
             "TTTTCCCC",
             "CCCCAGGA";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, SEMIGLOBAL);
-    plotGraph(pc->Graph(), "small-tiling");
-    EXPECT_EQ("GGGGAAAATTTTCCCCAGGA", pc->Sequence());
+    plotConsensus(pc, "small-tiling");
+    EXPECT_EQ("GGGGAAAATTTTCCCCAGGA", pc->Sequence);
     delete pc;
 }
 
@@ -439,7 +441,7 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
     vector<std::string> reads;
     reads += "GGG", "TGGG";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-    string dot = pc->Graph()->ToGraphViz(PoaGraph::COLOR_NODES | PoaGraph::VERBOSE_NODES);
+    string dot = pc->Graph.ToGraphViz(PoaGraph::COLOR_NODES | PoaGraph::VERBOSE_NODES, pc);
 
     string expectedDot = \
                         "digraph G {"
@@ -463,7 +465,6 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
     delete pc;
 }
 
-#if 0
 TEST(PoaConsensus, TestLocalStaggered)
 {
     // Adapted from Pat's C# test
@@ -476,13 +477,16 @@ TEST(PoaConsensus, TestLocalStaggered)
                   "AGGATAGTGCCGCCAATCTTCCAGTAATATACAGCACGGAGTAGCATCACGTACG",
                      "ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGT";
 
-    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, LOCAL);
-    // woops, we are getting this:
-    //"TTTACAGGATAGTGCCGCCAATCTTCCAGTAATATACAGCACGGAGTAGCATCACGTACGTACGTCTCACGTAATT"
-    EXPECT_EQ("ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGTAATT", pc->Sequence());
+    // 4 is a magic number here.  the .NET code had an entrenched
+    // assumption that sequences in POA were subreads from a ZMW, so
+    // the minCoverage was (numReads - 3), under assumption that basal
+    // coverage for CCS is (numReads-2) (beginning, end read).
+    // Application has to provide a sensible minCoverage.
+    const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, LOCAL, 4);
+    plotConsensus(pc, "local-staggered", true);
+    EXPECT_EQ("ATAGTGCCGCCAATCTTCCAGTATATACAGCACGGAGTAGCATCACGTACGTACGTCTACACGTAATT", pc->Sequence);
     delete pc;
 }
-#endif
 
 TEST(PoaConsensus, TestLongInsert)
 {
@@ -492,11 +496,13 @@ TEST(PoaConsensus, TestLongInsert)
               "TTTACAGGATAGTGCCGGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC",
               "TTGTACAGGATAGTGCCGCCAATCTTCCAGTGATGGGGGGGGGGGGGGGGGGGGGGGGGGGACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
-    EXPECT_EQ("TTTACAGGATAGTGCCGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC", pc->Sequence());
+    EXPECT_EQ("TTTACAGGATAGTGCCGCCAATCTTCCAGTGATACCCCGTGCCGCCAATCTTCCAGTATATACAGCACGAGTAGC", pc->Sequence);
     delete pc;
 }
 
 
+
+#if 0
 TEST(PoaConsensus, TestMutations)
 {
     using ::testing::ElementsAreArray;
@@ -523,3 +529,4 @@ TEST(PoaConsensus, TestMutations)
     ASSERT_THAT(variantDescriptions, ElementsAreArray(expectedDescriptions));
     delete pc;
 }
+#endif

@@ -61,12 +61,16 @@ namespace ConsensusCore {
     class ScoredMutation;
     struct Interval;
     struct Read;
+    class PoaGraph;
+    struct PoaConsensus;
 }
 
 namespace ConsensusCore {
 namespace detail {
     class ViterbiCombiner;
     class SumProductCombiner;
+    class SdpRangeFinder;
+    class PoaGraphImpl;
 }}
 
 

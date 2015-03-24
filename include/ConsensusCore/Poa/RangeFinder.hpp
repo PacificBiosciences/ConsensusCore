@@ -1,12 +1,12 @@
 #pragma once
 
+#include <ConsensusCore/Poa/PoaGraph.hpp>
+
 #include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
 #include <utility>
-
-#include <ConsensusCore/Poa/PoaGraphImpl.hpp>
 
 namespace ConsensusCore {
 namespace detail {
@@ -14,6 +14,10 @@ namespace detail {
     // an Anchor represents a point (cssPos, readPos)
     typedef std::pair<size_t, size_t>    SdpAnchor;
     typedef std::vector<SdpAnchor> SdpAnchorVector;
+
+    class PoaGraphImpl;
+
+    using ConsensusCore::PoaGraph;
 
     //
     // SdpRangeFinder objects are responsible for identifying the range
@@ -30,21 +34,19 @@ namespace detail {
     class SdpRangeFinder
     {
     private:
-        std::map<Vertex, Interval> alignableReadIntervalByVertex_;
+        std::map<PoaGraph::Vertex, Interval> alignableReadIntervalByVertex_;
 
     public:
         virtual ~SdpRangeFinder();
 
         void InitRangeFinder(const PoaGraphImpl& poaGraph,
-                             const std::vector<Vertex>& consensusPath,
+                             const std::vector<PoaGraph::Vertex>& consensusPath,
                              const std::string& consensusSequence,
                              const std::string& readSequence);
 
-        Interval FindAlignableRange(Vertex v);
+        Interval FindAlignableRange(PoaGraph::Vertex v);
 
-
-    public:
-
+    protected:
         virtual SdpAnchorVector FindAnchors(const std::string& consensusSequence,
                                             const std::string& readSequence) = 0;
     };

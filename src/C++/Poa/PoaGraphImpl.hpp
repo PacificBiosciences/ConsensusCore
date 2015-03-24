@@ -12,14 +12,14 @@
 #include <ConsensusCore/Matrix/VectorL.hpp>
 
 #include <boost/config.hpp>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graphviz.hpp>
-#include <boost/graph/topological_sort.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/utility.hpp>
 #include <cfloat>
+#include <climits>
 #include <vector>
 
 using std::string;
@@ -61,7 +61,6 @@ namespace detail {
         int SpanningReads;
         float Score;
         float ReachingScore;
-        bool IsInConsensus;
 
         void Init(char base, int reads)
         {
@@ -70,7 +69,11 @@ namespace detail {
             this->SpanningReads = 0;
             this->Score = 0;
             this->ReachingScore = 0;
-            this->IsInConsensus = false;
+        }
+
+        PoaNode()
+        {
+            Init('N', 0);
         }
 
         explicit PoaNode(char base)
@@ -84,11 +87,13 @@ namespace detail {
         }
     };
 
-    typedef adjacency_list < setS, vecS, bidirectionalS, property<vertex_info_t, PoaNode*> > BoostGraph;
+    typedef adjacency_list < setS, vecS, bidirectionalS, property<vertex_info_t, PoaNode> > BoostGraph;
     typedef graph_traits<BoostGraph>::edge_descriptor Edge;
     typedef graph_traits<BoostGraph>::vertex_descriptor Vertex;
     typedef property_map<BoostGraph, vertex_info_t>::type VertexInfoMap;
     static const Vertex null_vertex = graph_traits<BoostGraph>::null_vertex();
+
+    BOOST_STATIC_ASSERT(boost::is_same<Vertex, size_t>::value);
 
     struct AlignmentColumn : noncopyable
     {
@@ -120,16 +125,15 @@ namespace detail {
 
     typedef unordered_map<Vertex, const AlignmentColumn*> AlignmentColumnMap;
 
-
     class PoaGraphImpl
     {
         friend class SdpRangeFinder;
 
         BoostGraph g_;
-        VertexInfoMap vertexInfoMap_;
+        VertexInfoMap vertexInfoMap_;  // NB: this is a reference type and refers to an "internal" property map
         Vertex enterVertex_;
         Vertex exitVertex_;
-        vector<std::string> sequences_;
+        size_t numSequences_;
 
         void repCheck();
 
@@ -155,7 +159,7 @@ namespace detail {
         //
         void tagSpan(Vertex start, Vertex end);
 
-        std::vector<Vertex> consensusPath(AlignMode mode) const;
+        std::vector<Vertex> consensusPath(AlignMode mode, int minCoverage=-INT_MAX) const;
 
         void threadFirstRead(std::string sequence);
 
@@ -169,33 +173,23 @@ namespace detail {
 
     public:
         PoaGraphImpl();
+        PoaGraphImpl(const PoaGraphImpl& other);
         ~PoaGraphImpl();
 
         void AddSequence(const std::string& sequence,
                          const AlignConfig& config,
                          SdpRangeFinder* rangeFinder=NULL);
 
-        // TODO(dalexander): make this const
-        tuple<string, float, vector<ScoredMutation>*>
-        FindConsensus(const AlignConfig& config, bool findVariants=true);
+        PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage=-INT_MAX);
 
         int NumSequences() const;
-        string ToGraphViz(int flags) const;
-        void WriteGraphVizFile(string filename, int flags) const;
+        string ToGraphViz(int flags, const PoaConsensus* pc) const;
+        void WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const;
     };
-
-
-    // Note this is left-biased, which may not be what we want!
-    template<class T>
-    inline size_t ArgMaxVector(const std::vector<T>& v)
-    {
-        return std::distance(v.begin(), std::max_element(v.begin(), v.end()));
-    }
 
     // free functions, we should put these all in traversals
     std::string sequenceAlongPath(const BoostGraph& g,
                                   const VertexInfoMap& vertexInfoMap,
                                   std::vector<Vertex> path);
-
 
 }} // ConsensusCore::detail

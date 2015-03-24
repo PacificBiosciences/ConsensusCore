@@ -38,6 +38,7 @@
 #pragma once
 
 #include <boost/tuple/tuple.hpp>
+#include <climits>
 #include <vector>
 #include <string>
 #include <utility>
@@ -47,14 +48,19 @@
 
 namespace ConsensusCore
 {
+    struct PoaConsensus;
+
     namespace detail {
         class PoaGraphImpl;
+
     }
 
     /// \brief An object representing a Poa (partial-order alignment) graph
     class PoaGraph
     {
-        detail::PoaGraphImpl* impl;
+    public:
+        typedef size_t Vertex;
+        typedef size_t ReadId;
 
     public:  // Flags enums for specifying GraphViz output features
         enum {
@@ -63,19 +69,29 @@ namespace ConsensusCore
         };
 
     public:
-        void AddSequence(const std::string& sequence, const AlignConfig& config);
+        PoaGraph();
+        PoaGraph(const PoaGraph& other);
+        PoaGraph(const detail::PoaGraphImpl& o);  // NB: this performs a copy
+        ~PoaGraph();
 
-        // TODO(dalexander): move this method to PoaConsensus so we don't have to use a tuple
-        // interface here (which was done to avoid a circular dep on PoaConsensus).
-#ifndef SWIG
-        boost::tuple<std::string, float, std::vector<ScoredMutation>* >
-        FindConsensus(const AlignConfig& config) const;
-#endif  // !SWIG
+        void AddSequence(const std::string& sequence,
+                         const AlignConfig& config,
+                         detail::SdpRangeFinder* rangeFinder=NULL);
 
         int NumSequences() const;
-        std::string ToGraphViz(int flags = 0) const;
-        void WriteGraphVizFile(std::string filename, int flags = 0) const;
-        PoaGraph();
-        ~PoaGraph();
+
+        std::string ToGraphViz(int flags = 0,
+                               const PoaConsensus* pc = NULL) const;
+
+        void WriteGraphVizFile(std::string filename,
+                               int flags = 0,
+                               const PoaConsensus* pc = NULL) const;
+
+        const PoaConsensus* FindConsensus(const AlignConfig& config,
+                                          int minCoverage=-INT_MAX) const;
+
+    private:
+        detail::PoaGraphImpl* impl;
     };
+
 }

@@ -38,6 +38,7 @@
 #pragma once
 
 #include <boost/utility.hpp>
+#include <climits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,35 +50,49 @@ namespace ConsensusCore
 {
     using boost::noncopyable;
 
-    /// \brief A multi-sequence consensus obtained from a partial-order alignment
-    class PoaConsensus : private noncopyable
-    {
-        std::string consensusSequence_;
-        AlignConfig config_;
-        std::vector<ScoredMutation>* variants_;
-        PoaGraph* poaGraph_;
-        float score_;
+    class PoaGraph;
+    class PoaGraphPath;
+    class ScoredMutation;
 
-    public:
-        explicit PoaConsensus(const AlignConfig& config);
+    AlignConfig DefaultPoaConfig(AlignMode mode = GLOBAL);
+
+    /// \brief A multi-sequence consensus obtained from a partial-order alignment
+    struct PoaConsensus : private noncopyable
+    {
+        const std::string Sequence;
+        PoaGraph Graph;
+        std::vector<size_t> Path;
+
+        PoaConsensus(const std::string& css,
+                     const PoaGraph& g,
+                     const std::vector<size_t>& ConsensusPath);
+
+        // NB: this constructor exists to provide a means to avoid an unnecessary copy of the
+        // boost graph.  If we had move semantics (C++11) we would be able to get by without
+        // this.
+        PoaConsensus(const std::string& css,
+                     const detail::PoaGraphImpl& g,
+                     const std::vector<size_t>& ConsensusPath);
+
         ~PoaConsensus();
 
-    public:
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads,
-                                                 const AlignConfig& config);
+                                                 const AlignConfig& config,
+                                                 int minCoverage=-INT_MAX);
+
         static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads,
-                                                 AlignMode mode);
-        static const PoaConsensus* FindConsensus(const std::vector<std::string>& reads);
+                                                 AlignMode mode,
+                                                 int minCoverage=-INT_MAX);
 
     public:
-        const PoaGraph* Graph() const;
-        float Score() const;
+        // Additional accessors, which do things on the graph/graphImpl
+        // LikelyVariants
 
-        // Consensus interface methods
-        std::string Sequence() const;
-        std::string ToString() const;
 
-        // Mutations interface
-        const std::vector<ScoredMutation>* Mutations() const;
+    public:
+        std::string ToGraphViz(int flags = 0);
+
+        void WriteGraphVizFile(std::string filename,
+                               int flags = 0);
     };
 }
