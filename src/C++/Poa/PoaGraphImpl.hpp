@@ -135,7 +135,22 @@ namespace detail {
         int EndRow()   const { return Score.EndRow();   }
     };
 
+
     typedef unordered_map<VD, const AlignmentColumn*> AlignmentColumnMap;
+
+    class PoaAlignmentMatrixImpl : public PoaAlignmentMatrix
+    {
+    public:
+        virtual ~PoaAlignmentMatrixImpl();
+        virtual float Score() const;
+
+    public:
+        AlignmentColumnMap columns_;
+        std::string readSequence_;
+        AlignMode mode_;
+        float score_;
+    };
+
 
     class PoaGraphImpl
     {
@@ -151,7 +166,7 @@ namespace detail {
         size_t liveVertices_;                // vertices that are in the graph.  this is needed for algorithms.
         std::map<Vertex, VD> vertexLookup_;  // external ID -> internal ID
 
-        void repCheck();
+        void repCheck() const;
 
         Vertex externalize(VD vd) const         { return vertexInfoMap_[vd].Id; }
         VD     internalize(Vertex vertex) const { return vertexLookup_.at(vertex); }
@@ -194,13 +209,13 @@ namespace detail {
                             const AlignmentColumnMap& alignmentColumnForVertex,
                             const std::string& sequence,
                             const AlignConfig& config,
-                            int beginRow, int endRow);
+                            int beginRow, int endRow) const;
 
         const AlignmentColumn*
         makeAlignmentColumnForExit(VD v,
                                    const AlignmentColumnMap& alignmentColumnForVertex,
                                    const std::string& sequence,
-                                   const AlignConfig& config);
+                                   const AlignConfig& config) const;
 
     public:
         //
@@ -230,6 +245,15 @@ namespace detail {
                          const AlignConfig& config,
                          SdpRangeFinder* rangeFinder=NULL,
                          std::vector<Vertex>* readPathOutput=NULL);
+
+        void AddFirstSequence(const std::string& sequence,
+                              std::vector<Vertex>* readPathOutput=NULL);
+
+        PoaAlignmentMatrixImpl* TryAddSequence(const std::string& sequence,
+                                               const AlignConfig& config,
+                                               SdpRangeFinder* rangeFinder=NULL) const;
+
+        void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput=NULL);
 
         PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage=-INT_MAX);
 

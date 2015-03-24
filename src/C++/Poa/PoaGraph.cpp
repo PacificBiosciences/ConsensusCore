@@ -48,15 +48,33 @@ namespace ConsensusCore
     //
     // PIMPL idiom delegation
     //
-    void
-    PoaGraph::AddSequence(const std::string& sequence,
-                          const AlignConfig& config,
-                          detail::SdpRangeFinder* rangeFinder,
-                          std::vector<Vertex>* readPathOutput)
+    void PoaGraph::AddSequence(const std::string& sequence,
+                               const AlignConfig& config,
+                               detail::SdpRangeFinder* rangeFinder,
+                               std::vector<Vertex>* readPathOutput)
     {
         impl->AddSequence(sequence, config, rangeFinder, readPathOutput);
     }
 
+    void PoaGraph::AddFirstSequence(const std::string& sequence,
+                                    std::vector<Vertex>* readPathOutput)
+    {
+        impl->AddFirstSequence(sequence, readPathOutput);
+    }
+
+    PoaAlignmentMatrix*
+    PoaGraph::TryAddSequence(const std::string& sequence,
+                             const AlignConfig& config,
+                             detail::SdpRangeFinder* rangeFinder) const
+    {
+        return impl->TryAddSequence(sequence, config, rangeFinder);
+    }
+
+
+    void PoaGraph::CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput)
+    {
+        impl->CommitAdd(mat, readPathOutput);
+    }
 
     int
     PoaGraph::NumSequences() const

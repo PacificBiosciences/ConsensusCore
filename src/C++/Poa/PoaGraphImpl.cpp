@@ -82,9 +82,26 @@ namespace boost
 
 namespace ConsensusCore {
 namespace detail {
-    //
-    // PoaGraphImpl
-    //
+
+    // ----------------- PoaAlignmentMatrixImpl ---------------------
+
+
+    PoaAlignmentMatrixImpl::~PoaAlignmentMatrixImpl()
+    {
+        foreach (AlignmentColumnMap::value_type& kv, columns_)
+        {
+            delete kv.second;
+        }
+    }
+
+
+    float PoaAlignmentMatrixImpl::Score() const
+    {
+        return score_;
+    }
+
+
+    // ----------------- PoaGraphImpl ---------------------
 
     PoaGraphImpl::PoaGraphImpl()
         : g_(),
@@ -108,7 +125,7 @@ namespace detail {
     PoaGraphImpl::~PoaGraphImpl()
     {}
 
-    void PoaGraphImpl::repCheck()
+    void PoaGraphImpl::repCheck() const
     {
         // assert the representation invariant for the object
         foreach (VD v, vertices(g_))
@@ -131,9 +148,8 @@ namespace detail {
         }
     }
 
-
     static inline vector<const AlignmentColumn*>
-    getPredecessorColumns(BoostGraph& g,
+    getPredecessorColumns(const BoostGraph& g,
                           VD v,
                           const AlignmentColumnMap& colMap)
     {
@@ -149,7 +165,6 @@ namespace detail {
         return predecessorColumns;
     }
 
-
     PoaConsensus*
     PoaGraphImpl::FindConsensus(const AlignConfig& config, int minCoverage)
     {
@@ -163,7 +178,7 @@ namespace detail {
     PoaGraphImpl::makeAlignmentColumnForExit(VD v,
                                              const AlignmentColumnMap& colMap,
                                              const std::string& sequence,
-                                             const AlignConfig& config)
+                                             const AlignConfig& config) const
     {
         assert(out_degree(v, g_) == 0);
 
@@ -223,7 +238,7 @@ namespace detail {
                                       const std::string& sequence,
                                       const AlignConfig& config,
                                       int beginRow,
-                                      int endRow)
+                                      int endRow) const
     {
         AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
         const PoaNode& vertexInfo = vertexInfoMap_[v];
@@ -341,60 +356,92 @@ namespace detail {
                                    SdpRangeFinder* rangeFinder,
                                    std::vector<Vertex>* readPathOutput)
     {
-        DEBUG_ONLY(repCheck());
-        assert(readSeq.length() > 0);
-
-        if (numSequences_ == 0)
+        if (NumSequences() == 0)
         {
-            threadFirstRead(readSeq, readPathOutput);
-            numSequences_++;
+            AddFirstSequence(readSeq, readPathOutput);
         }
         else
         {
-            // Prepare the range finder, if applicable
-            if (rangeFinder != NULL)
-            {
-                // NB: no minCoverage applicable here; this
-                // intermediate "consensus" may include extra sequence
-                // at either end
-                std::vector<VD> cssPath = consensusPath(config.Mode);
-                std::string cssSeq = sequenceAlongPath(g_, vertexInfoMap_, cssPath);
-                rangeFinder->InitRangeFinder(*this, externalizePath(cssPath), cssSeq, readSeq);
-            }
-
-            // Calculate alignment columns of sequence vs. graph, using sparsity if
-            // we have a range finder.
-            AlignmentColumnMap colMap;
-            vector<VD> sortedVertices(num_vertices(g_));
-            topological_sort(g_, sortedVertices.rbegin());
-            const AlignmentColumn* curCol;
-            foreach (VD v, sortedVertices)
-            {
-                if (v != exitVertex_)
-                {
-                    Interval rowRange;
-                    if (rangeFinder) {
-                        rowRange = rangeFinder->FindAlignableRange(externalize(v));
-                    } else {
-                        rowRange = Interval(0, readSeq.size());
-                    }
-                    curCol = makeAlignmentColumn(v, colMap, readSeq, config, rowRange.Begin, rowRange.End);
-                }
-                else {
-                    curCol = makeAlignmentColumnForExit(v, colMap, readSeq, config);
-                }
-                colMap[v] = curCol;
-            }
-
-            tracebackAndThread(readSeq, colMap, config.Mode, readPathOutput);
-            numSequences_++;
-
-            // Clean up the mess we created.  Might be nicer to use scoped ptrs.
-            foreach (AlignmentColumnMap::value_type& kv, colMap)
-            {
-                delete kv.second;
-            }
+            PoaAlignmentMatrixImpl* mat = TryAddSequence(readSeq, config, rangeFinder);
+            CommitAdd(mat, readPathOutput);
+            delete mat;
         }
+    }
+
+    void PoaGraphImpl::AddFirstSequence(const std::string& readSeq,
+                                        std::vector<Vertex>* readPathOutput)
+    {
+        DEBUG_ONLY(repCheck());
+        assert(readSeq.length() > 0);
+        assert(numSequences_ == 0);
+
+        threadFirstRead(readSeq, readPathOutput);
+        numSequences_++;
+
+        DEBUG_ONLY(repCheck());
+    }
+
+    PoaAlignmentMatrixImpl*
+    PoaGraphImpl::TryAddSequence(const std::string& readSeq,
+                                 const AlignConfig& config,
+                                 SdpRangeFinder* rangeFinder) const
+    {
+        DEBUG_ONLY(repCheck());
+        assert(readSeq.length() > 0);
+        assert(numSequences_ > 0);
+
+        // Prepare the range finder, if applicable
+        if (rangeFinder != NULL)
+        {
+            // NB: no minCoverage applicable here; this
+            // "intermediate" consensus may include extra sequence
+            // at either end
+            std::vector<VD> cssPath = consensusPath(config.Mode);
+            std::string cssSeq = sequenceAlongPath(g_, vertexInfoMap_, cssPath);
+            rangeFinder->InitRangeFinder(*this, externalizePath(cssPath), cssSeq, readSeq);
+        }
+
+        // Calculate alignment columns of sequence vs. graph, using sparsity if
+        // we have a range finder.
+        PoaAlignmentMatrixImpl* mat = new PoaAlignmentMatrixImpl();
+        mat->readSequence_ = readSeq;
+        mat->mode_ = config.Mode;
+
+        vector<VD> sortedVertices(num_vertices(g_));
+        topological_sort(g_, sortedVertices.rbegin());
+        const AlignmentColumn* curCol;
+        foreach (VD v, sortedVertices)
+        {
+            if (v != exitVertex_)
+            {
+                Interval rowRange;
+                if (rangeFinder) {
+                    rowRange = rangeFinder->FindAlignableRange(externalize(v));
+                } else {
+                    rowRange = Interval(0, readSeq.size());
+                }
+                curCol = makeAlignmentColumn(v, mat->columns_, readSeq, config, rowRange.Begin, rowRange.End);
+            }
+            else {
+                curCol = makeAlignmentColumnForExit(v, mat->columns_, readSeq, config);
+            }
+            mat->columns_[v] = curCol;
+        }
+
+        mat->score_ = mat->columns_[exitVertex_]->Score[readSeq.size()];
+        DEBUG_ONLY(repCheck());
+
+        return mat;
+    }
+
+    void
+    PoaGraphImpl::CommitAdd(PoaAlignmentMatrix* mat_, std::vector<Vertex>* readPathOutput)
+    {
+        DEBUG_ONLY(repCheck());
+
+        PoaAlignmentMatrixImpl* mat = static_cast<PoaAlignmentMatrixImpl*>(mat_);
+        tracebackAndThread(mat->readSequence_, mat->columns_, mat->mode_, readPathOutput);
+        numSequences_++;
 
         DEBUG_ONLY(repCheck());
     }

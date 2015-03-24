@@ -55,6 +55,13 @@ namespace ConsensusCore
 
     }
 
+    class PoaAlignmentMatrix
+    {
+    public:
+        virtual ~PoaAlignmentMatrix() {};
+        virtual float Score() const   = 0;
+    };
+
     /// \brief An object representing a Poa (partial-order alignment) graph
     class PoaGraph
     {
@@ -74,10 +81,27 @@ namespace ConsensusCore
         PoaGraph(const detail::PoaGraphImpl& o);  // NB: this performs a copy
         ~PoaGraph();
 
+        //
+        // Easy API
+        //
         void AddSequence(const std::string& sequence,
                          const AlignConfig& config,
                          detail::SdpRangeFinder* rangeFinder=NULL,
                          std::vector<Vertex>* readPathOutput=NULL);
+
+        //
+        // API for more control
+        //
+        void AddFirstSequence(const std::string& sequence, std::vector<Vertex>* readPathOutput=NULL);
+
+        PoaAlignmentMatrix* TryAddSequence(const std::string& sequence,
+                                           const AlignConfig& config,
+                                           detail::SdpRangeFinder* rangeFinder=NULL) const;
+
+        void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput=NULL);
+
+        // ----------
+
 
         int NumSequences() const;
 
