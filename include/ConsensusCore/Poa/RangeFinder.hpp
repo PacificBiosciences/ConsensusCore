@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ConsensusCore/Poa/PoaGraph.hpp>
+#include <ConsensusCore/Interval.hpp>
 
 #include <cstddef>
 #include <map>
@@ -18,6 +19,7 @@ namespace detail {
     class PoaGraphImpl;
 
     using ConsensusCore::PoaGraph;
+    using ConsensusCore::Interval;
 
     //
     // SdpRangeFinder objects are responsible for identifying the range

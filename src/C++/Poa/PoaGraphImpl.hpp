@@ -56,14 +56,17 @@ namespace detail {
 
     struct PoaNode
     {
+        size_t Id;  // This is the external-facing identifier we use to represent the vertex
         char Base;
         int Reads;
+        // move the below out of here?
         int SpanningReads;
         float Score;
         float ReachingScore;
 
-        void Init(char base, int reads)
+        void Init(size_t id, char base, int reads)
         {
+            this->Id = id;
             this->Base = base;
             this->Reads = reads;
             this->SpanningReads = 0;
@@ -73,43 +76,52 @@ namespace detail {
 
         PoaNode()
         {
-            Init('N', 0);
+            Init(0, 'N', 0);
         }
 
-        explicit PoaNode(char base)
+        PoaNode(size_t id, char base)
         {
-            Init(base, 1);
+            Init(id, base, 1);
         }
 
-        PoaNode(char base, int reads)
+        PoaNode(size_t id, char base, int reads)
         {
-            Init(base, reads);
+            Init(id, base, reads);
         }
     };
 
-    typedef adjacency_list < setS, vecS, bidirectionalS, property<vertex_info_t, PoaNode> > BoostGraph;
-    typedef graph_traits<BoostGraph>::edge_descriptor Edge;
-    typedef graph_traits<BoostGraph>::vertex_descriptor Vertex;
-    typedef property_map<BoostGraph, vertex_info_t>::type VertexInfoMap;
-    static const Vertex null_vertex = graph_traits<BoostGraph>::null_vertex();
+    // BGL is intimidating, and it *deserves* your hatred.  But it's
+    // the only game in town!
+    typedef property<vertex_info_t, PoaNode, property<vertex_index_t, size_t> > vertex_property_t;
+    typedef adjacency_list<setS, listS, bidirectionalS, vertex_property_t> BoostGraph;
 
-    BOOST_STATIC_ASSERT(boost::is_same<Vertex, size_t>::value);
+
+    // Descriptor types used internally
+    typedef graph_traits<BoostGraph>::edge_descriptor   ED;
+    typedef graph_traits<BoostGraph>::vertex_descriptor VD;
+
+    // External-facing vertex id type
+    typedef size_t Vertex;
+
+    typedef property_map<BoostGraph, vertex_info_t>::type VertexInfoMap;
+    typedef property_map<BoostGraph, vertex_index_t>::type index_map_t;
+    static const VD null_vertex = graph_traits<BoostGraph>::null_vertex();
 
     struct AlignmentColumn : noncopyable
     {
-        Vertex CurrentVertex;
+        VD CurrentVertex;
         VectorL<float> Score;
         VectorL<MoveType> ReachingMove;
-        VectorL<Vertex> PreviousVertex;
+        VectorL<VD> PreviousVertex;
 
-        AlignmentColumn(Vertex vertex, int len)
+        AlignmentColumn(VD vertex, int len)
             : CurrentVertex(vertex),
               Score(0, len, -FLT_MAX),
               ReachingMove(0, len, InvalidMove),
               PreviousVertex(0, len, null_vertex)
         {}
 
-        AlignmentColumn(Vertex vertex, int beginRow, int endRow)
+        AlignmentColumn(VD vertex, int beginRow, int endRow)
             : CurrentVertex(vertex),
               Score(beginRow, endRow, -FLT_MAX),
               ReachingMove(beginRow, endRow, InvalidMove),
@@ -123,32 +135,69 @@ namespace detail {
         int EndRow()   const { return Score.EndRow();   }
     };
 
-    typedef unordered_map<Vertex, const AlignmentColumn*> AlignmentColumnMap;
+    typedef unordered_map<VD, const AlignmentColumn*> AlignmentColumnMap;
 
     class PoaGraphImpl
     {
         friend class SdpRangeFinder;
 
         BoostGraph g_;
-        VertexInfoMap vertexInfoMap_;  // NB: this is a reference type and refers to an "internal" property map
-        Vertex enterVertex_;
-        Vertex exitVertex_;
+        VertexInfoMap vertexInfoMap_;        // NB: this is a reference type and refers to an "internal" property map
+        index_map_t indexMap_;
+        VD enterVertex_;
+        VD exitVertex_;
         size_t numSequences_;
+        size_t totalVertices_;               // includes "ex"-vertices which have since been removed
+        size_t liveVertices_;                // vertices that are in the graph.  this is needed for algorithms.
+        std::map<Vertex, VD> vertexLookup_;  // external ID -> internal ID
 
         void repCheck();
+
+        Vertex externalize(VD vd) const         { return vertexInfoMap_[vd].Id; }
+        VD     internalize(Vertex vertex) const { return vertexLookup_.at(vertex); }
+
+        std::vector<Vertex> externalizePath(const std::vector<VD>& vds) const
+        {
+            std::vector<Vertex> out(vds.size(), 0);
+            for (size_t i = 0; i < vds.size(); i++)
+            {
+                out[i] = externalize(vds[i]);
+            }
+            return out;
+        }
+
+        std::vector<VD> internalizePath(const std::vector<Vertex>& vertices) const
+        {
+            std::vector<VD> out(vertices.size(), null_vertex);
+            for (size_t i = 0; i < vertices.size(); i++)
+            {
+                out[i] = internalize(vertices[i]);
+            }
+            return out;
+        }
+
+        VD addVertex(char base, int nReads=1)
+        {
+            VD vd = add_vertex(g_);
+            Vertex vExt = totalVertices_++;
+            vertexInfoMap_[vd] = PoaNode(vExt, base, nReads);
+            vertexLookup_[vExt] = vd;
+            indexMap_[vd] = liveVertices_++;
+            return vd;
+        }
 
         //
         // utility routines
         //
         const AlignmentColumn*
-        makeAlignmentColumn(Vertex v,
+        makeAlignmentColumn(VD v,
                             const AlignmentColumnMap& alignmentColumnForVertex,
                             const std::string& sequence,
                             const AlignConfig& config,
                             int beginRow, int endRow);
 
         const AlignmentColumn*
-        makeAlignmentColumnForExit(Vertex v,
+        makeAlignmentColumnForExit(VD v,
                                    const AlignmentColumnMap& alignmentColumnForVertex,
                                    const std::string& sequence,
                                    const AlignConfig& config);
@@ -157,9 +206,9 @@ namespace detail {
         //
         // Graph traversal functions, defined in PoaGraphTraversals
         //
-        void tagSpan(Vertex start, Vertex end);
+        void tagSpan(VD start, VD end);
 
-        std::vector<Vertex> consensusPath(AlignMode mode, int minCoverage=-INT_MAX) const;
+        std::vector<VD> consensusPath(AlignMode mode, int minCoverage=-INT_MAX) const;
 
         void threadFirstRead(std::string sequence, std::vector<Vertex>* readPathOutput=NULL);
 
@@ -192,6 +241,6 @@ namespace detail {
     // free functions, we should put these all in traversals
     std::string sequenceAlongPath(const BoostGraph& g,
                                   const VertexInfoMap& vertexInfoMap,
-                                  std::vector<Vertex> path);
+                                  const std::vector<VD>& path);
 
 }} // ConsensusCore::detail

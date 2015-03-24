@@ -84,12 +84,12 @@ namespace detail {
 
         SdpAnchorVector anchors = FindAnchors(consensusSequence, readSequence);
 
-        std::map<Vertex, optional<Interval> > directRanges;
-        std::map<Vertex, Interval> fwdMarks, revMarks;
+        std::map<VD, optional<Interval> > directRanges;
+        std::map<VD, Interval> fwdMarks, revMarks;
 
-        std::vector<Vertex> sortedVertices(num_vertices(poaGraph.g_));
+        std::vector<VD> sortedVertices(num_vertices(poaGraph.g_));
         topological_sort(poaGraph.g_, sortedVertices.rbegin());
-        foreach (Vertex v, sortedVertices)
+        foreach (VD v, sortedVertices)
         {
             directRanges[v] = boost::none;
         }
@@ -98,12 +98,13 @@ namespace detail {
         // css and this read.  Possibly null.
         for (size_t cssPos = 0; cssPos < consensusPath.size(); cssPos++)
         {
-            Vertex v = consensusPath[cssPos];
+            Vertex vExt = consensusPath[cssPos];
+            VD v = poaGraph.internalize(vExt);
             const SdpAnchor* anchor = binarySearchAnchors(anchors, cssPos);
             if (anchor != NULL) {
 #if DEBUG_RANGE_FINDER
                 cout << "Anchor: " << anchor->first << "-" << anchor->second
-                     <<  " (Vertex " << v << ")" << endl;
+                     <<  " (Vertex " << vExt << ")" << endl;
 #endif
                 directRanges[v] = Interval(max(int(anchor->second) - WIDTH, 0),
                                            min(int(anchor->second) + WIDTH, readLength));
@@ -115,16 +116,16 @@ namespace detail {
         // Use the direct ranges as a seed and perform a forward recursion,
         // letting a node with null direct range have a range that is the
         // union of the "forward stepped" ranges of its predecessors
-        foreach (Vertex v, sortedVertices)
+        foreach (VD v, sortedVertices)
         {
             optional<Interval> directRange = directRanges.at(v);
             if (directRange) {
                 fwdMarks[v] = directRange.get();
             } else {
                 std::vector<Interval> predRangesStepped;
-                foreach (Edge e, in_edges(v, poaGraph.g_))
+                foreach (ED e, in_edges(v, poaGraph.g_))
                 {
-                    Vertex pred = source(e, poaGraph.g_);
+                    VD pred = source(e, poaGraph.g_);
                     Interval predRangeStepped = next(fwdMarks.at(pred), readLength);
                     predRangesStepped.push_back(predRangeStepped);
                 }
@@ -133,16 +134,16 @@ namespace detail {
         }
 
         // Do the same thing, but as a backwards recursion
-        foreach (Vertex v, make_pair(sortedVertices.rbegin(), sortedVertices.rend()))
+        foreach (VD v, make_pair(sortedVertices.rbegin(), sortedVertices.rend()))
         {
             optional<Interval> directRange = directRanges.at(v);
             if (directRange) {
                 revMarks[v] = directRange.get();
             } else {
                 std::vector<Interval> succRangesStepped;
-                foreach (Edge e, out_edges(v, poaGraph.g_))
+                foreach (ED e, out_edges(v, poaGraph.g_))
                 {
-                    Vertex succ = target(e, poaGraph.g_);
+                    VD succ = target(e, poaGraph.g_);
                     Interval succRangeStepped = prev(revMarks.at(succ), 0);
                     succRangesStepped.push_back(succRangeStepped);
                 }
@@ -151,11 +152,12 @@ namespace detail {
         }
 
         // take hulls of extents from forward and reverse recursions
-        foreach (Vertex v, sortedVertices)
+        foreach (VD v, sortedVertices)
         {
-            alignableReadIntervalByVertex_[v] = RangeUnion(fwdMarks.at(v), revMarks.at(v));
+            Vertex vExt = poaGraph.externalize(v);
+            alignableReadIntervalByVertex_[vExt] = RangeUnion(fwdMarks.at(v), revMarks.at(v));
 #if DEBUG_RANGE_FINDER
-            cout << v << " range = ["
+            cout << vExt << " range = ["
                  << alignableReadIntervalByVertex_[v].Begin  << ", "
                  << alignableReadIntervalByVertex_[v].End << ")" << endl;
 #endif

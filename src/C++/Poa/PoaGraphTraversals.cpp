@@ -48,23 +48,23 @@ namespace detail {
 
     std::string sequenceAlongPath(const BoostGraph& g,
                                   const VertexInfoMap& vertexInfoMap,
-                                  std::vector<Vertex> path)
+                                  const std::vector<VD>& path)
     {
         std::stringstream ss;
-        foreach (Vertex v, path)
+        foreach (VD v, path)
         {
             ss << vertexInfoMap[v].Base;
         }
         return ss.str();
     }
 
-    void PoaGraphImpl::tagSpan(Vertex start, Vertex end)
+    void PoaGraphImpl::tagSpan(VD start, VD end)
     {
         // cout << "Tagging span " << start << " to " << end << endl;
-        std::list<Vertex> sortedVertices(num_vertices(g_));
+        std::list<VD> sortedVertices(num_vertices(g_));
         topological_sort(g_, sortedVertices.rbegin());
         bool spanning = false;
-        foreach (Vertex v, sortedVertices)
+        foreach (VD v, sortedVertices)
         {
             if (v == start)
             {
@@ -81,7 +81,7 @@ namespace detail {
         }
     }
 
-    std::vector<Vertex>
+    std::vector<VD>
     PoaGraphImpl::consensusPath(AlignMode mode, int minCoverage) const
     {
         // Pat's note on the approach here:
@@ -100,10 +100,10 @@ namespace detail {
         // against inclusion in the consensus.
         int totalReads = NumSequences();
 
-        std::list<Vertex> path;
-        std::list<Vertex> sortedVertices(num_vertices(g_));
+        std::list<VD> path;
+        std::list<VD> sortedVertices(num_vertices(g_));
         topological_sort(g_, sortedVertices.rbegin());
-        unordered_map<Vertex, Vertex> bestPrevVertex;
+        unordered_map<VD, VD> bestPrevVertex;
 
         // ignore ^ and $
         // TODO(dalexander): find a cleaner way to do this
@@ -111,9 +111,9 @@ namespace detail {
         sortedVertices.pop_back();
         sortedVertices.pop_front();
 
-        Vertex bestVertex = null_vertex;
+        VD bestVertex = null_vertex;
         float bestReachingScore = -FLT_MAX;
-        foreach (Vertex v, sortedVertices)
+        foreach (VD v, sortedVertices)
         {
             PoaNode& vInfo = vertexInfoMap_[v];
             int containingReads = vInfo.Reads;
@@ -124,9 +124,9 @@ namespace detail {
             vInfo.Score = score;
             vInfo.ReachingScore = score;
             bestPrevVertex[v] = null_vertex;
-            foreach (Edge e, in_edges(v, g_))
+            foreach (ED e, in_edges(v, g_))
             {
-                Vertex sourceVertex = source(e, g_);
+                VD sourceVertex = source(e, g_);
                 float rsc = score + vertexInfoMap_[sourceVertex].ReachingScore;
                 if (rsc > vInfo.ReachingScore)
                 {
@@ -143,30 +143,29 @@ namespace detail {
         assert(bestVertex != null_vertex);
 
         // trace back from best-scoring vertex
-        Vertex v = bestVertex;
+        VD v = bestVertex;
         while (v != null_vertex)
         {
             path.push_front(v);
             v = bestPrevVertex[v];
         }
-        return std::vector<Vertex>(path.begin(), path.end());
+        return std::vector<VD>(path.begin(), path.end());
     }
 
     void PoaGraphImpl::threadFirstRead(std::string sequence,
                                        std::vector<Vertex>* outputPath)
     {
         // first sequence in the alignment
-        Vertex u = null_vertex, v;
-        Vertex startSpanVertex = null_vertex, endSpanVertex;
+        VD u = null_vertex, v;
+        VD startSpanVertex = null_vertex, endSpanVertex;
         int readPos = 0;
 
         if (outputPath) { outputPath->clear(); }
 
         foreach (char base, sequence)
         {
-            v = add_vertex(g_);
-            if (outputPath) { outputPath->push_back(v); }
-            vertexInfoMap_[v] = PoaNode(base);
+            v = addVertex(base);
+            if (outputPath) { outputPath->push_back(externalize(v)); }
             if (readPos == 0)
             {
                 add_edge(enterVertex_, v, g_);
@@ -198,18 +197,18 @@ namespace detail {
         // we go.
         int i = I;
         const AlignmentColumn* curCol;
-        Vertex v = null_vertex, forkVertex = null_vertex;
-        Vertex u = exitVertex_;
-        Vertex startSpanVertex;
-        Vertex endSpanVertex = alignmentColumnForVertex.at(exitVertex_)->PreviousVertex[I];
+        VD v = null_vertex, forkVertex = null_vertex;
+        VD u = exitVertex_;
+        VD startSpanVertex;
+        VD endSpanVertex = alignmentColumnForVertex.at(exitVertex_)->PreviousVertex[I];
 
         if (outputPath) {
             outputPath->resize(I);
-            std::fill(outputPath->begin(), outputPath->end(), null_vertex);
+            std::fill(outputPath->begin(), outputPath->end(), (size_t)-1);
         }
 
 #define READPOS (i-1)
-#define VERTEX_ON_PATH(readPos, v) if (outputPath) { (*outputPath)[(readPos)] = v; }
+#define VERTEX_ON_PATH(readPos, v) if (outputPath) { (*outputPath)[(readPos)] = externalize(v); }
 
         while ( !(u == enterVertex_ && i == 0) )
         {
@@ -220,7 +219,7 @@ namespace detail {
             curCol = alignmentColumnForVertex.at(u);
             assert(curCol != NULL);
             PoaNode& curNodeInfo = vertexInfoMap_[u];
-            Vertex prevVertex = curCol->PreviousVertex[i];
+            VD prevVertex = curCol->PreviousVertex[i];
             MoveType reachingMove = curCol->ReachingMove[i];
 
             if (reachingMove == StartMove)
@@ -235,8 +234,7 @@ namespace detail {
                 while (i > 0)
                 {
                     assert(alignMode == LOCAL);
-                    Vertex newForkVertex = add_vertex(g_);
-                    vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
+                    VD newForkVertex = addVertex(sequence[READPOS]);
                     add_edge(newForkVertex, forkVertex, g_);
                     VERTEX_ON_PATH(READPOS, newForkVertex);
                     forkVertex = newForkVertex;
@@ -258,8 +256,7 @@ namespace detail {
 
                     while (i > static_cast<int>(prevRow))
                     {
-                        Vertex newForkVertex = add_vertex(g_);
-                        vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
+                        VD newForkVertex = addVertex(sequence[READPOS]);
                         add_edge(newForkVertex, forkVertex, g_);
                         VERTEX_ON_PATH(READPOS, newForkVertex);
                         forkVertex = newForkVertex;
@@ -291,8 +288,7 @@ namespace detail {
                      reachingMove == MismatchMove)
             {
                 // begin a new arc with this read base
-                Vertex newForkVertex = add_vertex(g_);
-                vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
+                VD newForkVertex = addVertex(sequence[READPOS]);
                 if (forkVertex == null_vertex)
                 {
                     forkVertex = v;
@@ -325,30 +321,30 @@ namespace detail {
 
         // all filled in?
         assert (outputPath == NULL ||
-                std::find(outputPath->begin(), outputPath->end(), null_vertex) == outputPath->end());
+                std::find(outputPath->begin(), outputPath->end(), ((size_t)-1)) == outputPath->end());
 
 #undef READPOS
 #undef VERTEX_ON_PATH
     }
 
-    static boost::unordered_set<Vertex>
-    childVertices(Vertex v,
+    static boost::unordered_set<VD>
+    childVertices(VD v,
                   const BoostGraph& g)
     {
-        boost::unordered_set<Vertex> result;
-        foreach (Edge e, out_edges(v, g))
+        boost::unordered_set<VD> result;
+        foreach (ED e, out_edges(v, g))
         {
             result.insert(target(e, g));
         }
         return result;
     }
 
-    static boost::unordered_set<Vertex>
-    parentVertices(Vertex v,
+    static boost::unordered_set<VD>
+    parentVertices(VD v,
                    const BoostGraph& g)
     {
-        boost::unordered_set<Vertex> result;
-        foreach (Edge e, in_edges(v, g))
+        boost::unordered_set<VD> result;
+        foreach (ED e, in_edges(v, g))
         {
             result.insert(source(e, g));
         }
@@ -359,20 +355,22 @@ namespace detail {
     vector<ScoredMutation>*
     PoaGraphImpl::findPossibleVariants(const std::vector<Vertex>& bestPath) const
     {
+        std::vector<VD> bestPath_ = internalizePath(bestPath);
+
         // Return value will be deallocated by PoaConsensus destructor.
         vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
-        for (int i = 2; i < (int)bestPath.size() - 2; i++) // NOLINT
+        for (int i = 2; i < (int)bestPath_.size() - 2; i++) // NOLINT
         {
-            Vertex v = bestPath[i];
-            boost::unordered_set<Vertex> children = childVertices(v, g_);
+            VD v = bestPath_[i];
+            boost::unordered_set<VD> children = childVertices(v, g_);
 
             // Look for a direct edge from the current node to the node
             // two spaces down---suggesting a deletion with respect to
             // the consensus sequence.
-            if (children.find(bestPath[i + 2]) != children.end())
+            if (children.find(bestPath_[i + 2]) != children.end())
             {
-                float score = -vertexInfoMap_[bestPath[i + 1]].Score;
+                float score = -vertexInfoMap_[bestPath_[i + 1]].Score;
                 variants->push_back(Mutation(DELETION, i + 1, '-').WithScore(score));
             }
 
@@ -380,17 +378,17 @@ namespace detail {
             // This indicates we should try inserting the base at i + 1.
 
             // Parents of (i + 1)
-            boost::unordered_set<Vertex> lookBack = parentVertices(bestPath[i + 1], g_);
+            boost::unordered_set<VD> lookBack = parentVertices(bestPath_[i + 1], g_);
 
             // (We could do this in STL using std::set sorted on score, which would then
             // provide an intersection mechanism (in <algorithm>) but that actually ends
             // up being more code.  Sad.)
             float bestInsertScore = -FLT_MAX;
-            Vertex bestInsertVertex = null_vertex;
+            VD bestInsertVertex = null_vertex;
 
-            foreach (Vertex v, children)
+            foreach (VD v, children)
             {
-                boost::unordered_set<Vertex>::iterator found = lookBack.find(v);
+                boost::unordered_set<VD>::iterator found = lookBack.find(v);
                 if (found != lookBack.end())
                 {
                     float score = vertexInfoMap_[*found].Score;
@@ -413,16 +411,16 @@ namespace detail {
             // to i + 2.  This indicates we should try mismatching the base i + 1.
 
             // Parents of (i + 2)
-            lookBack = parentVertices(bestPath[i + 2], g_);
+            lookBack = parentVertices(bestPath_[i + 2], g_);
 
             float bestMismatchScore = -FLT_MAX;
-            Vertex bestMismatchVertex = null_vertex;
+            VD bestMismatchVertex = null_vertex;
 
-            foreach (Vertex v, children)
+            foreach (VD v, children)
             {
-                if (v == bestPath[i + 1]) continue;
+                if (v == bestPath_[i + 1]) continue;
 
-                boost::unordered_set<Vertex>::iterator found = lookBack.find(v);
+                boost::unordered_set<VD>::iterator found = lookBack.find(v);
                 if (found != lookBack.end())
                 {
                     float score = vertexInfoMap_[*found].Score;

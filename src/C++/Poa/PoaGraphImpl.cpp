@@ -10,8 +10,8 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/graphviz.hpp>
-#include <boost/unordered_set.hpp>
 
+#include <set>
 #include <iostream>
 
 
@@ -20,6 +20,7 @@ namespace boost
     using ConsensusCore::detail::VertexInfoMap;
     using ConsensusCore::PoaConsensus;
     using ConsensusCore::PoaGraph;
+    using ConsensusCore::detail::VD;
     using boost::format;
 
     class my_label_writer
@@ -37,11 +38,13 @@ namespace boost
             }
         }
 
-        template <class VertexOrEdge>
-        void operator()(std::ostream& out, const VertexOrEdge& v) const
+        template <class descriptor>
+        void operator()(std::ostream& out, const descriptor& v) const
         {
+            PoaGraph::Vertex vertexId = map_[v].Id;
+
             std::string nodeColoringAttribute =
-                (color_ && isInConsensus(v) ?
+                (color_ && isInConsensus(vertexId) ?
                  " style=\"filled\", fillcolor=\"lightblue\" ," : "");
 
             if (!verbose_)
@@ -58,7 +61,7 @@ namespace boost
                                "{ %d | %d } |"
                                "{ %0.2f | %0.2f } }\"]")
                     % nodeColoringAttribute
-                    % v % map_[v].Base
+                    % vertexId % map_[v].Base
                     % map_[v].Reads % map_[v].SpanningReads
                     % map_[v].Score % map_[v].ReachingScore;
             }
@@ -71,7 +74,7 @@ namespace boost
         }
 
         VertexInfoMap map_;
-        boost::unordered_set<PoaGraph::Vertex> cssVtxs_;
+        std::set<PoaGraph::Vertex> cssVtxs_;
         bool color_;
         bool verbose_;
     };
@@ -86,12 +89,12 @@ namespace detail {
     PoaGraphImpl::PoaGraphImpl()
         : g_(),
           vertexInfoMap_(get(vertex_info, g_)),
-          numSequences_(0)
+          numSequences_(0),
+          totalVertices_(0),
+          liveVertices_(0)
     {
-        enterVertex_ = add_vertex(g_);
-        vertexInfoMap_[enterVertex_] = PoaNode('^', 0);
-        exitVertex_ = add_vertex(g_);
-        vertexInfoMap_[exitVertex_] = PoaNode('$', 0);
+        enterVertex_ = addVertex('^', 0);
+        exitVertex_  = addVertex('$', 0);
     }
 
     PoaGraphImpl::PoaGraphImpl(const PoaGraphImpl& other)
@@ -108,7 +111,7 @@ namespace detail {
     void PoaGraphImpl::repCheck()
     {
         // assert the representation invariant for the object
-        foreach (Vertex v, vertices(g_))
+        foreach (VD v, vertices(g_))
         {
             if (v == enterVertex_)
             {
@@ -131,14 +134,14 @@ namespace detail {
 
     static inline vector<const AlignmentColumn*>
     getPredecessorColumns(BoostGraph& g,
-                          Vertex v,
+                          VD v,
                           const AlignmentColumnMap& colMap)
     {
         vector<const AlignmentColumn*> predecessorColumns;
         const AlignmentColumn* predCol;
-        foreach (Edge e, in_edges(v, g))
+        foreach (ED e, in_edges(v, g))
         {
-            Vertex u = source(e, g);
+            VD u = source(e, g);
             predCol = colMap.at(u);
             assert(predCol != NULL);
             predecessorColumns.push_back(predCol);
@@ -150,14 +153,14 @@ namespace detail {
     PoaConsensus*
     PoaGraphImpl::FindConsensus(const AlignConfig& config, int minCoverage)
     {
-        std::vector<Vertex> bestPath = consensusPath(config.Mode, minCoverage);
+        std::vector<VD> bestPath = consensusPath(config.Mode, minCoverage);
         std::string consensusSequence = sequenceAlongPath(g_, vertexInfoMap_, bestPath);
-        PoaConsensus* pc = new PoaConsensus(consensusSequence, *this, bestPath);
+        PoaConsensus* pc = new PoaConsensus(consensusSequence, *this, externalizePath(bestPath));
         return pc;
     }
 
     const AlignmentColumn*
-    PoaGraphImpl::makeAlignmentColumnForExit(Vertex v,
+    PoaGraphImpl::makeAlignmentColumnForExit(VD v,
                                              const AlignmentColumnMap& colMap,
                                              const std::string& sequence,
                                              const AlignConfig& config)
@@ -169,7 +172,7 @@ namespace detail {
         AlignmentColumn* curCol = new AlignmentColumn(v, I + 1);
 
         float bestScore = -FLT_MAX;
-        Vertex prevVertex = null_vertex;
+        VD prevVertex = null_vertex;
 
         // Under local or semiglobal alignment the vertex $ can be
         // "reached" in the dynamic programming from any other vertex
@@ -178,7 +181,7 @@ namespace detail {
         // row, not necessarily I.
         if (config.Mode == SEMIGLOBAL || config.Mode == LOCAL)
         {
-            foreach (Vertex u, vertices(g_))
+            foreach (VD u, vertices(g_))
             {
                 if (u != exitVertex_)
                 {
@@ -215,7 +218,7 @@ namespace detail {
     }
 
     const AlignmentColumn*
-    PoaGraphImpl::makeAlignmentColumn(Vertex v,
+    PoaGraphImpl::makeAlignmentColumn(VD v,
                                       const AlignmentColumnMap& colMap,
                                       const std::string& sequence,
                                       const AlignConfig& config,
@@ -251,7 +254,7 @@ namespace detail {
             // otherwise it's a deletion
             float candidateScore;
             float bestScore = -FLT_MAX;
-            Vertex prevVertex = null_vertex;
+            VD prevVertex = null_vertex;
             MoveType reachingMove = InvalidMove;
 
             foreach (const AlignmentColumn * prevCol, predecessorColumns)
@@ -278,7 +281,7 @@ namespace detail {
         for (unsigned int i = 1, readPos = 0;  i <= sequence.length(); i++, readPos++)
         {
             float candidateScore, bestScore;
-            Vertex prevVertex;
+            VD prevVertex;
             MoveType reachingMove;
 
             if (config.Mode == LOCAL)
@@ -354,24 +357,24 @@ namespace detail {
                 // NB: no minCoverage applicable here; this
                 // intermediate "consensus" may include extra sequence
                 // at either end
-                std::vector<Vertex> cssPath = consensusPath(config.Mode);
+                std::vector<VD> cssPath = consensusPath(config.Mode);
                 std::string cssSeq = sequenceAlongPath(g_, vertexInfoMap_, cssPath);
-                rangeFinder->InitRangeFinder(*this, cssPath, cssSeq, readSeq);
+                rangeFinder->InitRangeFinder(*this, externalizePath(cssPath), cssSeq, readSeq);
             }
 
             // Calculate alignment columns of sequence vs. graph, using sparsity if
             // we have a range finder.
             AlignmentColumnMap colMap;
-            vector<Vertex> sortedVertices(num_vertices(g_));
+            vector<VD> sortedVertices(num_vertices(g_));
             topological_sort(g_, sortedVertices.rbegin());
             const AlignmentColumn* curCol;
-            foreach (Vertex v, sortedVertices)
+            foreach (VD v, sortedVertices)
             {
                 if (v != exitVertex_)
                 {
                     Interval rowRange;
                     if (rangeFinder) {
-                        rowRange = rangeFinder->FindAlignableRange(v);
+                        rowRange = rangeFinder->FindAlignableRange(externalize(v));
                     } else {
                         rowRange = Interval(0, readSeq.size());
                     }
