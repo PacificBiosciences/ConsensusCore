@@ -51,10 +51,12 @@ namespace ConsensusCore
     void
     PoaGraph::AddSequence(const std::string& sequence,
                           const AlignConfig& config,
-                          detail::SdpRangeFinder* rangeFinder)
+                          detail::SdpRangeFinder* rangeFinder,
+                          std::vector<Vertex>* readPathOutput)
     {
-        impl->AddSequence(sequence, config, rangeFinder);
+        impl->AddSequence(sequence, config, rangeFinder, readPathOutput);
     }
+
 
     int
     PoaGraph::NumSequences() const

@@ -335,14 +335,15 @@ namespace detail {
 
     void PoaGraphImpl::AddSequence(const std::string& readSeq,
                                    const AlignConfig& config,
-                                   SdpRangeFinder* rangeFinder)
+                                   SdpRangeFinder* rangeFinder,
+                                   std::vector<Vertex>* readPathOutput)
     {
         DEBUG_ONLY(repCheck());
         assert(readSeq.length() > 0);
 
         if (numSequences_ == 0)
         {
-            threadFirstRead(readSeq);
+            threadFirstRead(readSeq, readPathOutput);
             numSequences_++;
         }
         else
@@ -382,7 +383,7 @@ namespace detail {
                 colMap[v] = curCol;
             }
 
-            tracebackAndThread(readSeq, colMap, config.Mode);
+            tracebackAndThread(readSeq, colMap, config.Mode, readPathOutput);
             numSequences_++;
 
             // Clean up the mess we created.  Might be nicer to use scoped ptrs.

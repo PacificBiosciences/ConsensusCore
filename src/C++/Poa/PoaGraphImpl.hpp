@@ -161,12 +161,13 @@ namespace detail {
 
         std::vector<Vertex> consensusPath(AlignMode mode, int minCoverage=-INT_MAX) const;
 
-        void threadFirstRead(std::string sequence);
+        void threadFirstRead(std::string sequence, std::vector<Vertex>* readPathOutput=NULL);
 
         void tracebackAndThread
           (std::string sequence,
            const AlignmentColumnMap& alignmentColumnForVertex,
-           AlignMode mode);
+           AlignMode mode,
+           std::vector<Vertex>* readPathOutput=NULL);
 
         vector<ScoredMutation>*
         findPossibleVariants(const std::vector<Vertex>& bestPath) const;
@@ -178,7 +179,8 @@ namespace detail {
 
         void AddSequence(const std::string& sequence,
                          const AlignConfig& config,
-                         SdpRangeFinder* rangeFinder=NULL);
+                         SdpRangeFinder* rangeFinder=NULL,
+                         std::vector<Vertex>* readPathOutput=NULL);
 
         PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage=-INT_MAX);
 

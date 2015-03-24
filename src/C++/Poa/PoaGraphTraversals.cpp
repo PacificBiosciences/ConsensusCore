@@ -152,16 +152,20 @@ namespace detail {
         return std::vector<Vertex>(path.begin(), path.end());
     }
 
-    void PoaGraphImpl::threadFirstRead(std::string sequence)
+    void PoaGraphImpl::threadFirstRead(std::string sequence,
+                                       std::vector<Vertex>* outputPath)
     {
         // first sequence in the alignment
         Vertex u = null_vertex, v;
         Vertex startSpanVertex = null_vertex, endSpanVertex;
         int readPos = 0;
 
+        if (outputPath) { outputPath->clear(); }
+
         foreach (char base, sequence)
         {
             v = add_vertex(g_);
+            if (outputPath) { outputPath->push_back(v); }
             vertexInfoMap_[v] = PoaNode(base);
             if (readPos == 0)
             {
@@ -185,7 +189,8 @@ namespace detail {
     void PoaGraphImpl::tracebackAndThread
       (std::string sequence,
        const AlignmentColumnMap& alignmentColumnForVertex,
-       AlignMode alignMode)
+       AlignMode alignMode,
+       std::vector<Vertex>* outputPath)
     {
         const int I = sequence.length();
 
@@ -198,13 +203,20 @@ namespace detail {
         Vertex startSpanVertex;
         Vertex endSpanVertex = alignmentColumnForVertex.at(exitVertex_)->PreviousVertex[I];
 
+        if (outputPath) {
+            outputPath->resize(I);
+            std::fill(outputPath->begin(), outputPath->end(), null_vertex);
+        }
+
+#define READPOS (i-1)
+#define VERTEX_ON_PATH(readPos, v) if (outputPath) { (*outputPath)[(readPos)] = v; }
+
         while ( !(u == enterVertex_ && i == 0) )
         {
             // u -> v
             // u: current vertex
             // v: vertex last visited in traceback (could be == u)
             // forkVertex: the vertex that will be the target of a new edge
-            int readPos = i - 1; // (INVARIANT)
             curCol = alignmentColumnForVertex.at(u);
             assert(curCol != NULL);
             PoaNode& curNodeInfo = vertexInfoMap_[u];
@@ -224,11 +236,11 @@ namespace detail {
                 {
                     assert(alignMode == LOCAL);
                     Vertex newForkVertex = add_vertex(g_);
-                    vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
+                    vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
                     add_edge(newForkVertex, forkVertex, g_);
+                    VERTEX_ON_PATH(READPOS, newForkVertex);
                     forkVertex = newForkVertex;
                     i--;
-                    readPos = i - 1;
                 }
             }
             else if (reachingMove == EndMove)
@@ -247,16 +259,17 @@ namespace detail {
                     while (i > static_cast<int>(prevRow))
                     {
                         Vertex newForkVertex = add_vertex(g_);
-                        vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
+                        vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
                         add_edge(newForkVertex, forkVertex, g_);
+                        VERTEX_ON_PATH(READPOS, newForkVertex);
                         forkVertex = newForkVertex;
                         i--;
-                        readPos = i - 1;
                     }
                 }
             }
             else if (reachingMove == MatchMove)
             {
+                VERTEX_ON_PATH(READPOS, u);
                 // if there is an extant forkVertex, join it
                 if (forkVertex != null_vertex)
                 {
@@ -279,12 +292,13 @@ namespace detail {
             {
                 // begin a new arc with this read base
                 Vertex newForkVertex = add_vertex(g_);
-                vertexInfoMap_[newForkVertex] = PoaNode(sequence[readPos]);
+                vertexInfoMap_[newForkVertex] = PoaNode(sequence[READPOS]);
                 if (forkVertex == null_vertex)
                 {
                     forkVertex = v;
                 }
                 add_edge(newForkVertex, forkVertex, g_);
+                VERTEX_ON_PATH(READPOS, newForkVertex);
                 forkVertex = newForkVertex;
                 i--;
             }
@@ -303,12 +317,18 @@ namespace detail {
         }
 
         // if there is an extant forkVertex, join it to enterVertex
-        // is this still desirable?
         if (forkVertex != null_vertex)
         {
             add_edge(enterVertex_, forkVertex, g_);
             forkVertex = null_vertex;
         }
+
+        // all filled in?
+        assert (outputPath == NULL ||
+                std::find(outputPath->begin(), outputPath->end(), null_vertex) == outputPath->end());
+
+#undef READPOS
+#undef VERTEX_ON_PATH
     }
 
     static boost::unordered_set<Vertex>

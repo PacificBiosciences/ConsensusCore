@@ -76,7 +76,8 @@ namespace ConsensusCore
 
         void AddSequence(const std::string& sequence,
                          const AlignConfig& config,
-                         detail::SdpRangeFinder* rangeFinder=NULL);
+                         detail::SdpRangeFinder* rangeFinder=NULL,
+                         std::vector<Vertex>* readPathOutput=NULL);
 
         int NumSequences() const;
 
