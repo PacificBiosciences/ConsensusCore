@@ -98,7 +98,7 @@ namespace detail {
         // of reads in the template, such that if a node is contained
         // in fewer than minCoverage reads, it will be penalized
         // against inclusion in the consensus.
-        int totalReads = NumSequences();
+        int totalReads = NumReads();
 
         std::list<VD> path;
         std::list<VD> sortedVertices(num_vertices(g_));

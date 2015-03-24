@@ -85,7 +85,7 @@ namespace ConsensusCore
             {
                 throw InvalidInputError("Input sequences must have nonzero length.");
             }
-            pg.AddSequence(read, config);
+            pg.AddRead(read, config);
         }
         return pg.FindConsensus(config, minCoverage);
     }

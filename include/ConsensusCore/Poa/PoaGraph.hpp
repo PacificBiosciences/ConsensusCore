@@ -50,9 +50,9 @@ namespace ConsensusCore
 {
     struct PoaConsensus;
 
-    namespace detail {
+    namespace detail
+    {
         class PoaGraphImpl;
-
     }
 
     class PoaAlignmentMatrix
@@ -84,26 +84,26 @@ namespace ConsensusCore
         //
         // Easy API
         //
-        void AddSequence(const std::string& sequence,
-                         const AlignConfig& config,
-                         detail::SdpRangeFinder* rangeFinder=NULL,
-                         std::vector<Vertex>* readPathOutput=NULL);
+        void AddRead(const std::string& sequence,
+                     const AlignConfig& config,
+                     detail::SdpRangeFinder* rangeFinder=NULL,
+                     std::vector<Vertex>* readPathOutput=NULL);
 
         //
         // API for more control
         //
-        void AddFirstSequence(const std::string& sequence, std::vector<Vertex>* readPathOutput=NULL);
+        void AddFirstRead(const std::string& sequence, std::vector<Vertex>* readPathOutput=NULL);
 
-        PoaAlignmentMatrix* TryAddSequence(const std::string& sequence,
-                                           const AlignConfig& config,
-                                           detail::SdpRangeFinder* rangeFinder=NULL) const;
+        PoaAlignmentMatrix* TryAddRead(const std::string& sequence,
+                                       const AlignConfig& config,
+                                       detail::SdpRangeFinder* rangeFinder=NULL) const;
 
         void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput=NULL);
 
         // ----------
 
 
-        int NumSequences() const;
+        size_t NumReads() const;
 
         std::string ToGraphViz(int flags = 0,
                                const PoaConsensus* pc = NULL) const;

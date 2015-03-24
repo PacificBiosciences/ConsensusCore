@@ -161,7 +161,7 @@ namespace detail {
         index_map_t indexMap_;
         VD enterVertex_;
         VD exitVertex_;
-        size_t numSequences_;
+        size_t numReads_;
         size_t totalVertices_;               // includes "ex"-vertices which have since been removed
         size_t liveVertices_;                // vertices that are in the graph.  this is needed for algorithms.
         std::map<Vertex, VD> vertexLookup_;  // external ID -> internal ID
@@ -241,23 +241,23 @@ namespace detail {
         PoaGraphImpl(const PoaGraphImpl& other);
         ~PoaGraphImpl();
 
-        void AddSequence(const std::string& sequence,
+        void AddRead(const std::string& sequence,
                          const AlignConfig& config,
                          SdpRangeFinder* rangeFinder=NULL,
                          std::vector<Vertex>* readPathOutput=NULL);
 
-        void AddFirstSequence(const std::string& sequence,
+        void AddFirstRead(const std::string& sequence,
                               std::vector<Vertex>* readPathOutput=NULL);
 
-        PoaAlignmentMatrixImpl* TryAddSequence(const std::string& sequence,
-                                               const AlignConfig& config,
-                                               SdpRangeFinder* rangeFinder=NULL) const;
+        PoaAlignmentMatrixImpl* TryAddRead(const std::string& sequence,
+                                           const AlignConfig& config,
+                                           SdpRangeFinder* rangeFinder=NULL) const;
 
         void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput=NULL);
 
         PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage=-INT_MAX);
 
-        int NumSequences() const;
+        size_t NumReads() const;
         string ToGraphViz(int flags, const PoaConsensus* pc) const;
         void WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const;
     };

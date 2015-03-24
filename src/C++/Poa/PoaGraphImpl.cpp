@@ -106,7 +106,7 @@ namespace detail {
     PoaGraphImpl::PoaGraphImpl()
         : g_(),
           vertexInfoMap_(get(vertex_info, g_)),
-          numSequences_(0),
+          numReads_(0),
           totalVertices_(0),
           liveVertices_(0)
     {
@@ -119,7 +119,7 @@ namespace detail {
           vertexInfoMap_(get(vertex_info, g_)),
           enterVertex_(other.enterVertex_),
           exitVertex_(other.exitVertex_),
-          numSequences_(other.numSequences_)
+          numReads_(other.numReads_)
     {}
 
     PoaGraphImpl::~PoaGraphImpl()
@@ -133,11 +133,11 @@ namespace detail {
             if (v == enterVertex_)
             {
                 assert(in_degree(v, g_) == 0);
-                assert(out_degree(v, g_) > 0 || NumSequences() == 0);
+                assert(out_degree(v, g_) > 0 || NumReads() == 0);
             }
             else if (v == exitVertex_)
             {
-                assert(in_degree(v, g_) > 0 || NumSequences() == 0);
+                assert(in_degree(v, g_) > 0 || NumReads() == 0);
                 assert(out_degree(v, g_) == 0);
             }
             else
@@ -351,44 +351,44 @@ namespace detail {
         return curCol;
     }
 
-    void PoaGraphImpl::AddSequence(const std::string& readSeq,
-                                   const AlignConfig& config,
-                                   SdpRangeFinder* rangeFinder,
-                                   std::vector<Vertex>* readPathOutput)
+    void PoaGraphImpl::AddRead(const std::string& readSeq,
+                               const AlignConfig& config,
+                               SdpRangeFinder* rangeFinder,
+                               std::vector<Vertex>* readPathOutput)
     {
-        if (NumSequences() == 0)
+        if (NumReads() == 0)
         {
-            AddFirstSequence(readSeq, readPathOutput);
+            AddFirstRead(readSeq, readPathOutput);
         }
         else
         {
-            PoaAlignmentMatrixImpl* mat = TryAddSequence(readSeq, config, rangeFinder);
+            PoaAlignmentMatrixImpl* mat = TryAddRead(readSeq, config, rangeFinder);
             CommitAdd(mat, readPathOutput);
             delete mat;
         }
     }
 
-    void PoaGraphImpl::AddFirstSequence(const std::string& readSeq,
-                                        std::vector<Vertex>* readPathOutput)
+    void PoaGraphImpl::AddFirstRead(const std::string& readSeq,
+                                    std::vector<Vertex>* readPathOutput)
     {
         DEBUG_ONLY(repCheck());
         assert(readSeq.length() > 0);
-        assert(numSequences_ == 0);
+        assert(numReads_ == 0);
 
         threadFirstRead(readSeq, readPathOutput);
-        numSequences_++;
+        numReads_++;
 
         DEBUG_ONLY(repCheck());
     }
 
     PoaAlignmentMatrixImpl*
-    PoaGraphImpl::TryAddSequence(const std::string& readSeq,
-                                 const AlignConfig& config,
-                                 SdpRangeFinder* rangeFinder) const
+    PoaGraphImpl::TryAddRead(const std::string& readSeq,
+                             const AlignConfig& config,
+                             SdpRangeFinder* rangeFinder) const
     {
         DEBUG_ONLY(repCheck());
         assert(readSeq.length() > 0);
-        assert(numSequences_ > 0);
+        assert(numReads_ > 0);
 
         // Prepare the range finder, if applicable
         if (rangeFinder != NULL)
@@ -441,14 +441,14 @@ namespace detail {
 
         PoaAlignmentMatrixImpl* mat = static_cast<PoaAlignmentMatrixImpl*>(mat_);
         tracebackAndThread(mat->readSequence_, mat->columns_, mat->mode_, readPathOutput);
-        numSequences_++;
+        numReads_++;
 
         DEBUG_ONLY(repCheck());
     }
 
-    int PoaGraphImpl::NumSequences() const
+    size_t PoaGraphImpl::NumReads() const
     {
-       return numSequences_;
+       return numReads_;
     }
 
     string PoaGraphImpl::ToGraphViz(int flags, const PoaConsensus* pc) const
