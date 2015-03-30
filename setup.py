@@ -42,9 +42,18 @@ def configure():
     except ImportError:
         die("Requires numpy >= 1.6.0")
 
+    ccArgs = set([
+        "--boost",
+        "--swig",
+        "--swig-lib",
+        "--debug",
+        "--c++11",
+        "--pbi"
+        ])
+
     configArgs = []
     for arg in sys.argv[:]:
-        if arg.startswith("-") and arg not in ["--help", "--version"]:
+        if arg in ccArgs:
             configArgs.append(arg)
             sys.argv.remove(arg)
 
