@@ -42,18 +42,12 @@ def configure():
     except ImportError:
         die("Requires numpy >= 1.6.0")
 
-    ccArgs = set([
-        "--boost",
-        "--swig",
-        "--swig-lib",
-        "--debug",
-        "--c++11",
-        "--pbi"
-        ])
+    ccArgs = re.compile(r"^--(?:boost|swig|swig-lib)=?")
+    ccOpts = re.compile(r"^--(?:debug|c\+\+11|pbi)$")
 
     configArgs = []
     for arg in sys.argv[:]:
-        if arg in ccArgs:
+        if ccArgs.match(arg) or ccOpts.match(arg):
             configArgs.append(arg)
             sys.argv.remove(arg)
 
