@@ -18,7 +18,7 @@ all: $(PYTHON_DLL)
 $(PYTHON_DLL): $(SWIG_INTERFACES) $(CXX_LIB)
 	-mkdir -p $(PYTHON_BUILD_DIR)
 	$(SWIG_CMD) $(INCLUDES) -module ConsensusCore -o $(GEN_CXX) $(SWIG_INTERFACE)
-	$(CXX) $(SHLIB_FLAGS) $(INCLUDES) -I $(PYTHON_INCLUDE) -I $(NUMPY_INCLUDE) $(GEN_CXX) $(CXX_LIB) -o $(PYTHON_DLL)
+	$(CXX) $(SHLIB_FLAGS) $(INCLUDES) -I $(NUMPY_INCLUDE) -I $(PYTHON_INCLUDE) $(GEN_CXX) $(CXX_LIB) -o $(PYTHON_DLL)
 
 test-python: $(PYTHON_DLL)
 	@PYTHONPATH=$(PYTHON_BUILD_DIR) python src/Demos/Demo.py && echo "Python build is OK!"
