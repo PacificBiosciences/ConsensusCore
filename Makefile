@@ -21,13 +21,13 @@ lib:
 # SWIG targets
 #
 python: lib
-	make -f make/Python.mk
+	$(MAKE) -f make/Python.mk
 
 echo-python-build-directory:
 	@echo $(PYTHON_BUILD_DIR)
 
 csharp: lib
-	make -f make/CSharp.mk
+	$(MAKE) -f make/CSharp.mk
 
 before-xbuild: csharp
 	-mkdir -p bin/Debug

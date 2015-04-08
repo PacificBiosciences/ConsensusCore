@@ -11,8 +11,10 @@ endif
 CXX_OBJS        := $(addprefix $(OBJDIR)/, $(CXX_SRCS:.cpp=.o))
 SWIG_SRCS       := $(shell find src/SWIG/ -name "*.i")
 
+AR              := ar
+
 $(CXX_LIB): $(OBJDIR) $(CXX_OBJS)
-	ar crs $(CXX_LIB) $(CXX_OBJS)
+	$(AR) crs $(CXX_LIB) $(CXX_OBJS)
 	touch $(CXX_LIB)
 
 $(OBJDIR):
