@@ -57,15 +57,24 @@ namespace ConsensusCore
         : evaluator_(new EvaluatorType(evaluator)),
           recursor_(new R(recursor))
     {
-        // Allocate alpha and beta
-        alpha_ = new MatrixType(evaluator.ReadLength() + 1,
-                                evaluator.TemplateLength() + 1);
-        beta_ = new MatrixType(evaluator.ReadLength() + 1,
-                               evaluator.TemplateLength() + 1);
-        // Buffer where we extend into
-        extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, EXTEND_BUFFER_COLUMNS);
-        // Initial alpha and beta
-        numFlipFlops_ = recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
+        try {
+            // Allocate alpha and beta
+            alpha_ = new MatrixType(evaluator.ReadLength() + 1,
+                                    evaluator.TemplateLength() + 1);
+            beta_ = new MatrixType(evaluator.ReadLength() + 1,
+                                   evaluator.TemplateLength() + 1);
+            // Buffer where we extend into
+            extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, EXTEND_BUFFER_COLUMNS);
+            // Initial alpha and beta
+            numFlipFlops_ = recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
+        }
+        catch(AlphaBetaMismatchException e) {
+            delete alpha_;
+            delete beta_;
+            delete extendBuffer_;
+            delete recursor_;
+            throw e;
+        }
     }
 
     template<typename R>
