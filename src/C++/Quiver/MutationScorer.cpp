@@ -73,7 +73,7 @@ namespace ConsensusCore
             delete beta_;
             delete extendBuffer_;
             delete recursor_;
-            throw e;
+            throw;
         }
     }
 
