@@ -107,6 +107,41 @@ namespace detail {
     typedef property_map<BoostGraph, vertex_index_t>::type index_map_t;
     static const VD null_vertex = graph_traits<BoostGraph>::null_vertex();
 
+
+    struct EdgeComparator
+    {
+        EdgeComparator(const BoostGraph& g) : g_(g) {}
+
+        // want lex. comparison... just using pair to get it..
+        bool operator() (ED e1, ED e2)
+        {
+            std::pair<int, int> vt1, vt2;
+            vt1 = std::make_pair(get(vertex_index, g_, source(e1, g_)),
+                                 get(vertex_index, g_, target(e1, g_)));
+            vt2 = std::make_pair(get(vertex_index, g_, source(e2, g_)),
+                                 get(vertex_index, g_, target(e2, g_)));
+            return (vt1 < vt2);
+        }
+
+    private:
+        const BoostGraph& g_;
+    };
+
+    inline std::vector<ED> inEdges(VD v, const BoostGraph& g)
+    {
+        // This is a sad workaround the nondeterministic order of iteration
+        // from BGL's in_edges. (see: http://stackoverflow.com/questions/30968690/)
+
+        // Unfortunately, we can't just use the boost::sort range adapter
+        // because it requires an underlying random access iterator, which
+        // we can't get from the std::set container.
+        graph_traits<BoostGraph>::in_edge_iterator begin, end;
+        tie(begin, end) = in_edges(v, g);
+        std::vector<ED> tmp(begin, end);
+        std::sort(tmp.begin(), tmp.end(), EdgeComparator(g));
+        return tmp;
+       }
+
     struct AlignmentColumn : noncopyable
     {
         VD CurrentVertex;

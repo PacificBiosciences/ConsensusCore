@@ -124,7 +124,7 @@ namespace detail {
             vInfo.Score = score;
             vInfo.ReachingScore = score;
             bestPrevVertex[v] = null_vertex;
-            foreach (ED e, in_edges(v, g_))
+            foreach (ED e, inEdges(v, g_))
             {
                 VD sourceVertex = source(e, g_);
                 float rsc = score + vertexInfoMap_[sourceVertex].ReachingScore;

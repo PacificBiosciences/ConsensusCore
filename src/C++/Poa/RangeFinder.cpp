@@ -123,7 +123,7 @@ namespace detail {
                 fwdMarks[v] = directRange.get();
             } else {
                 std::vector<Interval> predRangesStepped;
-                foreach (ED e, in_edges(v, poaGraph.g_))
+                foreach (ED e, inEdges(v, poaGraph.g_))
                 {
                     VD pred = source(e, poaGraph.g_);
                     Interval predRangeStepped = next(fwdMarks.at(pred), readLength);

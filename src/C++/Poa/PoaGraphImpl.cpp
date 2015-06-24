@@ -155,7 +155,7 @@ namespace detail {
     {
         vector<const AlignmentColumn*> predecessorColumns;
         const AlignmentColumn* predCol;
-        foreach (ED e, in_edges(v, g))
+        foreach (ED e, inEdges(v, g))
         {
             VD u = source(e, g);
             predCol = colMap.at(u);
