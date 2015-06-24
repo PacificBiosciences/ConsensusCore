@@ -559,7 +559,7 @@ TEST(PoaConsensus, NondeterminismRegressionTest)
         "AGAGTTACTTGCGAAC";
 
     std::set<std::string> answers;
-    for (int run=0; run<1000; run++)
+    for (int run=0; run<100; run++)
     {
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, GLOBAL);
 #if 0
