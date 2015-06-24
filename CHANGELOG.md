@@ -1,3 +1,7 @@
+* Version 1.0.1
+  - Fix for a serious memory leak occurring on alpha/beta mating failures.  Thanks Nigel!
+  - Fix for nondeterministic POA consensus
+
 * Version 1.0.0
   - Minor build/deploy system tweaks.  No API changes.
 
