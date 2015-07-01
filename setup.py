@@ -43,7 +43,7 @@ def configure():
         die("Requires numpy >= 1.6.0")
 
     ccArgs = re.compile(r"^--(?:boost|swig|swig-lib)=?")
-    ccOpts = re.compile(r"^--(?:debug|c\+\+11|pbi)$")
+    ccOpts = re.compile(r"^--(?:debug|c\+\+11|pbi|modules)$")
 
     configArgs = []
     for arg in sys.argv[:]:
