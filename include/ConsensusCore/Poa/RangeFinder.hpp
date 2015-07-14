@@ -50,7 +50,7 @@ namespace detail {
 
     protected:
         virtual SdpAnchorVector FindAnchors(const std::string& consensusSequence,
-                                            const std::string& readSequence) = 0;
+                                            const std::string& readSequence) const = 0;
     };
 
 }}
