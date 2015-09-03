@@ -53,8 +53,8 @@ else
     CXX_STRICT_FLAGS    = $(CXX_FLAGS) -pedantic -std=$(CPP_ABI) -Wall
 endif
 
-CXX             = $(CCACHE) $(GXX) $(MACHINE) $(CXX_FLAGS) $(INCLUDES) -isystem $(BOOST)
-CXX_STRICT      = $(CCACHE) $(GXX) $(MACHINE) $(CXX_STRICT_FLAGS) $(INCLUDES) -isystem $(BOOST)
+CXX             = $(CCACHE) $(GXX) $(MACHINE) $(CPPFLAGS) $(CXXFLAGS) $(CXX_FLAGS) $(INCLUDES) -isystem $(BOOST) $(LDFLAGS)
+CXX_STRICT      = $(CCACHE) $(GXX) $(MACHINE) $(CPPFLAGS) $(CXXFLAGS) $(CXX_STRICT_FLAGS) $(INCLUDES) -isystem $(BOOST) $(LDFLAGS)
 
 ifeq ($(UNAME), Darwin)
     SHLIB_FLAGS = -shared -undefined dynamic_lookup
