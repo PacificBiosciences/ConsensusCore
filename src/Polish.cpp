@@ -172,7 +172,7 @@ std::tuple<bool, size_t, size_t> Polish(AbstractIntegrator* ai, const PolishConf
 
             for (const auto& mut : muts) {
                 const double ll = ai->LL(mut);
-                if (ll > LL) scoredMuts.emplace_back(mut.WithScore(ll));
+                if (ll - LL > 0.04) scoredMuts.emplace_back(mut.WithScore(ll));
                 ++nTested;
             }
 
