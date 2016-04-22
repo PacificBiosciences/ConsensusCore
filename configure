@@ -102,7 +102,7 @@ BOOST=`tools/find_boost $BOOST` || exit
 SWIG=`tools/find_swig $SWIG`  || exit
 
 if [ -z $SWIG_LIB ]; then
-    SWIG_LIB=`swig -swiglib`
+    SWIG_LIB=`$SWIG -swiglib`
 fi
 
 
