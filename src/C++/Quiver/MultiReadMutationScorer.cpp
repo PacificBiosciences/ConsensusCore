@@ -278,7 +278,9 @@ namespace ConsensusCore
         }
 
         bool isActive = scorer != NULL;
-        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, isActive));
+        reads_.push_back(ReadStateType(&mr, scorer, isActive));
+        if (scorer != NULL) { delete scorer; }
+
         DEBUG_ONLY(CheckInvariants());
         return isActive;
     }
@@ -520,11 +522,11 @@ namespace ConsensusCore
     namespace detail {
 
         template<typename ScorerType>
-        ReadState<ScorerType>::ReadState(MappedRead* read,
-                                         ScorerType* scorer,
+        ReadState<ScorerType>::ReadState(const MappedRead* read,
+                                         const ScorerType* scorer,
                                          bool isActive)
-            : Read(read),
-              Scorer(scorer),
+            : Read(new MappedRead(*read)),
+              Scorer(new ScorerType(*scorer)),
               IsActive(isActive)
         {
             CheckInvariants();
@@ -540,6 +542,20 @@ namespace ConsensusCore
             if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
             CheckInvariants();
         }
+
+        template<typename ScorerType>
+        ReadState<ScorerType>&
+        ReadState<ScorerType>::operator=(const ReadState& other)
+        {
+            if (this != &other) {
+                if (Read != NULL)   delete Read;
+                if (Scorer != NULL) delete Scorer;
+                Read = new MappedRead(*other.Read);
+                Scorer = new ScorerType(*other.Scorer);
+            }
+            return *this;
+        }
+
 
         template<typename ScorerType>
         ReadState<ScorerType>::~ReadState()

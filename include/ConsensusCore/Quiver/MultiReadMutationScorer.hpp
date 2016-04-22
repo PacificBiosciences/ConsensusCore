@@ -132,12 +132,14 @@ namespace ConsensusCore {
             ScorerType* Scorer;
             bool IsActive;
 
-            ReadState(MappedRead* read,
-                      ScorerType* scorer,
+            ReadState(const MappedRead* read,
+                      const ScorerType* scorer,
                       bool isActive);
 
             ReadState(const ReadState& other);
+            ReadState& operator=(const ReadState& other);
             ~ReadState();
+
             void CheckInvariants() const;
             std::string ToString() const;
         };
