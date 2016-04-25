@@ -69,6 +69,7 @@ namespace ConsensusCore
             numFlipFlops_ = recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
         }
         catch(AlphaBetaMismatchException e) {
+            delete evaluator_;
             delete alpha_;
             delete beta_;
             delete extendBuffer_;
@@ -89,6 +90,27 @@ namespace ConsensusCore
         // Buffer where we extend into
         extendBuffer_ = new MatrixType(*other.extendBuffer_);
         numFlipFlops_ = other.numFlipFlops_;
+    }
+
+    template<typename R>
+    MutationScorer<R> &
+    MutationScorer<R>::operator=(const MutationScorer& other)
+    {
+        if (this != &other)
+        {
+            delete evaluator_;
+            delete alpha_;
+            delete beta_;
+            delete extendBuffer_;
+            delete recursor_;
+            evaluator_    = new EvaluatorType(*other.evaluator_);
+            alpha_        = new MatrixType(*other.alpha_);
+            beta_         = new MatrixType(*other.beta_);
+            extendBuffer_ = new MatrixType(*other.extendBuffer_);
+            recursor_     = new RecursorType(*other.recursor_);
+            numFlipFlops_ = other.numFlipFlops_;
+        }
+        return *this;
     }
 
     template<typename R>

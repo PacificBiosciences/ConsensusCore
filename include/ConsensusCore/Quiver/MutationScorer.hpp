@@ -63,6 +63,7 @@ namespace ConsensusCore
             throw(AlphaBetaMismatchException);
 
         MutationScorer(const MutationScorer& other);
+        MutationScorer & operator= (const MutationScorer& other);
         virtual ~MutationScorer();
 
     public:
