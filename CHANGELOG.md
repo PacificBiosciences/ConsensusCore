@@ -1,3 +1,7 @@
+* Version 1.0.2
+ - Fix a rare crash that could occur during refinement if a read ended up being mapped
+   to a zero-length span of template (after lifting of reference alignment onto POA)
+
 * Version 1.0.1
   - Fix for a serious memory leak occurring on alpha/beta mating failures.  Thanks Nigel!
   - Fix for nondeterministic POA consensus

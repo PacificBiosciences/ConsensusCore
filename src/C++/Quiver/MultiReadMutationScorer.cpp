@@ -66,7 +66,7 @@ namespace ConsensusCore
         if (mut.IsInsertion()) {
             return (ts < ms && me <= te);   // Insertion starts within?
         } else {
-            return (ts < me && ms < te);    // Intervals intersect?
+            return (ts < te && ts < me && ms < te);    // Intervals intersect?
         }
     }
 
