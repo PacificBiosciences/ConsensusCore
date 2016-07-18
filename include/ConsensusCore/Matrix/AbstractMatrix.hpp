@@ -56,5 +56,10 @@ namespace ConsensusCore {
     public:  // Accessors
         virtual bool IsAllocated(int i, int j) const = 0;
         virtual float Get(int i, int j) const = 0;
+
+    public:
+        // Method SWIG clients can use to get a native matrix (e.g. Numpy)
+        // mat must be filled as a ROW major matrix
+        virtual void ToHostMatrix(float** mat, int* rows, int* cols) const = 0;
     };
 }
