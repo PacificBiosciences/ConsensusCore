@@ -9,3 +9,4 @@ ConsensusCore.xcodeproj
 *~
 bin/
 obj/
+/.p4config
