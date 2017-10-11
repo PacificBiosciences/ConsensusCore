@@ -49,6 +49,9 @@ def find_boost():
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         boost = sys.argv[1]
+        _candidate = '%s/include' % boost
+        if os.path.isfile('%s/boost/version.hpp' % _candidate):
+            boost = _candidate
     else:
         boost = find_boost()
     if boost_version(boost) < BOOST_MINIMUM_VERSION:
