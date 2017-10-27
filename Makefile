@@ -15,7 +15,7 @@ include make/Defs.mk
 all: lib
 
 lib:
-	${MAKE} -f make/Cpp.mk
+	${MAKE} -f make/Cpp.mk -j8
 
 #
 # SWIG targets
