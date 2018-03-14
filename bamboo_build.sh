@@ -1,10 +1,10 @@
 #!/bin/bash -xev
 type module >& /dev/null \
 || . /mnt/software/Modules/current/init/bash
-module load gcc/6.4.0
-module load boost/1.60
-module load swig/3.0.5
-module load ccache/3.3.4
+module load gcc
+module load boost
+module load swig
+module load ccache
 
 if [[ $bamboo_repository_branch_name =~ -DEP-438- ]]; then
   export BOOST_ROOT=/mnt/software/b/boost/1.60
