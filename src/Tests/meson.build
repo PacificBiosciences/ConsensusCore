@@ -34,6 +34,13 @@ quiver_test = executable(
 #########
 
 test(
+  'quiver formatting check',
+  quiver_clang_formatter,
+  args : [
+    '--all'],
+  workdir : meson.source_root())
+
+test(
   'quiver gtest unittests',
   quiver_test,
   args : [

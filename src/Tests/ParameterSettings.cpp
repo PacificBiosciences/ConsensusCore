@@ -43,8 +43,7 @@
 
 using namespace ConsensusCore;  // NOLINT
 
-
-QvModelParams TestingParams(const std::string& chem)
+QvModelParams TestingParams(const std::string &chem)
 {
     return QvModelParams(chem,    // Chemistry
                          "test",  // Model
@@ -62,10 +61,7 @@ QvModelParams TestingParams(const std::string& chem)
                          0.f);    // MergeS
 }
 
-QuiverConfig TestingConfig(const std::string& chem)
+QuiverConfig TestingConfig(const std::string &chem)
 {
-    return QuiverConfig(TestingParams(chem),
-                        ALL_MOVES,
-                        BandingOptions(4, 200),
-                        -12.5);
+    return QuiverConfig(TestingParams(chem), ALL_MOVES, BandingOptions(4, 200), -12.5);
 }

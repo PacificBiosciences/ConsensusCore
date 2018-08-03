@@ -39,84 +39,76 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <climits>
-#include <vector>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Types.hpp>
 
-namespace ConsensusCore
+namespace ConsensusCore {
+struct PoaConsensus;
+
+namespace detail {
+class PoaGraphImpl;
+}
+
+class PoaAlignmentMatrix
 {
-    struct PoaConsensus;
+public:
+    virtual ~PoaAlignmentMatrix(){};
+    virtual float Score() const = 0;
+};
 
-    namespace detail
-    {
-        class PoaGraphImpl;
-    }
+/// \brief An object representing a Poa (partial-order alignment) graph
+class PoaGraph
+{
+public:
+    typedef size_t Vertex;
+    typedef size_t ReadId;
 
-    class PoaAlignmentMatrix
+public:  // Flags enums for specifying GraphViz output features
+    enum
     {
-    public:
-        virtual ~PoaAlignmentMatrix() {};
-        virtual float Score() const   = 0;
+        COLOR_NODES = 0x1,
+        VERBOSE_NODES = 0x2
     };
 
-    /// \brief An object representing a Poa (partial-order alignment) graph
-    class PoaGraph
-    {
-    public:
-        typedef size_t Vertex;
-        typedef size_t ReadId;
+public:
+    PoaGraph();
+    PoaGraph(const PoaGraph &other);
+    PoaGraph(const detail::PoaGraphImpl &o);  // NB: this performs a copy
+    ~PoaGraph();
 
-    public:  // Flags enums for specifying GraphViz output features
-        enum {
-            COLOR_NODES    = 0x1,
-            VERBOSE_NODES  = 0x2
-        };
+    //
+    // Easy API
+    //
+    void AddRead(const std::string &sequence, const AlignConfig &config,
+                 detail::SdpRangeFinder *rangeFinder = NULL,
+                 std::vector<Vertex> *readPathOutput = NULL);
 
-    public:
-        PoaGraph();
-        PoaGraph(const PoaGraph& other);
-        PoaGraph(const detail::PoaGraphImpl& o);  // NB: this performs a copy
-        ~PoaGraph();
+    //
+    // API for more control
+    //
+    void AddFirstRead(const std::string &sequence, std::vector<Vertex> *readPathOutput = NULL);
 
-        //
-        // Easy API
-        //
-        void AddRead(const std::string& sequence,
-                     const AlignConfig& config,
-                     detail::SdpRangeFinder* rangeFinder=NULL,
-                     std::vector<Vertex>* readPathOutput=NULL);
+    PoaAlignmentMatrix *TryAddRead(const std::string &sequence, const AlignConfig &config,
+                                   detail::SdpRangeFinder *rangeFinder = NULL) const;
 
-        //
-        // API for more control
-        //
-        void AddFirstRead(const std::string& sequence, std::vector<Vertex>* readPathOutput=NULL);
+    void CommitAdd(PoaAlignmentMatrix *mat, std::vector<Vertex> *readPathOutput = NULL);
 
-        PoaAlignmentMatrix* TryAddRead(const std::string& sequence,
-                                       const AlignConfig& config,
-                                       detail::SdpRangeFinder* rangeFinder=NULL) const;
+    // ----------
 
-        void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput=NULL);
+    size_t NumReads() const;
 
-        // ----------
+    std::string ToGraphViz(int flags = 0, const PoaConsensus *pc = NULL) const;
 
+    void WriteGraphVizFile(std::string filename, int flags = 0,
+                           const PoaConsensus *pc = NULL) const;
 
-        size_t NumReads() const;
+    const PoaConsensus *FindConsensus(const AlignConfig &config, int minCoverage = -INT_MAX) const;
 
-        std::string ToGraphViz(int flags = 0,
-                               const PoaConsensus* pc = NULL) const;
-
-        void WriteGraphVizFile(std::string filename,
-                               int flags = 0,
-                               const PoaConsensus* pc = NULL) const;
-
-        const PoaConsensus* FindConsensus(const AlignConfig& config,
-                                          int minCoverage=-INT_MAX) const;
-
-    private:
-        detail::PoaGraphImpl* impl;
-    };
-
+private:
+    detail::PoaGraphImpl *impl;
+};
 }

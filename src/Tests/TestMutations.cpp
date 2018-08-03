@@ -47,8 +47,8 @@
 #include <string>
 #include <vector>
 
-#include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using std::string;
 using std::vector;
@@ -107,7 +107,6 @@ TEST(MutationTest, ApplyMutationsTest)
     EXPECT_EQ("GATTACA", tpl);
 }
 
-
 TEST(MutationTest, ApplyMutationsToSamePositionTest)
 {
     // Test the very real scenario of Ins@x, Subs@x.
@@ -155,7 +154,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         Mutation m2(INSERTION, 5, 'C');
         Mutation m3(SUBSTITUTION, 4, 'G');
         muts += m1, m2, m3;
-        int expectedMtp[] = { 0, 1, 2, 2, 3, 5, 6, 7 };
+        int expectedMtp[] = {0, 1, 2, 2, 3, 5, 6, 7};
         ASSERT_THAT(TargetToQueryPositions(muts, tpl), ElementsAreArray(expectedMtp));
     }
 
@@ -165,7 +164,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         std::vector<Mutation> muts2;
         Mutation m(INSERTION, 0, 'A');
         muts2 += m;
-        int expectedMtp2[] = { 1, 2, 3 };
+        int expectedMtp2[] = {1, 2, 3};
         ASSERT_THAT(TargetToQueryPositions(muts2, tpl2), ElementsAreArray(expectedMtp2));
     }
 
@@ -175,7 +174,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         std::vector<Mutation> muts3;
         Mutation m(DELETION, 0, '-');
         muts3 += m;
-        int expectedMtp3[] = { 0, 0, 1, 2 };
+        int expectedMtp3[] = {0, 0, 1, 2};
         ASSERT_THAT(TargetToQueryPositions(muts3, tpl3), ElementsAreArray(expectedMtp3));
     }
 }

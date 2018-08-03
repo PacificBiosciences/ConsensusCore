@@ -56,4 +56,5 @@ subdir('include')
 # sources + tests #
 ###################
 
+quiver_clang_formatter = find_program('tools/check-formatting')
 subdir('src')

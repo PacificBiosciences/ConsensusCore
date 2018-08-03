@@ -45,76 +45,68 @@
 #include <iostream>
 #include <string>
 
-
 using std::string;
 using std::cout;
 using std::endl;
 
-namespace ConsensusCore
+namespace ConsensusCore {
+ReadScorer::ReadScorer(QuiverConfig &config) : _quiverConfig(config) {}
+
+float ReadScorer::Score(const string &tpl, const Read &read) const throw(AlphaBetaMismatchException)
 {
-    ReadScorer::ReadScorer(QuiverConfig& config)
-        : _quiverConfig(config)
-    {}
+    int I, J;
+    SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+    QvEvaluator e(read, tpl, _quiverConfig.QvParams);
 
-    float ReadScorer::Score(const string& tpl, const Read& read) const
-        throw(AlphaBetaMismatchException)
-    {
-        int I, J;
-        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+    I = read.Length();
+    J = tpl.length();
+    SparseMatrix alpha(I + 1, J + 1), beta(I + 1, J + 1);
+    r.FillAlphaBeta(e, alpha, beta);
 
-        I = read.Length();
-        J = tpl.length();
-        SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
-        r.FillAlphaBeta(e, alpha, beta);
+    return beta(0, 0);
+}
 
-        return beta(0, 0);
-    }
+const PairwiseAlignment *ReadScorer::Align(const string &tpl, const Read &read) const
+    throw(AlphaBetaMismatchException)
+{
+    int I, J;
+    SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+    QvEvaluator e(read, tpl, _quiverConfig.QvParams);
 
-    const PairwiseAlignment*
-    ReadScorer::Align(const string& tpl, const Read& read) const
-        throw(AlphaBetaMismatchException)
-    {
-        int I, J;
-        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+    I = read.Length();
+    J = tpl.length();
+    SparseMatrix alpha(I + 1, J + 1), beta(I + 1, J + 1);
+    r.FillAlphaBeta(e, alpha, beta);
+    return r.Alignment(e, alpha);
+}
 
-        I = read.Length();
-        J = tpl.length();
-        SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
-        r.FillAlphaBeta(e, alpha, beta);
-        return r.Alignment(e, alpha);
-    }
+const SparseMatrix *ReadScorer::Alpha(const string &tpl, const Read &read) const
+    throw(AlphaBetaMismatchException)
+{
+    int I, J;
+    SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+    QvEvaluator e(read, tpl, _quiverConfig.QvParams);
 
-    const SparseMatrix*
-    ReadScorer::Alpha(const string& tpl, const Read& read) const
-        throw(AlphaBetaMismatchException)
-    {
-        int I, J;
-        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+    I = read.Length();
+    J = tpl.length();
+    SparseMatrix *alpha = new SparseMatrix(I + 1, J + 1);
+    SparseMatrix *beta = new SparseMatrix(I + 1, J + 1);
+    r.FillAlphaBeta(e, *alpha, *beta);
+    return alpha;
+}
 
-        I = read.Length();
-        J = tpl.length();
-        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
-        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
-        r.FillAlphaBeta(e, *alpha, *beta);
-        return alpha;
-    }
+const SparseMatrix *ReadScorer::Beta(const string &tpl, const Read &read) const
+    throw(AlphaBetaMismatchException)
+{
+    int I, J;
+    SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+    QvEvaluator e(read, tpl, _quiverConfig.QvParams);
 
-    const SparseMatrix*
-    ReadScorer::Beta(const string& tpl, const Read& read) const
-        throw(AlphaBetaMismatchException)
-    {
-        int I, J;
-        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
-
-        I = read.Length();
-        J = tpl.length();
-        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
-        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
-        r.FillAlphaBeta(e, *alpha, *beta);
-        return beta;
-    }
+    I = read.Length();
+    J = tpl.length();
+    SparseMatrix *alpha = new SparseMatrix(I + 1, J + 1);
+    SparseMatrix *beta = new SparseMatrix(I + 1, J + 1);
+    r.FillAlphaBeta(e, *alpha, *beta);
+    return beta;
+}
 }

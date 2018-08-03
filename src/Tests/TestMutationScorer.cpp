@@ -42,30 +42,28 @@
 
 #include <ConsensusCore/Features.hpp>
 #include <ConsensusCore/Mutation.hpp>
-#include <ConsensusCore/Read.hpp>
-#include <ConsensusCore/Sequence.hpp>
 #include <ConsensusCore/Quiver/MutationScorer.hpp>
 #include <ConsensusCore/Quiver/QuiverConfig.hpp>
 #include <ConsensusCore/Quiver/QvEvaluator.hpp>
 #include <ConsensusCore/Quiver/ReadScorer.hpp>
 #include <ConsensusCore/Quiver/SimpleRecursor.hpp>
 #include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Read.hpp>
+#include <ConsensusCore/Sequence.hpp>
 
 #include "ParameterSettings.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using namespace boost::assign;  // NOLINT
 
-typedef testing::Types<SimpleQvRecursor,
-                       SseQvRecursor,
-                       SparseSimpleQvRecursor,
-                       SparseSseQvRecursor>    AllRecursorTypes;
+typedef testing::Types<SimpleQvRecursor, SseQvRecursor, SparseSimpleQvRecursor, SparseSseQvRecursor>
+    AllRecursorTypes;
 
-TYPED_TEST_CASE(MutationScorerTest,          AllRecursorTypes);
-
+TYPED_TEST_CASE(MutationScorerTest, AllRecursorTypes);
 
 //
-// ================== Tests for single read MutationScorer ============================
+// ================== Tests for single read MutationScorer
+// ============================
 //
 
 template <typename R>
@@ -76,9 +74,9 @@ public:
 
 protected:
     MutationScorerTest()
-        : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingConfig_(TestingConfig())
-    {}
+        : recursor_(ALL_MOVES, BandingOptions(4, 200)), testingConfig_(TestingConfig())
+    {
+    }
 
     virtual ~MutationScorerTest() {}
 
@@ -88,14 +86,13 @@ protected:
 };
 
 #define MS MutationScorer<TypeParam>
-#define E  typename TypeParam::EvaluatorType
+#define E typename TypeParam::EvaluatorType
 
-#define recursor  (this->recursor_)
-#define params    (this->testingConfig_.QvParams)
-#define config    (this->testingConfig_)
+#define recursor (this->recursor_)
+#define params (this->testingConfig_.QvParams)
+#define config (this->testingConfig_)
 
 extern Read AnonymousRead(std::string seq);
-
 
 TYPED_TEST(MutationScorerTest, BasicTest)
 {
@@ -110,19 +107,18 @@ TYPED_TEST(MutationScorerTest, BasicTest)
 
     // Testing mutations should not change the template.
     // Let's just make sure of that.
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
 }
-
 
 TYPED_TEST(MutationScorerTest, CopyTest)
 {
@@ -133,7 +129,6 @@ TYPED_TEST(MutationScorerTest, CopyTest)
     MS msCopy(ms);
     ASSERT_EQ(ms.Score(), msCopy.Score());
 }
-
 
 TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
 {
@@ -148,13 +143,13 @@ TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
     Mutation substitutionMutation(SUBSTITUTION, 0, 'T');
     Mutation deletionMutation(DELETION, 0, '-');
 
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(insertBefore));
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation1));
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation2));
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertBefore));
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation1));
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation2));
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
 }
 
 TYPED_TEST(MutationScorerTest, MutationsAtEnd)
@@ -168,13 +163,12 @@ TYPED_TEST(MutationScorerTest, MutationsAtEnd)
     Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
     Mutation deletionMutation(DELETION, 6, '-');
 
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
 }
-
 
 TYPED_TEST(MutationScorerTest, TinyTemplate)
 {
@@ -188,19 +182,16 @@ TYPED_TEST(MutationScorerTest, TinyTemplate)
     EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtBeginning));
     EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtEnd));
 
-
     Mutation insertAtBeginning(INSERTION, 0, 'T');
     Mutation insertAtEnd(INSERTION, 4, 'T');
     EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtBeginning));
     EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtEnd));
 
-    for (int pos = 0; pos < tpl.length(); pos++)
-    {
+    for (int pos = 0; pos < tpl.length(); pos++) {
         Mutation m(SUBSTITUTION, pos, 'A');
         EXPECT_EQ(params.Mismatch, ms.ScoreMutation(m));
     }
 }
-
 
 TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 {
@@ -210,24 +201,21 @@ TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
     MS ms(ev, recursor);
     Mutation insertMutation(INSERTION, 4, 'A');
 
-    EXPECT_EQ("GATTACA"       , ms.Template());
-    EXPECT_EQ(0               , ms.Score());
-    EXPECT_EQ("GATTACA"       , ms.Template());
-    EXPECT_EQ(params.Merge[0] , ms.ScoreMutation(insertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(insertMutation));
 
     std::string newTpl = ApplyMutation(insertMutation, tpl);
     ms.Template(newTpl);
-    EXPECT_EQ(params.Merge[0] , ms.Score());
-    EXPECT_EQ("GATTAACA"      , ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.Score());
+    EXPECT_EQ("GATTAACA", ms.Template());
 }
-
-
-
 
 TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
 {
     //                     0123456789012345678
-    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTT = "CCCCCGATTACACCCCC";
     std::string tplTTTT = "CCCCCGATTTTACACCCCC";
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
     std::string tplAATT = "CCCCCGAAATTACACCCCC";
@@ -253,7 +241,7 @@ TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
 TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
 {
     //                     0123456789012345678
-    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTT = "CCCCCGATTACACCCCC";
     std::string tplTTTT = "CCCCCGATTTTACACCCCC";
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
 

@@ -35,9 +35,9 @@
 
 // Author: David Alexander
 
+#include <boost/tuple/tuple.hpp>
 #include <string>
 #include <vector>
-#include <boost/tuple/tuple.hpp>
 
 #pragma once
 
@@ -45,18 +45,17 @@
 #define API_MINOR 0
 #define API_PATCH 2
 
-namespace ConsensusCore
+namespace ConsensusCore {
+class Version
 {
-    class Version
-    {
-    public:
-        static int Major();
-        static int Minor();
-        static int Patch();
+public:
+    static int Major();
+    static int Minor();
+    static int Patch();
 
-        // Sadly SWIG doesn't support boost::tuple
-        static std::vector<int> VersionTuple();
+    // Sadly SWIG doesn't support boost::tuple
+    static std::vector<int> VersionTuple();
 
-        static std::string VersionString();
-    };
+    static std::string VersionString();
+};
 }
