@@ -188,18 +188,18 @@ public:
     bool InsertDefault(const QuiverConfig& config);
 
     // Insert, using the chemistry found in the config.
-    bool Insert(const QuiverConfig& config) throw(InvalidInputError);
+    bool Insert(const QuiverConfig& config);
 
     // Insert, aliasing as a different chemistry name.  This is
     // important, for example, when a read presents itself as
     // "XL-C2" but we have no trained models for "XL-C2", so we
     // want to have At("XL-C2") fetch the config for a similar
     // chemistry.
-    bool InsertAs(const std::string& name, const QuiverConfig& config) throw(InvalidInputError);
+    bool InsertAs(const std::string& name, const QuiverConfig& config);
 
     int Size() const;
 
-    const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);
+    const QuiverConfig& At(const std::string& name) const;
 
     std::vector<std::string> Keys() const;
 

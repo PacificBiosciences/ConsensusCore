@@ -58,15 +58,14 @@ public:
     typedef R RecursorType;
 
 public:
-    MutationScorer(const EvaluatorType& evaluator,
-                   const R& recursor) throw(AlphaBetaMismatchException);
+    MutationScorer(const EvaluatorType& evaluator, const R& recursor);
 
     MutationScorer(const MutationScorer& other);
     virtual ~MutationScorer();
 
 public:
     std::string Template() const;
-    void Template(std::string tpl) throw(AlphaBetaMismatchException);
+    void Template(std::string tpl);
 
     float Score() const;
     float ScoreMutation(const Mutation& m) const;

@@ -51,8 +51,7 @@
 
 namespace ConsensusCore {
 template <typename R>
-MutationScorer<R>::MutationScorer(const EvaluatorType& evaluator,
-                                  const R& recursor) throw(AlphaBetaMismatchException)
+MutationScorer<R>::MutationScorer(const EvaluatorType& evaluator, const R& recursor)
     : evaluator_(new EvaluatorType(evaluator)), recursor_(new R(recursor))
 {
     try {
@@ -99,7 +98,7 @@ std::string MutationScorer<R>::Template() const
 }
 
 template <typename R>
-void MutationScorer<R>::Template(std::string tpl) throw(AlphaBetaMismatchException)
+void MutationScorer<R>::Template(std::string tpl)
 {
     delete alpha_;
     delete beta_;

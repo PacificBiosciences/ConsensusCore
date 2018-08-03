@@ -52,7 +52,7 @@ using std::endl;
 namespace ConsensusCore {
 ReadScorer::ReadScorer(QuiverConfig& config) : _quiverConfig(config) {}
 
-float ReadScorer::Score(const string& tpl, const Read& read) const throw(AlphaBetaMismatchException)
+float ReadScorer::Score(const string& tpl, const Read& read) const
 {
     int I, J;
     SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -67,7 +67,6 @@ float ReadScorer::Score(const string& tpl, const Read& read) const throw(AlphaBe
 }
 
 const PairwiseAlignment* ReadScorer::Align(const string& tpl, const Read& read) const
-    throw(AlphaBetaMismatchException)
 {
     int I, J;
     SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -81,7 +80,6 @@ const PairwiseAlignment* ReadScorer::Align(const string& tpl, const Read& read) 
 }
 
 const SparseMatrix* ReadScorer::Alpha(const string& tpl, const Read& read) const
-    throw(AlphaBetaMismatchException)
 {
     int I, J;
     SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
@@ -96,7 +94,6 @@ const SparseMatrix* ReadScorer::Alpha(const string& tpl, const Read& read) const
 }
 
 const SparseMatrix* ReadScorer::Beta(const string& tpl, const Read& read) const
-    throw(AlphaBetaMismatchException)
 {
     int I, J;
     SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);

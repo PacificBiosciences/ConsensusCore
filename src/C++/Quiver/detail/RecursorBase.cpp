@@ -67,7 +67,6 @@ namespace detail {
 
 template <typename M, typename E, typename C>
 int RecursorBase<M, E, C>::FillAlphaBeta(const E& e, M& a, M& b) const
-    throw(AlphaBetaMismatchException)
 {
     FillAlpha(e, M::Null(), a);
     FillBeta(e, a, b);

@@ -72,8 +72,7 @@ public:
     /// This routine will fill the alpha and beta matrices, ensuring
     /// that the score computed from the alpha and beta recursions are
     /// identical, refilling back-and-forth if necessary.
-    virtual int FillAlphaBeta(const E& e, M& alpha, M& beta) const
-        throw(AlphaBetaMismatchException);
+    virtual int FillAlphaBeta(const E& e, M& alpha, M& beta) const;
 
     /// \brief Reband alpha and beta matrices.
     /// This routine will reband alpha and beta to the convex hull
