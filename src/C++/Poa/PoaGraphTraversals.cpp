@@ -237,7 +237,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
                 const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
                 int prevRow = ArgMax(prevCol->Score);
 
-                while (i > static_cast<int>(prevRow)) {
+                while (i > prevRow) {
                     VD newForkVertex = addVertex(sequence[READPOS]);
                     add_edge(newForkVertex, forkVertex, g_);
                     VERTEX_ON_PATH(READPOS, newForkVertex);
