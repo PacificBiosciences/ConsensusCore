@@ -99,7 +99,7 @@ public:
     typedef QvModelParams ParamsType;
 
 public:
-    QvEvaluator(const Read &read, const std::string &tpl, const QvModelParams &params,
+    QvEvaluator(const Read& read, const std::string& tpl, const QvModelParams& params,
                 bool pinStart = true, bool pinEnd = true)
         : read_(read), params_(params), tpl_(tpl), pinStart_(pinStart), pinEnd_(pinEnd)
     {
@@ -247,7 +247,7 @@ public:
     }
 
 protected:
-    inline const QvSequenceFeatures &Features() const { return read_.Features; }
+    inline const QvSequenceFeatures& Features() const { return read_.Features; }
 
 protected:
     Read read_;

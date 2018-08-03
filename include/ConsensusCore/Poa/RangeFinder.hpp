@@ -41,15 +41,15 @@ private:
 public:
     virtual ~SdpRangeFinder();
 
-    void InitRangeFinder(const PoaGraphImpl &poaGraph,
-                         const std::vector<PoaGraph::Vertex> &consensusPath,
-                         const std::string &consensusSequence, const std::string &readSequence);
+    void InitRangeFinder(const PoaGraphImpl& poaGraph,
+                         const std::vector<PoaGraph::Vertex>& consensusPath,
+                         const std::string& consensusSequence, const std::string& readSequence);
 
     Interval FindAlignableRange(PoaGraph::Vertex v);
 
 protected:
-    virtual SdpAnchorVector FindAnchors(const std::string &consensusSequence,
-                                        const std::string &readSequence) const = 0;
+    virtual SdpAnchorVector FindAnchors(const std::string& consensusSequence,
+                                        const std::string& readSequence) const = 0;
 };
 }
 }

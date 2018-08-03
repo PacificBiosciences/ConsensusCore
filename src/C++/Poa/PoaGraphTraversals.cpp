@@ -46,8 +46,8 @@
 namespace ConsensusCore {
 namespace detail {
 
-std::string sequenceAlongPath(const BoostGraph &g, const VertexInfoMap &vertexInfoMap,
-                              const std::vector<VD> &path)
+std::string sequenceAlongPath(const BoostGraph& g, const VertexInfoMap& vertexInfoMap,
+                              const std::vector<VD>& path)
 {
     std::stringstream ss;
     foreach (VD v, path) {
@@ -107,7 +107,7 @@ std::vector<VD> PoaGraphImpl::consensusPath(AlignMode mode, int minCoverage) con
     VD bestVertex = null_vertex;
     float bestReachingScore = -FLT_MAX;
     foreach (VD v, sortedVertices) {
-        PoaNode &vInfo = vertexInfoMap_[v];
+        PoaNode& vInfo = vertexInfoMap_[v];
         int containingReads = vInfo.Reads;
         int spanningReads = vInfo.SpanningReads;
         float score =
@@ -141,7 +141,7 @@ std::vector<VD> PoaGraphImpl::consensusPath(AlignMode mode, int minCoverage) con
     return std::vector<VD>(path.begin(), path.end());
 }
 
-void PoaGraphImpl::threadFirstRead(std::string sequence, std::vector<Vertex> *outputPath)
+void PoaGraphImpl::threadFirstRead(std::string sequence, std::vector<Vertex>* outputPath)
 {
     // first sequence in the alignment
     VD u = null_vertex, v;
@@ -174,15 +174,15 @@ void PoaGraphImpl::threadFirstRead(std::string sequence, std::vector<Vertex> *ou
 }
 
 void PoaGraphImpl::tracebackAndThread(std::string sequence,
-                                      const AlignmentColumnMap &alignmentColumnForVertex,
-                                      AlignMode alignMode, std::vector<Vertex> *outputPath)
+                                      const AlignmentColumnMap& alignmentColumnForVertex,
+                                      AlignMode alignMode, std::vector<Vertex>* outputPath)
 {
     const int I = sequence.length();
 
     // perform traceback from (I,$), threading the new sequence into the graph as
     // we go.
     int i = I;
-    const AlignmentColumn *curCol;
+    const AlignmentColumn* curCol;
     VD v = null_vertex, forkVertex = null_vertex;
     VD u = exitVertex_;
     VD startSpanVertex;
@@ -206,7 +206,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
         // forkVertex: the vertex that will be the target of a new edge
         curCol = alignmentColumnForVertex.at(u);
         assert(curCol != NULL);
-        PoaNode &curNodeInfo = vertexInfoMap_[u];
+        PoaNode& curNodeInfo = vertexInfoMap_[u];
         VD prevVertex = curCol->PreviousVertex[i];
         MoveType reachingMove = curCol->ReachingMove[i];
 
@@ -234,7 +234,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
                 // Find the row # we are coming from, walk
                 // back to there, threading read bases onto
                 // graph via forkVertex, adjusting i.
-                const AlignmentColumn *prevCol = alignmentColumnForVertex.at(prevVertex);
+                const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
                 int prevRow = ArgMax(prevCol->Score);
 
                 while (i > static_cast<int>(prevRow)) {
@@ -295,7 +295,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
 #undef VERTEX_ON_PATH
 }
 
-static boost::unordered_set<VD> childVertices(VD v, const BoostGraph &g)
+static boost::unordered_set<VD> childVertices(VD v, const BoostGraph& g)
 {
     boost::unordered_set<VD> result;
     foreach (ED e, out_edges(v, g)) {
@@ -304,7 +304,7 @@ static boost::unordered_set<VD> childVertices(VD v, const BoostGraph &g)
     return result;
 }
 
-static boost::unordered_set<VD> parentVertices(VD v, const BoostGraph &g)
+static boost::unordered_set<VD> parentVertices(VD v, const BoostGraph& g)
 {
     boost::unordered_set<VD> result;
     foreach (ED e, in_edges(v, g)) {
@@ -313,13 +313,13 @@ static boost::unordered_set<VD> parentVertices(VD v, const BoostGraph &g)
     return result;
 }
 
-vector<ScoredMutation> *PoaGraphImpl::findPossibleVariants(
-    const std::vector<Vertex> &bestPath) const
+vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
+    const std::vector<Vertex>& bestPath) const
 {
     std::vector<VD> bestPath_ = internalizePath(bestPath);
 
     // Return value will be deallocated by PoaConsensus destructor.
-    vector<ScoredMutation> *variants = new vector<ScoredMutation>();
+    vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
     for (int i = 2; i < (int)bestPath_.size() - 2; i++)  // NOLINT
     {

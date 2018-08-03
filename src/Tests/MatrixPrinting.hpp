@@ -40,7 +40,7 @@
 #include <string>
 
 template <typename M>
-std::string PrintMatrix(const M &m, int precision = 2)
+std::string PrintMatrix(const M& m, int precision = 2)
 {
     if (m.Rows() > 40 || m.Columns() > 40) {
         return "Cowardly refusing to print a large matrix\n";

@@ -92,7 +92,7 @@ struct QvModelParams
     //
     // Constructor for single merge rate and merge rate slope
     //
-    QvModelParams(const std::string &ChemistryName, const std::string &ModelName, float Match,
+    QvModelParams(const std::string& ChemistryName, const std::string& ModelName, float Match,
                   float Mismatch, float MismatchS, float Branch, float BranchS, float DeletionN,
                   float DeletionWithTag, float DeletionWithTagS, float Nce, float NceS, float Merge,
                   float MergeS)
@@ -118,7 +118,7 @@ struct QvModelParams
     //
     // Constructor for per-channel merge rate and merge rate slope
     //
-    QvModelParams(const std::string &ChemistryName, const std::string &ModelName, float Match,
+    QvModelParams(const std::string& ChemistryName, const std::string& ModelName, float Match,
                   float Mismatch, float MismatchS, float Branch, float BranchS, float DeletionN,
                   float DeletionWithTag, float DeletionWithTagS, float Nce, float NceS,
                   float Merge_A, float Merge_C, float Merge_G, float Merge_T, float MergeS_A,
@@ -167,11 +167,11 @@ struct QuiverConfig
     float FastScoreThreshold;
     float AddThreshold;
 
-    QuiverConfig(const QvModelParams &qvParams, int movesAvailable,
-                 const BandingOptions &bandingOptions, float fastScoreThreshold,
+    QuiverConfig(const QvModelParams& qvParams, int movesAvailable,
+                 const BandingOptions& bandingOptions, float fastScoreThreshold,
                  float addThreshold = 1.0f);
 
-    QuiverConfig(const QuiverConfig &qvConfig);
+    QuiverConfig(const QuiverConfig& qvConfig);
 };
 
 class QuiverConfigTable
@@ -181,7 +181,7 @@ private:
 
 private:
     std::list<QuiverConfigTableEntry> table;
-    bool InsertAs_(const std::string &name, const QuiverConfig &config);
+    bool InsertAs_(const std::string& name, const QuiverConfig& config);
 
 public:
     typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
@@ -189,21 +189,21 @@ public:
     QuiverConfigTable();
 
     // Insert as the default config (when a read's chemistry is not found.
-    bool InsertDefault(const QuiverConfig &config);
+    bool InsertDefault(const QuiverConfig& config);
 
     // Insert, using the chemistry found in the config.
-    bool Insert(const QuiverConfig &config) throw(InvalidInputError);
+    bool Insert(const QuiverConfig& config) throw(InvalidInputError);
 
     // Insert, aliasing as a different chemistry name.  This is
     // important, for example, when a read presents itself as
     // "XL-C2" but we have no trained models for "XL-C2", so we
     // want to have At("XL-C2") fetch the config for a similar
     // chemistry.
-    bool InsertAs(const std::string &name, const QuiverConfig &config) throw(InvalidInputError);
+    bool InsertAs(const std::string& name, const QuiverConfig& config) throw(InvalidInputError);
 
     int Size() const;
 
-    const QuiverConfig &At(const std::string &name) const throw(InvalidInputError);
+    const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);
 
     std::vector<std::string> Keys() const;
 

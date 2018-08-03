@@ -49,9 +49,9 @@ namespace ConsensusCore {
 // "winLen" instead of winEnd.  Had to contort a bit to get SWIG
 // bindings working well.
 
-void CoverageInWindow(int tStartDim, int *tStart, int tEndDim, int *tEnd, int winStart, int winLen,
-                      int *coverage);
+void CoverageInWindow(int tStartDim, int* tStart, int tEndDim, int* tEnd, int winStart, int winLen,
+                      int* coverage);
 
-std::vector<Interval> CoveredIntervals(int minCoverage, int tStartDim, int *tStart, int tEndDim,
-                                       int *tEnd, int winStart, int winLen);
+std::vector<Interval> CoveredIntervals(int minCoverage, int tStartDim, int* tStart, int tEndDim,
+                                       int* tEnd, int winStart, int winLen);
 }

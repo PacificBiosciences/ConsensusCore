@@ -24,7 +24,7 @@ using boost::format;
 class my_label_writer
 {
 public:
-    my_label_writer(VertexInfoMap map, bool color, bool verbose, const PoaConsensus *pc = NULL)
+    my_label_writer(VertexInfoMap map, bool color, bool verbose, const PoaConsensus* pc = NULL)
         : map_(map), cssVtxs_(), color_(color), verbose_(verbose)
     {
         if (pc != NULL) {
@@ -33,7 +33,7 @@ public:
     }
 
     template <class descriptor>
-    void operator()(std::ostream &out, const descriptor &v) const
+    void operator()(std::ostream& out, const descriptor& v) const
     {
         PoaGraph::Vertex vertexId = map_[v].Id;
 
@@ -72,7 +72,7 @@ namespace detail {
 
 PoaAlignmentMatrixImpl::~PoaAlignmentMatrixImpl()
 {
-    foreach (AlignmentColumnMap::value_type &kv, columns_) {
+    foreach (AlignmentColumnMap::value_type& kv, columns_) {
         delete kv.second;
     }
 }
@@ -88,7 +88,7 @@ PoaGraphImpl::PoaGraphImpl()
     exitVertex_ = addVertex('$', 0);
 }
 
-PoaGraphImpl::PoaGraphImpl(const PoaGraphImpl &other)
+PoaGraphImpl::PoaGraphImpl(const PoaGraphImpl& other)
     : g_(other.g_)
     , vertexInfoMap_(get(vertex_info, g_))
     , enterVertex_(other.enterVertex_)
@@ -116,11 +116,11 @@ void PoaGraphImpl::repCheck() const
     }
 }
 
-static inline vector<const AlignmentColumn *> getPredecessorColumns(
-    const BoostGraph &g, VD v, const AlignmentColumnMap &colMap)
+static inline vector<const AlignmentColumn*> getPredecessorColumns(const BoostGraph& g, VD v,
+                                                                   const AlignmentColumnMap& colMap)
 {
-    vector<const AlignmentColumn *> predecessorColumns;
-    const AlignmentColumn *predCol;
+    vector<const AlignmentColumn*> predecessorColumns;
+    const AlignmentColumn* predCol;
     foreach (ED e, inEdges(v, g)) {
         VD u = source(e, g);
         predCol = colMap.at(u);
@@ -130,25 +130,25 @@ static inline vector<const AlignmentColumn *> getPredecessorColumns(
     return predecessorColumns;
 }
 
-PoaConsensus *PoaGraphImpl::FindConsensus(const AlignConfig &config, int minCoverage)
+PoaConsensus* PoaGraphImpl::FindConsensus(const AlignConfig& config, int minCoverage)
 {
     std::vector<VD> bestPath = consensusPath(config.Mode, minCoverage);
     std::string consensusSequence = sequenceAlongPath(g_, vertexInfoMap_, bestPath);
-    PoaConsensus *pc = new PoaConsensus(consensusSequence, *this, externalizePath(bestPath));
+    PoaConsensus* pc = new PoaConsensus(consensusSequence, *this, externalizePath(bestPath));
     return pc;
 }
 
-const AlignmentColumn *PoaGraphImpl::makeAlignmentColumnForExit(VD v,
-                                                                const AlignmentColumnMap &colMap,
-                                                                const std::string &sequence,
-                                                                const AlignConfig &config) const
+const AlignmentColumn* PoaGraphImpl::makeAlignmentColumnForExit(VD v,
+                                                                const AlignmentColumnMap& colMap,
+                                                                const std::string& sequence,
+                                                                const AlignConfig& config) const
 {
     assert(out_degree(v, g_) == 0);
 
     // this is kind of unnecessary as we are only actually using one entry in this
     // column
     int I = sequence.length();
-    AlignmentColumn *curCol = new AlignmentColumn(v, I + 1);
+    AlignmentColumn* curCol = new AlignmentColumn(v, I + 1);
 
     float bestScore = -FLT_MAX;
     VD prevVertex = null_vertex;
@@ -161,7 +161,7 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumnForExit(VD v,
     if (config.Mode == SEMIGLOBAL || config.Mode == LOCAL) {
         foreach (VD u, vertices(g_)) {
             if (u != exitVertex_) {
-                const AlignmentColumn *predCol = colMap.at(u);
+                const AlignmentColumn* predCol = colMap.at(u);
                 int prevRow = (config.Mode == LOCAL ? ArgMax(predCol->Score) : I);
 
                 if (predCol->Score[prevRow] > bestScore) {
@@ -172,8 +172,8 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumnForExit(VD v,
         }
     } else {
         // regular predecessors
-        vector<const AlignmentColumn *> predecessorColumns = getPredecessorColumns(g_, v, colMap);
-        foreach (const AlignmentColumn *predCol, predecessorColumns) {
+        vector<const AlignmentColumn*> predecessorColumns = getPredecessorColumns(g_, v, colMap);
+        foreach (const AlignmentColumn* predCol, predecessorColumns) {
             if (predCol->Score[I] > bestScore) {
                 bestScore = predCol->Score[I];
                 prevVertex = predCol->CurrentVertex;
@@ -187,14 +187,14 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumnForExit(VD v,
     return curCol;
 }
 
-const AlignmentColumn *PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentColumnMap &colMap,
-                                                         const std::string &sequence,
-                                                         const AlignConfig &config, int beginRow,
+const AlignmentColumn* PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentColumnMap& colMap,
+                                                         const std::string& sequence,
+                                                         const AlignConfig& config, int beginRow,
                                                          int endRow) const
 {
-    AlignmentColumn *curCol = new AlignmentColumn(v, sequence.length() + 1);
-    const PoaNode &vertexInfo = vertexInfoMap_[v];
-    vector<const AlignmentColumn *> predecessorColumns = getPredecessorColumns(g_, v, colMap);
+    AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
+    const PoaNode& vertexInfo = vertexInfoMap_[v];
+    vector<const AlignmentColumn*> predecessorColumns = getPredecessorColumns(g_, v, colMap);
 
     //
     // handle row 0 separately:
@@ -218,7 +218,7 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentCo
         VD prevVertex = null_vertex;
         MoveType reachingMove = InvalidMove;
 
-        foreach (const AlignmentColumn *prevCol, predecessorColumns) {
+        foreach (const AlignmentColumn* prevCol, predecessorColumns) {
             candidateScore = prevCol->Score[0] + config.Params.Delete;
             if (candidateScore > bestScore) {
                 bestScore = candidateScore;
@@ -252,7 +252,7 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentCo
             reachingMove = InvalidMove;
         }
 
-        foreach (const AlignmentColumn *prevCol, predecessorColumns) {
+        foreach (const AlignmentColumn* prevCol, predecessorColumns) {
             // Incorporate (Match or Mismatch)
             bool isMatch = sequence[readPos] == vertexInfo.Base;
             candidateScore =
@@ -286,19 +286,19 @@ const AlignmentColumn *PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentCo
     return curCol;
 }
 
-void PoaGraphImpl::AddRead(const std::string &readSeq, const AlignConfig &config,
-                           SdpRangeFinder *rangeFinder, std::vector<Vertex> *readPathOutput)
+void PoaGraphImpl::AddRead(const std::string& readSeq, const AlignConfig& config,
+                           SdpRangeFinder* rangeFinder, std::vector<Vertex>* readPathOutput)
 {
     if (NumReads() == 0) {
         AddFirstRead(readSeq, readPathOutput);
     } else {
-        PoaAlignmentMatrixImpl *mat = TryAddRead(readSeq, config, rangeFinder);
+        PoaAlignmentMatrixImpl* mat = TryAddRead(readSeq, config, rangeFinder);
         CommitAdd(mat, readPathOutput);
         delete mat;
     }
 }
 
-void PoaGraphImpl::AddFirstRead(const std::string &readSeq, std::vector<Vertex> *readPathOutput)
+void PoaGraphImpl::AddFirstRead(const std::string& readSeq, std::vector<Vertex>* readPathOutput)
 {
     DEBUG_ONLY(repCheck());
     assert(readSeq.length() > 0);
@@ -310,9 +310,9 @@ void PoaGraphImpl::AddFirstRead(const std::string &readSeq, std::vector<Vertex> 
     DEBUG_ONLY(repCheck());
 }
 
-PoaAlignmentMatrixImpl *PoaGraphImpl::TryAddRead(const std::string &readSeq,
-                                                 const AlignConfig &config,
-                                                 SdpRangeFinder *rangeFinder) const
+PoaAlignmentMatrixImpl* PoaGraphImpl::TryAddRead(const std::string& readSeq,
+                                                 const AlignConfig& config,
+                                                 SdpRangeFinder* rangeFinder) const
 {
     DEBUG_ONLY(repCheck());
     assert(readSeq.length() > 0);
@@ -330,13 +330,13 @@ PoaAlignmentMatrixImpl *PoaGraphImpl::TryAddRead(const std::string &readSeq,
 
     // Calculate alignment columns of sequence vs. graph, using sparsity if
     // we have a range finder.
-    PoaAlignmentMatrixImpl *mat = new PoaAlignmentMatrixImpl();
+    PoaAlignmentMatrixImpl* mat = new PoaAlignmentMatrixImpl();
     mat->readSequence_ = readSeq;
     mat->mode_ = config.Mode;
 
     vector<VD> sortedVertices(num_vertices(g_));
     topological_sort(g_, sortedVertices.rbegin());
-    const AlignmentColumn *curCol;
+    const AlignmentColumn* curCol;
     foreach (VD v, sortedVertices) {
         if (v != exitVertex_) {
             Interval rowRange;
@@ -359,11 +359,11 @@ PoaAlignmentMatrixImpl *PoaGraphImpl::TryAddRead(const std::string &readSeq,
     return mat;
 }
 
-void PoaGraphImpl::CommitAdd(PoaAlignmentMatrix *mat_, std::vector<Vertex> *readPathOutput)
+void PoaGraphImpl::CommitAdd(PoaAlignmentMatrix* mat_, std::vector<Vertex>* readPathOutput)
 {
     DEBUG_ONLY(repCheck());
 
-    PoaAlignmentMatrixImpl *mat = static_cast<PoaAlignmentMatrixImpl *>(mat_);
+    PoaAlignmentMatrixImpl* mat = static_cast<PoaAlignmentMatrixImpl*>(mat_);
     tracebackAndThread(mat->readSequence_, mat->columns_, mat->mode_, readPathOutput);
     numReads_++;
 
@@ -372,7 +372,7 @@ void PoaGraphImpl::CommitAdd(PoaAlignmentMatrix *mat_, std::vector<Vertex> *read
 
 size_t PoaGraphImpl::NumReads() const { return numReads_; }
 
-string PoaGraphImpl::ToGraphViz(int flags, const PoaConsensus *pc) const
+string PoaGraphImpl::ToGraphViz(int flags, const PoaConsensus* pc) const
 {
     std::stringstream ss;
     write_graphviz(ss, g_, my_label_writer(vertexInfoMap_, flags & PoaGraph::COLOR_NODES,
@@ -380,7 +380,7 @@ string PoaGraphImpl::ToGraphViz(int flags, const PoaConsensus *pc) const
     return ss.str();
 }
 
-void PoaGraphImpl::WriteGraphVizFile(string filename, int flags, const PoaConsensus *pc) const
+void PoaGraphImpl::WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const
 {
     std::ofstream outfile(filename.c_str());
     outfile << ToGraphViz(flags, pc);

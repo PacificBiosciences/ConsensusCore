@@ -109,7 +109,7 @@ inline float MatchScore<IupacAware>(char t, char q, float matchScore, float mism
 }
 
 template <class C>
-CC::PairwiseAlignment *AlignAffineGeneric(const std::string &target, const std::string &query,
+CC::PairwiseAlignment* AlignAffineGeneric(const std::string& target, const std::string& query,
                                           CC::AffineAlignmentParams params)
 {
     // Implementation follows the textbook "two-state" affine gap model
@@ -215,13 +215,13 @@ AffineAlignmentParams IupacAwareAffineAlignmentParams()
     return AffineAlignmentParams(0, -1.0, -1.0, -0.5, -0.25);
 }
 
-PairwiseAlignment *AlignAffine(const std::string &target, const std::string &query,
+PairwiseAlignment* AlignAffine(const std::string& target, const std::string& query,
                                AffineAlignmentParams params)
 {
     return AlignAffineGeneric<Standard>(target, query, params);
 }
 
-PairwiseAlignment *AlignAffineIupac(const std::string &target, const std::string &query,
+PairwiseAlignment* AlignAffineIupac(const std::string& target, const std::string& query,
                                     AffineAlignmentParams params)
 {
     return AlignAffineGeneric<IupacAware>(target, query, params);

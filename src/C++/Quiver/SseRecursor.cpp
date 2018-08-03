@@ -67,7 +67,7 @@ static inline __m128 operator+(const __m128 a, const __m128 b) { return _mm_add_
 #endif
 
 template <typename M, typename E, typename C>
-void SseRecursor<M, E, C>::FillAlpha(const E &e, const M &guide, M &alpha) const
+void SseRecursor<M, E, C>::FillAlpha(const E& e, const M& guide, M& alpha) const
 {
     int I = e.ReadLength();
     int J = e.TemplateLength();
@@ -190,7 +190,7 @@ void SseRecursor<M, E, C>::FillAlpha(const E &e, const M &guide, M &alpha) const
 }
 
 template <typename M, typename E, typename C>
-void SseRecursor<M, E, C>::FillBeta(const E &e, const M &guide, M &beta) const
+void SseRecursor<M, E, C>::FillBeta(const E& e, const M& guide, M& beta) const
 {
     int I = e.ReadLength();
     int J = e.TemplateLength();
@@ -308,8 +308,8 @@ void SseRecursor<M, E, C>::FillBeta(const E &e, const M &guide, M &beta) const
 }
 
 template <typename M, typename E, typename C>
-INLINE_CALLEES float SseRecursor<M, E, C>::LinkAlphaBeta(const E &e, const M &alpha,
-                                                         int alphaColumn, const M &beta,
+INLINE_CALLEES float SseRecursor<M, E, C>::LinkAlphaBeta(const E& e, const M& alpha,
+                                                         int alphaColumn, const M& beta,
                                                          int betaColumn, int absoluteColumn) const
 {
     const int I = e.ReadLength();
@@ -369,8 +369,8 @@ INLINE_CALLEES float SseRecursor<M, E, C>::LinkAlphaBeta(const E &e, const M &al
 }
 
 template <typename M, typename E, typename C>
-INLINE_CALLEES void SseRecursor<M, E, C>::ExtendAlpha(const E &e, const M &alpha, int beginColumn,
-                                                      M &ext, int numExtColumns) const
+INLINE_CALLEES void SseRecursor<M, E, C>::ExtendAlpha(const E& e, const M& alpha, int beginColumn,
+                                                      M& ext, int numExtColumns) const
 {
     assert(numExtColumns >= 2);
     assert(alpha.Rows() == e.ReadLength() + 1 && ext.Rows() == e.ReadLength() + 1);
@@ -466,14 +466,14 @@ INLINE_CALLEES void SseRecursor<M, E, C>::ExtendAlpha(const E &e, const M &alpha
 }
 
 template <typename M, typename E, typename C>
-void SseRecursor<M, E, C>::ExtendBeta(const E &e, const M &beta, int endColumn, M &ext,
+void SseRecursor<M, E, C>::ExtendBeta(const E& e, const M& beta, int endColumn, M& ext,
                                       int numExtColumns, int lengthDiff) const
 {
     simpleRecursor_.ExtendBeta(e, beta, endColumn, ext, numExtColumns, lengthDiff);
 }
 
 template <typename M, typename E, typename C>
-SseRecursor<M, E, C>::SseRecursor(int movesAvailable, const BandingOptions &banding)
+SseRecursor<M, E, C>::SseRecursor(int movesAvailable, const BandingOptions& banding)
     : detail::RecursorBase<M, E, C>(movesAvailable, banding)
     , simpleRecursor_(movesAvailable, banding)
 {

@@ -56,7 +56,7 @@ namespace ConsensusCore {
 // Could the mutation change the contents of the portion of the
 // template that is mapped to the read?
 //
-bool ReadScoresMutation(const MappedRead &read, const Mutation &mut)
+bool ReadScoresMutation(const MappedRead& read, const Mutation& mut)
 {
     int ts = read.TemplateStart;
     int te = read.TemplateEnd;
@@ -76,7 +76,7 @@ bool ReadScoresMutation(const MappedRead &read, const Mutation &mut)
 // possible clipping, if the mutation is not wholly within the
 // mapped read.
 //
-Mutation OrientedMutation(const MappedRead &mr, const Mutation &mut)
+Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut)
 {
     using std::min;
     using std::max;
@@ -112,7 +112,7 @@ Mutation OrientedMutation(const MappedRead &mr, const Mutation &mut)
 
 template <typename R>
 MultiReadMutationScorer<R>::MultiReadMutationScorer(
-    const QuiverConfigTable &quiverConfigByChemistry, std::string tpl)
+    const QuiverConfigTable& quiverConfigByChemistry, std::string tpl)
     : quiverConfigByChemistry_(quiverConfigByChemistry)
     , fwdTemplate_(tpl)
     , revTemplate_(ReverseComplement(tpl))
@@ -127,7 +127,7 @@ MultiReadMutationScorer<R>::MultiReadMutationScorer(
 }
 
 template <typename R>
-MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScorer<R> &other)
+MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScorer<R>& other)
     : quiverConfigByChemistry_(other.quiverConfigByChemistry_)
     , fastScoreThreshold_(other.fastScoreThreshold_)
     , fwdTemplate_(other.fwdTemplate_)
@@ -135,7 +135,7 @@ MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScore
     , reads_()
 {
     // Make a deep copy of the readsAndScorers
-    foreach (const ReadStateType &read, reads_) {
+    foreach (const ReadStateType& read, reads_) {
         reads_.push_back(ReadStateType(read));
     }
 
@@ -160,7 +160,7 @@ int MultiReadMutationScorer<R>::NumReads() const
 }
 
 template <typename R>
-const MappedRead *MultiReadMutationScorer<R>::Read(int readIdx) const
+const MappedRead* MultiReadMutationScorer<R>::Read(int readIdx) const
 {
     return reads_[readIdx].IsActive ? reads_[readIdx].Read : NULL;
 }
@@ -184,14 +184,14 @@ std::string MultiReadMutationScorer<R>::Template(StrandEnum strand, int template
 }
 
 template <typename R>
-void MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation> &mutations)
+void MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation>& mutations)
 {
     DEBUG_ONLY(CheckInvariants());
     std::vector<int> mtp = TargetToQueryPositions(mutations, fwdTemplate_);
     fwdTemplate_ = ConsensusCore::ApplyMutations(mutations, fwdTemplate_);
     revTemplate_ = ReverseComplement(fwdTemplate_);
 
-    foreach (ReadStateType &rs, reads_) {
+    foreach (ReadStateType& rs, reads_) {
         try {
             int newTemplateStart = mtp[rs.Read->TemplateStart];
             int newTemplateEnd = mtp[rs.Read->TemplateEnd];
@@ -203,7 +203,7 @@ void MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation> &mut
             if (rs.IsActive) {
                 rs.Scorer->Template(Template(rs.Read->Strand, newTemplateStart, newTemplateEnd));
             }
-        } catch (AlphaBetaMismatchException &e) {
+        } catch (AlphaBetaMismatchException& e) {
             rs.IsActive = false;
         }
     }
@@ -211,17 +211,17 @@ void MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation> &mut
 }
 
 template <typename R>
-bool MultiReadMutationScorer<R>::AddRead(const MappedRead &mr, float threshold)
+bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
 {
     DEBUG_ONLY(CheckInvariants());
-    const QuiverConfig *config = &quiverConfigByChemistry_.At(mr.Chemistry);
+    const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
     EvaluatorType ev(mr, Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd), config->QvParams);
     RecursorType recursor(config->MovesAvailable, config->Banding);
 
-    ScorerType *scorer;
+    ScorerType* scorer;
     try {
         scorer = new MutationScorer<R>(ev, recursor);
-    } catch (AlphaBetaMismatchException &e) {
+    } catch (AlphaBetaMismatchException& e) {
         scorer = NULL;
     }
 
@@ -244,18 +244,18 @@ bool MultiReadMutationScorer<R>::AddRead(const MappedRead &mr, float threshold)
 }
 
 template <typename R>
-bool MultiReadMutationScorer<R>::AddRead(const MappedRead &mr)
+bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
 {
     DEBUG_ONLY(CheckInvariants());
-    const QuiverConfig *config = &quiverConfigByChemistry_.At(mr.Chemistry);
+    const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
     return AddRead(mr, config->AddThreshold);
 }
 
 template <typename R>
-float MultiReadMutationScorer<R>::Score(const Mutation &m) const
+float MultiReadMutationScorer<R>::Score(const Mutation& m) const
 {
     float sum = 0;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive && ReadScoresMutation(*rs.Read, m)) {
             Mutation orientedMut = OrientedMutation(*rs.Read, m);
             sum += (rs.Scorer->ScoreMutation(orientedMut) - rs.Scorer->Score());
@@ -272,10 +272,10 @@ float MultiReadMutationScorer<R>::Score(MutationType mutationType, int position,
 }
 
 template <typename R>
-float MultiReadMutationScorer<R>::FastScore(const Mutation &m) const
+float MultiReadMutationScorer<R>::FastScore(const Mutation& m) const
 {
     float sum = 0;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive && ReadScoresMutation(*rs.Read, m)) {
             Mutation orientedMut = OrientedMutation(*rs.Read, m);
             sum += (rs.Scorer->ScoreMutation(orientedMut) - rs.Scorer->Score());
@@ -288,10 +288,10 @@ float MultiReadMutationScorer<R>::FastScore(const Mutation &m) const
 }
 
 template <typename R>
-std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation &m, float unscoredValue) const
+std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, float unscoredValue) const
 {
     std::vector<float> scoreByRead;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive && ReadScoresMutation(*rs.Read, m)) {
             Mutation orientedMut = OrientedMutation(*rs.Read, m);
             scoreByRead.push_back(rs.Scorer->ScoreMutation(orientedMut) - rs.Scorer->Score());
@@ -311,10 +311,10 @@ std::vector<float> MultiReadMutationScorer<R>::Scores(MutationType mutationType,
 }
 
 template <typename R>
-bool MultiReadMutationScorer<R>::IsFavorable(const Mutation &m) const
+bool MultiReadMutationScorer<R>::IsFavorable(const Mutation& m) const
 {
     float sum = 0;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive && ReadScoresMutation(*rs.Read, m)) {
             Mutation orientedMut = OrientedMutation(*rs.Read, m);
             sum += (rs.Scorer->ScoreMutation(orientedMut) - rs.Scorer->Score());
@@ -324,10 +324,10 @@ bool MultiReadMutationScorer<R>::IsFavorable(const Mutation &m) const
 }
 
 template <typename R>
-bool MultiReadMutationScorer<R>::FastIsFavorable(const Mutation &m) const
+bool MultiReadMutationScorer<R>::FastIsFavorable(const Mutation& m) const
 {
     float sum = 0;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive && ReadScoresMutation(*rs.Read, m)) {
             Mutation orientedMut = OrientedMutation(*rs.Read, m);
             sum += (rs.Scorer->ScoreMutation(orientedMut) - rs.Scorer->Score());
@@ -362,13 +362,13 @@ std::vector<int> MultiReadMutationScorer<R>::UsedMatrixEntries() const
 }
 
 template <typename R>
-const AbstractMatrix *MultiReadMutationScorer<R>::AlphaMatrix(int i) const
+const AbstractMatrix* MultiReadMutationScorer<R>::AlphaMatrix(int i) const
 {
     return reads_[i].Scorer->Alpha();
 }
 
 template <typename R>
-const AbstractMatrix *MultiReadMutationScorer<R>::BetaMatrix(int i) const
+const AbstractMatrix* MultiReadMutationScorer<R>::BetaMatrix(int i) const
 {
     return reads_[i].Scorer->Beta();
 }
@@ -377,7 +377,7 @@ template <typename R>
 std::vector<int> MultiReadMutationScorer<R>::NumFlipFlops() const
 {
     std::vector<int> nFlipFlops;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         nFlipFlops.push_back(rs.Scorer->NumFlipFlops());
     }
     return nFlipFlops;
@@ -387,7 +387,7 @@ template <typename R>
 float MultiReadMutationScorer<R>::BaselineScore() const
 {
     float sum = 0;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive) sum += rs.Scorer->Score();
     }
     return sum;
@@ -397,7 +397,7 @@ template <typename R>
 std::vector<float> MultiReadMutationScorer<R>::BaselineScores() const
 {
     std::vector<float> scoreByRead;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         if (rs.IsActive) scoreByRead.push_back(rs.Scorer->Score());
     }
     return scoreByRead;
@@ -408,7 +408,7 @@ void MultiReadMutationScorer<R>::CheckInvariants() const
 {
 #ifndef NDEBUG
     assert(revTemplate_ == ReverseComplement(fwdTemplate_));
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         rs.CheckInvariants();
         if (rs.IsActive) {
             assert(rs.Scorer->Template() ==
@@ -430,7 +430,7 @@ std::string MultiReadMutationScorer<R>::ToString() const
     ss << "Score: " << BaselineScore() << std::endl;
 
     ss << "Reads:" << std::endl;
-    foreach (const ReadStateType &rs, reads_) {
+    foreach (const ReadStateType& rs, reads_) {
         ss << "\t" << rs.ToString() << std::endl;
     }
     return ss.str();
@@ -439,14 +439,14 @@ std::string MultiReadMutationScorer<R>::ToString() const
 namespace detail {
 
 template <typename ScorerType>
-ReadState<ScorerType>::ReadState(MappedRead *read, ScorerType *scorer, bool isActive)
+ReadState<ScorerType>::ReadState(MappedRead* read, ScorerType* scorer, bool isActive)
     : Read(read), Scorer(scorer), IsActive(isActive)
 {
     CheckInvariants();
 }
 
 template <typename ScorerType>
-ReadState<ScorerType>::ReadState(const ReadState &other)
+ReadState<ScorerType>::ReadState(const ReadState& other)
     : Read(NULL), Scorer(NULL), IsActive(other.IsActive)
 {
     if (other.Read != NULL) Read = new MappedRead(*other.Read);

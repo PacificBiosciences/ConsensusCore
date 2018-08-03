@@ -70,7 +70,7 @@ TEST(PairwiseAlignmentTests, RepresentationTests)
 
 TEST(PairwiseAlignmentTests, GlobalAlignmentTests)
 {
-    PairwiseAlignment *a = Align("GATT", "GATT");
+    PairwiseAlignment* a = Align("GATT", "GATT");
     EXPECT_FLOAT_EQ(1.0, a->Accuracy());
     EXPECT_EQ("GATT", a->Target());
     EXPECT_EQ("GATT", a->Query());
@@ -134,7 +134,7 @@ TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
 
 TEST(AffineAlignmentTests, BasicTests)
 {
-    PairwiseAlignment *a = AlignAffine("ATT", "ATT");
+    PairwiseAlignment* a = AlignAffine("ATT", "ATT");
     EXPECT_EQ("ATT", a->Target());
     EXPECT_EQ("ATT", a->Query());
     delete a;
@@ -174,7 +174,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
 {
     // Test a real-world large insertion, found in an E. Coli
     // experiment
-    const char *target =
+    const char* target =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -193,7 +193,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "CTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAAA"
         "TCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    const char *query =
+    const char* query =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -215,7 +215,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "GCTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAA"
         "ATCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    const char *expectedAlignedTarget =
+    const char* expectedAlignedTarget =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -237,7 +237,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "GCTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAA"
         "ATCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    PairwiseAlignment *a = AlignAffine(target, query);
+    PairwiseAlignment* a = AlignAffine(target, query);
     ASSERT_EQ(expectedAlignedTarget, a->Target());
     delete a;
 }
@@ -246,7 +246,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
 
 TEST(IupacAlignmentTests, BasicTest)
 {
-    PairwiseAlignment *a;
+    PairwiseAlignment* a;
     a = AlignAffineIupac("GATTTT", "GMTTT");
     ASSERT_EQ("GATTTT", a->Target());
     ASSERT_EQ("GM-TTT", a->Query());
@@ -309,10 +309,10 @@ TEST(LinearAlignmentTests, BasicTest)
     EXPECT_FLOAT_EQ(2. / 7, a->Accuracy());
     delete a;
 
-    const char *ref =
+    const char* ref =
         "GTATTTTAAATAAAAACATTAAGTTATGACGAAGAAGAACGGAAACGCCTTAAACCGG"
         "AAAATTTTCATAAATAGCGAAAACCCGCGAGGTCGCCGCCC";
-    const char *read =
+    const char* read =
         "GTATTTTAAATAAAAAAACATTATAGTTTAATGAACGAGAATGAACGGTAATACGCC"
         "TTTAAAGCCTGAAATATTTTTCCATAAATGTAATTTCTGTATATAATCTCCGCGAGT"
         "GTCTGCCGCCC";

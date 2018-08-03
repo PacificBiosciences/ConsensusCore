@@ -44,6 +44,6 @@ namespace ConsensusCore {
 class Checksum
 {
 public:
-    static std::string Of(const QvSequenceFeatures &f);
+    static std::string Of(const QvSequenceFeatures& f);
 };
 }

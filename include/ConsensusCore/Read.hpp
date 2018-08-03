@@ -51,7 +51,7 @@ struct Read
 
     Read(QvSequenceFeatures features, std::string name, std::string chemistry);
 
-    Read(const Read &other);
+    Read(const Read& other);
 
     int Length() const;
     std::string ToString() const;
@@ -73,10 +73,10 @@ struct MappedRead : public Read
     bool PinStart;
     bool PinEnd;
 
-    MappedRead(const Read &read, StrandEnum strand, int templateStart, int templateEnd,
+    MappedRead(const Read& read, StrandEnum strand, int templateStart, int templateEnd,
                bool pinStart = true, bool pinEnd = true);
 
-    MappedRead(const MappedRead &other);
+    MappedRead(const MappedRead& other);
 
     std::string ToString() const;
 };

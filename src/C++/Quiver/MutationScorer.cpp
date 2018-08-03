@@ -51,8 +51,8 @@
 
 namespace ConsensusCore {
 template <typename R>
-MutationScorer<R>::MutationScorer(const EvaluatorType &evaluator,
-                                  const R &recursor) throw(AlphaBetaMismatchException)
+MutationScorer<R>::MutationScorer(const EvaluatorType& evaluator,
+                                  const R& recursor) throw(AlphaBetaMismatchException)
     : evaluator_(new EvaluatorType(evaluator)), recursor_(new R(recursor))
 {
     try {
@@ -73,7 +73,7 @@ MutationScorer<R>::MutationScorer(const EvaluatorType &evaluator,
 }
 
 template <typename R>
-MutationScorer<R>::MutationScorer(const MutationScorer<R> &other)
+MutationScorer<R>::MutationScorer(const MutationScorer<R>& other)
 {
     evaluator_ = new EvaluatorType(*other.evaluator_);
     recursor_ = new R(*other.recursor_);
@@ -110,31 +110,31 @@ void MutationScorer<R>::Template(std::string tpl) throw(AlphaBetaMismatchExcepti
 }
 
 template <typename R>
-const typename R::MatrixType *MutationScorer<R>::Alpha() const
+const typename R::MatrixType* MutationScorer<R>::Alpha() const
 {
     return alpha_;
 }
 
 template <typename R>
-const typename R::MatrixType *MutationScorer<R>::Beta() const
+const typename R::MatrixType* MutationScorer<R>::Beta() const
 {
     return beta_;
 }
 
 template <typename R>
-const typename R::EvaluatorType *MutationScorer<R>::Evaluator() const
+const typename R::EvaluatorType* MutationScorer<R>::Evaluator() const
 {
     return evaluator_;
 }
 
 template <typename R>
-const PairwiseAlignment *MutationScorer<R>::Alignment() const
+const PairwiseAlignment* MutationScorer<R>::Alignment() const
 {
     return recursor_->Alignment(*evaluator_, *alpha_);
 }
 
 template <typename R>
-float MutationScorer<R>::ScoreMutation(const Mutation &m) const
+float MutationScorer<R>::ScoreMutation(const Mutation& m) const
 {
     int betaLinkCol = 1 + m.End();
     int absoluteLinkColumn = 1 + m.End() + m.LengthDiff();

@@ -47,12 +47,12 @@ namespace ConsensusCore {
 /// (In other words a neighborhood of size 2 includes two before but one
 //   after).
 template <typename T>
-std::vector<Mutation> UniqueNearbyMutations(const T &mutationEnumerator,
-                                            const std::vector<Mutation> &centers,
+std::vector<Mutation> UniqueNearbyMutations(const T& mutationEnumerator,
+                                            const std::vector<Mutation>& centers,
                                             int neighborhoodSize)
 {
     std::set<Mutation> muts;
-    foreach (const Mutation &center, centers) {
+    foreach (const Mutation& center, centers) {
         int c = center.Start();
         int l = c - neighborhoodSize;
         // FIXME: r should probably be +1 to be symmetric

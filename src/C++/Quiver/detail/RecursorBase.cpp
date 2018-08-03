@@ -66,7 +66,7 @@ namespace ConsensusCore {
 namespace detail {
 
 template <typename M, typename E, typename C>
-int RecursorBase<M, E, C>::FillAlphaBeta(const E &e, M &a, M &b) const
+int RecursorBase<M, E, C>::FillAlphaBeta(const E& e, M& a, M& b) const
     throw(AlphaBetaMismatchException)
 {
     FillAlpha(e, M::Null(), a);
@@ -111,7 +111,7 @@ struct MoveSpec
 };
 
 template <typename M, typename E, typename C>
-const PairwiseAlignment *RecursorBase<M, E, C>::Alignment(const E &e, const M &a) const
+const PairwiseAlignment* RecursorBase<M, E, C>::Alignment(const E& e, const M& a) const
 {
     if (!boost::is_same<C, ViterbiCombiner>::value) {
         ShouldNotReachHere();
@@ -207,7 +207,7 @@ const PairwiseAlignment *RecursorBase<M, E, C>::Alignment(const E &e, const M &a
     std::string query;
     i = 0;
     j = 0;
-    foreach (const MoveSpec &move, moves) {
+    foreach (const MoveSpec& move, moves) {
         switch (move.MoveType) {
             case INCORPORATE:
                 target += e.Template()[j];
@@ -242,7 +242,7 @@ const PairwiseAlignment *RecursorBase<M, E, C>::Alignment(const E &e, const M &a
 }
 
 template <typename M, typename E, typename C>
-RecursorBase<M, E, C>::RecursorBase(int movesAvailable, const BandingOptions &bandingOptions)
+RecursorBase<M, E, C>::RecursorBase(int movesAvailable, const BandingOptions& bandingOptions)
     : movesAvailable_(movesAvailable), bandingOptions_(bandingOptions)
 {
 }

@@ -66,7 +66,7 @@ public:  // Constructor, destructor
     ~DenseMatrix();
 
 public:  // Nullability
-    static const DenseMatrix &Null();
+    static const DenseMatrix& Null();
     bool IsNull() const;
 
 public:  // Size information
@@ -92,7 +92,7 @@ public:  // Accessors
     // is a set or get.  To my knowledge, there is no way to do this in
     // C++.
     //
-    const float &operator()(int i, int j) const;
+    const float& operator()(int i, int j) const;
     bool IsAllocated(int i, int j) const;
     float Get(int i, int j) const;
     void Set(int i, int j, float v);
@@ -105,7 +105,7 @@ public:  // SSE accessors, which access 4 successive entries in a column
 public:
     // Method SWIG clients can use to get a native matrix (e.g. Numpy)
     // mat must be filled as a ROW major matrix
-    void ToHostMatrix(float **mat, int *rows, int *cols) const;
+    void ToHostMatrix(float** mat, int* rows, int* cols) const;
 
 private:
     std::vector<Interval> usedRanges_;

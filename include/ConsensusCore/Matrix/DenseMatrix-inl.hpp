@@ -52,9 +52,9 @@ namespace ConsensusCore {
 //
 // Nullability
 //
-inline const DenseMatrix &DenseMatrix::Null()
+inline const DenseMatrix& DenseMatrix::Null()
 {
-    static DenseMatrix *nullObj = new DenseMatrix(0, 0);
+    static DenseMatrix* nullObj = new DenseMatrix(0, 0);
     return *nullObj;
 }
 
@@ -114,7 +114,7 @@ inline bool DenseMatrix::IsAllocated(int i, int j) const
 
 inline float DenseMatrix::Get(int i, int j) const { return (*this)(i, j); }
 
-inline const float &DenseMatrix::operator()(int i, int j) const
+inline const float& DenseMatrix::operator()(int i, int j) const
 {
     return boost_dense_matrix::operator()(i, j);
 }
@@ -126,7 +126,7 @@ inline void DenseMatrix::ClearColumn(int j)
     // contiguously)
     int begin, end;
     boost::tie(begin, end) = usedRanges_[j];
-    std::fill_n((float *)&boost_dense_matrix::operator()(begin, j),  // NOLINT
+    std::fill_n((float*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
                 end - begin, value_type());
     usedRanges_[j] = Interval(0, 0);
     DEBUG_ONLY(CheckInvariants(j);)

@@ -50,7 +50,7 @@ class SparseVector
 {
 public:  // Constructor, destructor
     SparseVector(int logicalLength, int beginRow, int endRow);
-    SparseVector(const SparseVector &other);
+    SparseVector(const SparseVector& other);
     ~SparseVector();
 
     // Ensures there is enough allocated storage to
@@ -59,7 +59,7 @@ public:  // Constructor, destructor
     void ResetForRange(int beginRow, int endRow);
 
 public:
-    const float &operator()(int i) const;
+    const float& operator()(int i) const;
     bool IsAllocated(int i) const;
     float Get(int i) const;
     void Set(int i, float v);
@@ -79,7 +79,7 @@ private:
     void ExpandAllocated(int newAllocatedBegin, int newAllocatedEnd);
 
 private:
-    std::vector<float> *storage_;
+    std::vector<float>* storage_;
 
     // the "logical" length of the vector, of which only
     // a subset of entries are actually allocated

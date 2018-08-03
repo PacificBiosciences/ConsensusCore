@@ -100,24 +100,24 @@ const AlignConfig config(params, GLOBAL);
 //   target[j1..j2] into query[i1..i2] (one-based indexing)
 // used for trivial base cases.
 //
-std::string NWTranscript(const std::string &target, int j1, int j2, const std::string &query,
-                         int i1, int i2, int *score)
+std::string NWTranscript(const std::string& target, int j1, int j2, const std::string& query,
+                         int i1, int i2, int* score)
 {
     assert((i1 <= i2) && (j1 <= j2));
     // implement this inline later
     std::string T = target.substr(j1 - 1, j2 - j1 + 1);
     std::string Q = query.substr(i1 - 1, i2 - i1 + 1);
-    PairwiseAlignment *aln = Align(T, Q, score, config);
+    PairwiseAlignment* aln = Align(T, Q, score, config);
     std::string X = aln->Transcript();
     delete aln;
     return X;
 }
 
 #ifndef NDEBUG
-bool CheckTranscript(const std::string &transcript, const std::string &unalnTarget,
-                     const std::string &unalnQuery)
+bool CheckTranscript(const std::string& transcript, const std::string& unalnTarget,
+                     const std::string& unalnQuery)
 {
-    PairwiseAlignment *pa = PairwiseAlignment::FromTranscript(transcript, unalnTarget, unalnQuery);
+    PairwiseAlignment* pa = PairwiseAlignment::FromTranscript(transcript, unalnTarget, unalnQuery);
     if (pa == NULL) {
         return false;
     } else {
@@ -145,9 +145,9 @@ bool CheckTranscript(const std::string &transcript, const std::string &unalnTarg
 // i refers to query; j refers to target
 // this gives better balanced recursion in the (common) semiglobal case
 //
-std::string OptimalTranscript(const std::string &target, int j1, int j2, const std::string &query,
-                              int i1, int i2, ublas::vector<int> &buf1, ublas::vector<int> &buf2,
-                              int *score = NULL)
+std::string OptimalTranscript(const std::string& target, int j1, int j2, const std::string& query,
+                              int i1, int i2, ublas::vector<int>& buf1, ublas::vector<int>& buf2,
+                              int* score = NULL)
 {
     DEBUG_ONLY(std::string subtarget = target.substr(j1 - 1, j2 - j1 + 1);
                std::string subquery = query.substr(i1 - 1, i2 - i1 + 1);)
@@ -162,7 +162,7 @@ std::string OptimalTranscript(const std::string &target, int j1, int j2, const s
 
     std::string x, x1, x2;
     int segmentScore;
-    const AlignParams &params = config.Params;
+    const AlignParams& params = config.Params;
 
     //
     // Base case
@@ -178,8 +178,8 @@ std::string OptimalTranscript(const std::string &target, int j1, int j2, const s
         assert(buf1.size() == target.size() + 1);
         assert(buf2.size() == target.size() + 1);
 
-        ublas::vector<int> &Sm = buf1;  // S-
-        ublas::vector<int> &Sp = buf2;  // S+
+        ublas::vector<int>& Sm = buf1;  // S-
+        ublas::vector<int>& Sp = buf2;  // S+
 
         int mid = (i1 + i2) / 2;
 
@@ -248,7 +248,7 @@ std::string OptimalTranscript(const std::string &target, int j1, int j2, const s
 
     // Check 2: same score as basic N/W?
     DEBUG_ONLY(int peerScore;
-               PairwiseAlignment *peerAlignment = Align(subtarget, subquery, &peerScore, config);
+               PairwiseAlignment* peerAlignment = Align(subtarget, subquery, &peerScore, config);
                assert(peerScore == segmentScore); delete peerAlignment;)
 
     if (score != NULL) {
@@ -258,8 +258,8 @@ std::string OptimalTranscript(const std::string &target, int j1, int j2, const s
 }
 }
 
-PairwiseAlignment *ConsensusCore::AlignLinear(const std::string &target, const std::string &query,
-                                              int *score, AlignConfig config)
+PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const std::string& query,
+                                              int* score, AlignConfig config)
 {
     int J = target.length();
     ublas::vector<int> buf1(J + 1), buf2(J + 1);
@@ -268,7 +268,7 @@ PairwiseAlignment *ConsensusCore::AlignLinear(const std::string &target, const s
     return PairwiseAlignment::FromTranscript(x, target, query);
 }
 
-PairwiseAlignment *ConsensusCore::AlignLinear(const std::string &target, const std::string &query,
+PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const std::string& query,
                                               AlignConfig config)
 {
     return AlignLinear(target, query, NULL, config);

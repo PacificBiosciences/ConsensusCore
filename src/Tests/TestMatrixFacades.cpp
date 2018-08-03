@@ -190,7 +190,7 @@ TYPED_TEST(MatrixTest, ToHostArray)
         m.FinishEditingColumn(j, 0, 10);
     }
 
-    float *hostArray;
+    float* hostArray;
     int rows, cols;
     m.ToHostMatrix(&hostArray, &rows, &cols);
     EXPECT_EQ(10, rows);

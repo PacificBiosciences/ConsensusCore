@@ -75,7 +75,7 @@ int DenseMatrix::UsedEntries() const
 
 int DenseMatrix::AllocatedEntries() const { return Rows() * Columns(); }
 
-void DenseMatrix::ToHostMatrix(float **mat, int *rows, int *cols) const
+void DenseMatrix::ToHostMatrix(float** mat, int* rows, int* cols) const
 {
     // TODO(dalexander): make sure SWIG client deallocates this memory -- use
     // %newobject flag

@@ -66,8 +66,8 @@ AffineAlignmentParams IupacAwareAffineAlignmentParams();
 //
 // Affine gap-penalty alignment.
 //
-PairwiseAlignment *AlignAffine(
-    const std::string &target, const std::string &query,
+PairwiseAlignment* AlignAffine(
+    const std::string& target, const std::string& query,
     AffineAlignmentParams params = DefaultAffineAlignmentParams());  // NOLINT
 
 //
@@ -78,7 +78,7 @@ PairwiseAlignment *AlignAffine(
 //   T->M = -1,
 //   A->M = -0.5
 //
-PairwiseAlignment *AlignAffineIupac(
-    const std::string &target, const std::string &query,
+PairwiseAlignment* AlignAffineIupac(
+    const std::string& target, const std::string& query,
     AffineAlignmentParams params = IupacAwareAffineAlignmentParams());  // NOLINT
 }

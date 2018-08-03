@@ -47,7 +47,7 @@ namespace ConsensusCore {
 namespace detail {
 
 template <typename M>
-inline Interval RowRange(int j, const M &matrix, float scoreDiff)
+inline Interval RowRange(int j, const M& matrix, float scoreDiff)
 {
     int beginRow, endRow;
     boost::tie(beginRow, endRow) = matrix.UsedRowRange(j);
@@ -78,8 +78,8 @@ inline Interval RowRange(int j, const M &matrix, float scoreDiff)
 }
 
 template <typename M, typename E, typename C>
-inline bool RecursorBase<M, E, C>::RangeGuide(int j, const M &guide, const M &matrix, int *beginRow,
-                                              int *endRow) const
+inline bool RecursorBase<M, E, C>::RangeGuide(int j, const M& guide, const M& matrix, int* beginRow,
+                                              int* endRow) const
 {
     bool useGuide = !(guide.IsNull() || guide.IsColumnEmpty(j));
     bool useMatrix = !(matrix.IsNull() || matrix.IsColumnEmpty(j));

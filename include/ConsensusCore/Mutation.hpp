@@ -67,7 +67,7 @@ private:
 public:
     Mutation(MutationType type, int start, int end, std::string newBases);
     Mutation(MutationType type, int position, char base);
-    Mutation(const Mutation &other);
+    Mutation(const Mutation& other);
 
     // Note: this defines a default mutation.  This is really only needed to fix
     // SWIG compilation.
@@ -94,22 +94,22 @@ public:
     std::string ToString() const;
 
 public:
-    bool operator==(const Mutation &other) const;
-    bool operator<(const Mutation &other) const;
+    bool operator==(const Mutation& other) const;
+    bool operator<(const Mutation& other) const;
 
 public:
     ScoredMutation WithScore(float score) const;
 };
 
-std::ostream &operator<<(std::ostream &out, const Mutation &m);
+std::ostream& operator<<(std::ostream& out, const Mutation& m);
 
-std::string ApplyMutation(const Mutation &mut, const std::string &tpl);
-std::string ApplyMutations(const std::vector<Mutation> &muts, const std::string &tpl);
+std::string ApplyMutation(const Mutation& mut, const std::string& tpl);
+std::string ApplyMutations(const std::vector<Mutation>& muts, const std::string& tpl);
 
-std::string MutationsToTranscript(const std::vector<Mutation> &muts, const std::string &tpl);
+std::string MutationsToTranscript(const std::vector<Mutation>& muts, const std::string& tpl);
 
-std::vector<int> TargetToQueryPositions(const std::vector<Mutation> &mutations,
-                                        const std::string &tpl);
+std::vector<int> TargetToQueryPositions(const std::vector<Mutation>& mutations,
+                                        const std::string& tpl);
 
 class ScoredMutation : public Mutation
 {
@@ -118,12 +118,12 @@ private:
 
 public:
     ScoredMutation();
-    ScoredMutation(const Mutation &m, float score);
+    ScoredMutation(const Mutation& m, float score);
     float Score() const;
     std::string ToString() const;
 };
 
-std::ostream &operator<<(std::ostream &out, const ScoredMutation &m);
+std::ostream& operator<<(std::ostream& out, const ScoredMutation& m);
 }
 
 #include <ConsensusCore/Mutation-inl.hpp>

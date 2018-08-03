@@ -56,7 +56,7 @@ class Feature : private boost::shared_array<T>
 {
 public:
     // \brief Allocate a new feature object, copying content from ptr.
-    Feature(const T *inPtr, int length) : boost::shared_array<T>(new T[length]), length_(length)
+    Feature(const T* inPtr, int length) : boost::shared_array<T>(new T[length]), length_(length)
     {
         assert(length >= 0);
         std::copy(inPtr, inPtr + length, get());
@@ -65,7 +65,7 @@ public:
     // Our features are typically stored in unsigned char[] or short[].
     // Here are constructors to make it easier to stuff those guys into
     // a FloatFeature.
-    Feature(const unsigned char *inPtr, int length)
+    Feature(const unsigned char* inPtr, int length)
         : boost::shared_array<T>(new T[length]), length_(length)
     {
         assert(length >= 0);
@@ -80,9 +80,9 @@ public:
 
     int Length() const { return length_; }
 
-    const T &operator[](int i) const { return this->boost::shared_array<T>::operator[](i); }
+    const T& operator[](int i) const { return this->boost::shared_array<T>::operator[](i); }
 
-    T &operator[](int i) { return this->boost::shared_array<T>::operator[](i); }
+    T& operator[](int i) { return this->boost::shared_array<T>::operator[](i); }
 
     T ElementAt(int i) const { return (*this)[i]; }
 
@@ -93,9 +93,9 @@ private:
 
 #ifndef SWIG
 public:
-    T *get() { return this->boost::shared_array<T>::get(); }
+    T* get() { return this->boost::shared_array<T>::get(); }
 
-    const T *get() const { return this->boost::shared_array<T>::get(); }
+    const T* get() const { return this->boost::shared_array<T>::get(); }
 
     operator std::string() const;
 #endif  // !SWIG
@@ -106,25 +106,25 @@ public:
 // Support for boost::foreach
 //
 template <typename T>
-inline const T *range_begin(const Feature<T> &f)
+inline const T* range_begin(const Feature<T>& f)
 {
     return f.get();
 }
 
 template <typename T>
-inline const T *range_end(const Feature<T> &f)
+inline const T* range_end(const Feature<T>& f)
 {
     return f.get() + f.Length();
 }
 
 template <typename T>
-inline T *range_begin(Feature<T> &f)  // NOLINT
+inline T* range_begin(Feature<T>& f)  // NOLINT
 {
     return f.get();
 }
 
 template <typename T>
-inline T *range_end(Feature<T> &f)  // NOLINT
+inline T* range_end(Feature<T>& f)  // NOLINT
 {
     return f.get() + f.Length();
 }
@@ -140,13 +140,13 @@ namespace boost {
 template <typename T>
 struct range_const_iterator<ConsensusCore::Feature<T>>
 {
-    typedef const T *type;
+    typedef const T* type;
 };
 
 template <typename T>
 struct range_mutable_iterator<ConsensusCore::Feature<T>>
 {
-    typedef T *type;
+    typedef T* type;
 };
 }
 #endif  // !SWIG

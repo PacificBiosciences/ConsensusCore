@@ -57,7 +57,7 @@ SparseMatrix::SparseMatrix(int rows, int cols)
     }
 }
 
-SparseMatrix::SparseMatrix(const SparseMatrix &other)
+SparseMatrix::SparseMatrix(const SparseMatrix& other)
     : columns_(other.nCols_)
     , nCols_(other.nCols_)
     , nRows_(other.nRows_)
@@ -101,7 +101,7 @@ int SparseMatrix::AllocatedEntries() const
     return sum;
 }
 
-void SparseMatrix::ToHostMatrix(float **mat, int *rows, int *cols) const
+void SparseMatrix::ToHostMatrix(float** mat, int* rows, int* cols) const
 {
     const float nan = std::numeric_limits<float>::quiet_NaN();
     *mat = new float[Rows() * Columns()];

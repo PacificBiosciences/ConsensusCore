@@ -59,7 +59,7 @@ using std::max;
 namespace ConsensusCore {
 
 template <typename M, typename E, typename C>
-void SimpleRecursor<M, E, C>::FillAlpha(const E &e, const M &guide, M &alpha) const
+void SimpleRecursor<M, E, C>::FillAlpha(const E& e, const M& guide, M& alpha) const
 {
     int I = e.ReadLength();
     int J = e.TemplateLength();
@@ -137,7 +137,7 @@ void SimpleRecursor<M, E, C>::FillAlpha(const E &e, const M &guide, M &alpha) co
 }
 
 template <typename M, typename E, typename C>
-void SimpleRecursor<M, E, C>::FillBeta(const E &e, const M &guide, M &beta) const
+void SimpleRecursor<M, E, C>::FillBeta(const E& e, const M& guide, M& beta) const
 {
     int I = e.ReadLength();
     int J = e.TemplateLength();
@@ -223,8 +223,8 @@ void SimpleRecursor<M, E, C>::FillBeta(const E &e, const M &guide, M &beta) cons
 /// read; columns alphaColumn - 1 and alphaColumn - 2 of alpha
 /// will be read.
 template <typename M, typename E, typename C>
-float SimpleRecursor<M, E, C>::LinkAlphaBeta(const E &e, const M &alpha, int alphaColumn,
-                                             const M &beta, int betaColumn,
+float SimpleRecursor<M, E, C>::LinkAlphaBeta(const E& e, const M& alpha, int alphaColumn,
+                                             const M& beta, int betaColumn,
                                              int absoluteColumn) const
 {
     const int I = e.ReadLength();
@@ -269,7 +269,7 @@ float SimpleRecursor<M, E, C>::LinkAlphaBeta(const E &e, const M &alpha, int alp
 // Reads: alpha(:, (beginColumn-2)..)
 //
 template <typename M, typename E, typename C>
-void SimpleRecursor<M, E, C>::ExtendAlpha(const E &e, const M &alpha, int beginColumn, M &ext,
+void SimpleRecursor<M, E, C>::ExtendAlpha(const E& e, const M& alpha, int beginColumn, M& ext,
                                           int numExtColumns) const
 {
     assert(numExtColumns >= 2);
@@ -352,7 +352,7 @@ void SimpleRecursor<M, E, C>::ExtendAlpha(const E &e, const M &alpha, int beginC
 //
 // Accesses B(:, ..(j+2))
 template <typename M, typename E, typename C>
-void SimpleRecursor<M, E, C>::ExtendBeta(const E &e, const M &beta, int lastColumn, M &ext,
+void SimpleRecursor<M, E, C>::ExtendBeta(const E& e, const M& beta, int lastColumn, M& ext,
                                          int numExtColumns, int lengthDiff) const
 {
     int I = beta.Rows() - 1;
@@ -424,7 +424,7 @@ void SimpleRecursor<M, E, C>::ExtendBeta(const E &e, const M &beta, int lastColu
 }
 
 template <typename M, typename E, typename C>
-SimpleRecursor<M, E, C>::SimpleRecursor(int movesAvailable, const BandingOptions &banding)
+SimpleRecursor<M, E, C>::SimpleRecursor(int movesAvailable, const BandingOptions& banding)
     : detail::RecursorBase<M, E, C>(movesAvailable, banding)
 {
 }

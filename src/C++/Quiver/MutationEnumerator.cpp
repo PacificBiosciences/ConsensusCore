@@ -50,12 +50,12 @@ namespace ConsensusCore {
 namespace {  // PRIVATE
 const char BASES[] = {'A', 'C', 'G', 'T'};
 
-inline int BoundPosition(const std::string &tpl, int pos)
+inline int BoundPosition(const std::string& tpl, int pos)
 {
     return pos < 0 ? 0 : (pos > static_cast<int>(tpl.length()) ? tpl.length() : pos);
 }
 
-inline std::pair<int, int> BoundInterval(const std::string &tpl, int beginPos, int endPos)
+inline std::pair<int, int> BoundInterval(const std::string& tpl, int beginPos, int endPos)
 {
     return std::make_pair(BoundPosition(tpl, beginPos), BoundPosition(tpl, endPos));
 }
@@ -63,12 +63,12 @@ inline std::pair<int, int> BoundInterval(const std::string &tpl, int beginPos, i
 
 namespace detail {
 
-AbstractMutationEnumerator::AbstractMutationEnumerator(const std::string &tpl) : tpl_(tpl) {}
+AbstractMutationEnumerator::AbstractMutationEnumerator(const std::string& tpl) : tpl_(tpl) {}
 
 AbstractMutationEnumerator::~AbstractMutationEnumerator() {}
 }  // detail
 
-AllSingleBaseMutationEnumerator::AllSingleBaseMutationEnumerator(const std::string &tpl)
+AllSingleBaseMutationEnumerator::AllSingleBaseMutationEnumerator(const std::string& tpl)
     : detail::AbstractMutationEnumerator(tpl)
 {
 }
@@ -96,7 +96,7 @@ std::vector<Mutation> AllSingleBaseMutationEnumerator::Mutations(int beginPos, i
     return result;
 }
 
-UniqueSingleBaseMutationEnumerator::UniqueSingleBaseMutationEnumerator(const std::string &tpl)
+UniqueSingleBaseMutationEnumerator::UniqueSingleBaseMutationEnumerator(const std::string& tpl)
     : detail::AbstractMutationEnumerator(tpl)
 {
 }
@@ -132,7 +132,7 @@ std::vector<Mutation> UniqueSingleBaseMutationEnumerator::Mutations(int beginPos
 }
 
 DinucleotideRepeatMutationEnumerator::DinucleotideRepeatMutationEnumerator(
-    const std::string &tpl, int minDinucRepeatElements)
+    const std::string& tpl, int minDinucRepeatElements)
     : detail::AbstractMutationEnumerator(tpl), minDinucRepeatElements_(minDinucRepeatElements)
 {
 }

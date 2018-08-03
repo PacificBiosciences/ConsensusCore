@@ -45,6 +45,6 @@ void Logging::EnableDiagnosticLogging()
     flog = new cpplog::FilteringLogger(LL_TRACE, slog);
 }
 
-cpplog::StdErrLogger *Logging::slog = new cpplog::StdErrLogger();
-cpplog::FilteringLogger *Logging::flog = new cpplog::FilteringLogger(LL_WARN, slog);
+cpplog::StdErrLogger* Logging::slog = new cpplog::StdErrLogger();
+cpplog::FilteringLogger* Logging::flog = new cpplog::FilteringLogger(LL_WARN, slog);
 }
