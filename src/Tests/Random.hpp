@@ -148,6 +148,7 @@ std::vector<int> RandomSampleWithoutReplacement(RNG& rng, int n, int k)
             draws.push_back(draw);
         }
     }
+    return draws;
 }
 
 typedef boost::mt19937 Rng;
