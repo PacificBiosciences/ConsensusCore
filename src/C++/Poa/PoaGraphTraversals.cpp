@@ -346,8 +346,8 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
         float bestInsertScore = -FLT_MAX;
         VD bestInsertVertex = null_vertex;
 
-        foreach (VD v, children) {
-            boost::unordered_set<VD>::iterator found = lookBack.find(v);
+        foreach (VD vi, children) {
+            boost::unordered_set<VD>::iterator found = lookBack.find(vi);
             if (found != lookBack.end()) {
                 float score = vertexInfoMap_[*found].Score;
                 if (score > bestInsertScore) {
@@ -371,10 +371,10 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
         float bestMismatchScore = -FLT_MAX;
         VD bestMismatchVertex = null_vertex;
 
-        foreach (VD v, children) {
-            if (v == bestPath_[i + 1]) continue;
+        foreach (VD vi, children) {
+            if (vi == bestPath_[i + 1]) continue;
 
-            boost::unordered_set<VD>::iterator found = lookBack.find(v);
+            boost::unordered_set<VD>::iterator found = lookBack.find(vi);
             if (found != lookBack.end()) {
                 float score = vertexInfoMap_[*found].Score;
                 if (score > bestMismatchScore) {
