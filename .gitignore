@@ -1,7 +1,7 @@
 make/Config.mk
 *.o
 *.d
-build/
+build*/
 .project
 .cproject
 .settings
@@ -10,3 +10,7 @@ ConsensusCore.xcodeproj
 bin/
 obj/
 /.p4config
+
+# Meson WrapDB stuff
+subprojects/packagecache/
+subprojects/googletest*

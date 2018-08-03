@@ -1,25 +1,41 @@
-#!/bin/bash -xev
-type module >& /dev/null \
-|| . /mnt/software/Modules/current/init/bash
+#!/usr/bin/env bash
+set -vex
+
+################
+# DEPENDENCIES #
+################
+
+## Load modules
+type module >& /dev/null || . /mnt/software/Modules/current/init/bash
+
+module purge
+
+module load meson
+module load ninja
+
 module load gcc
-module load boost
-module load swig
 module load ccache
 
-if [[ $bamboo_repository_branch_name =~ -DEP-438- ]]; then
-  export BOOST_ROOT=/mnt/software/b/boost/1.60
-fi
-if [[ $USER == "bamboo" ]]; then
-  export CCACHE_DIR=/mnt/secondary/Share/tmp/bamboo.mobs.ccachedir
+module load boost
+
+module load gtest
+
+
+BOOST_ROOT="${BOOST_ROOT%/include}"
+# unset these variables to have meson discover all
+# boost-dependent variables from BOOST_ROOT alone
+unset BOOST_INCLUDEDIR
+unset BOOST_LIBRARYDIR
+
+export CXX="ccache g++"
+export CCACHE_BASEDIR="${PWD}"
+
+if [[ $USER == bamboo ]]; then
+  export CCACHE_DIR=/mnt/secondary/Share/tmp/bamboo.${bamboo_shortPlanKey}.ccachedir
   export CCACHE_TEMPDIR=/scratch/bamboo.ccache_tempdir
 fi
-export CCACHE_COMPILERCHECK='%compiler% -dumpversion'
-export CCACHE_BASEDIR=$PWD
-export PYTHONUSERBASE=$PWD/_deployment
-export PATH=/mnt/software/a/anaconda2/4.2.0/bin:$PATH
 
-make clean
-rm -rf _deployment
-mkdir -p _deployment
+export ENABLED_TESTS="true"
 
-python setup.py install --user --boost=$BOOST_ROOT
+bash scripts/ci/build.sh
+bash scripts/ci/test.sh
