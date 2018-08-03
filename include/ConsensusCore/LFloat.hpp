@@ -71,12 +71,12 @@ struct lfloat
 };
 
 template <typename T>
-const float Zero()
+float Zero()
 {
     return T();
 }
 template <typename T>
-const __m128 Zero4()
+__m128 Zero4()
 {
     return _mm_set_ps1(T());
 }

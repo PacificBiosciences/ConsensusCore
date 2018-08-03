@@ -77,7 +77,7 @@ public:
     const MatrixType* Beta() const;
     const PairwiseAlignment* Alignment() const;
     const EvaluatorType* Evaluator() const;
-    const int NumFlipFlops() const { return numFlipFlops_; }
+    int NumFlipFlops() const { return numFlipFlops_; }
 
 private:
     EvaluatorType* evaluator_;

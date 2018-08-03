@@ -63,9 +63,9 @@ inline bool SparseMatrix::IsNull() const { return (Rows() == 0 && Columns() == 0
 //
 // Size information
 //
-inline const int SparseMatrix::Rows() const { return nRows_; }
+inline int SparseMatrix::Rows() const { return nRows_; }
 
-inline const int SparseMatrix::Columns() const { return nCols_; }
+inline int SparseMatrix::Columns() const { return nCols_; }
 
 //
 // Entry range queries per column

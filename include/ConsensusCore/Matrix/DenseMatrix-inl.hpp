@@ -63,9 +63,9 @@ inline bool DenseMatrix::IsNull() const { return (Rows() == 0 && Columns() == 0)
 //
 // Size information
 //
-inline const int DenseMatrix::Rows() const { return size1(); }
+inline int DenseMatrix::Rows() const { return size1(); }
 
-inline const int DenseMatrix::Columns() const { return size2(); }
+inline int DenseMatrix::Columns() const { return size2(); }
 
 //
 // Entry range queries per column
