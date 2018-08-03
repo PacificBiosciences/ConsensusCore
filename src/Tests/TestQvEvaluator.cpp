@@ -139,9 +139,7 @@ TEST_F(QvEvaluatorTest, BadTagTest)
     float* mergeQv = RandomQvArray(rng, readLength);
     delTag[5] = 3;
 
-    QvSequenceFeatures* f;
-    ASSERT_THROW(f = new QvSequenceFeatures(seq, insQv, subsQv, delQv, delTag, mergeQv),
-                 InternalError);
+    ASSERT_THROW(new QvSequenceFeatures(seq, insQv, subsQv, delQv, delTag, mergeQv), InternalError);
 
     delete[] insQv;
     delete[] subsQv;
