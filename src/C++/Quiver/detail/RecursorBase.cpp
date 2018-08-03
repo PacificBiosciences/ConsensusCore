@@ -56,7 +56,7 @@
 
 // TODO(dalexander): put these into a RecursorConfig struct
 #define MAX_FLIP_FLOPS 5
-#define ALPHA_BETA_MISMATCH_TOLERANCE 0.2
+#define ALPHA_BETA_MISMATCH_TOLERANCE 0.2f
 #define REBANDING_THRESHOLD 0.04
 
 using std::max;
@@ -86,7 +86,8 @@ int RecursorBase<M, E, C>::FillAlphaBeta(const E& e, M& a, M& b) const
         flipflops += 3;
     }
 
-    while (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE && flipflops <= MAX_FLIP_FLOPS) {
+    while (std::fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE &&
+           flipflops <= MAX_FLIP_FLOPS) {
         if (flipflops % 2 == 0) {
             FillAlpha(e, b, a);
         } else {
@@ -95,7 +96,7 @@ int RecursorBase<M, E, C>::FillAlphaBeta(const E& e, M& a, M& b) const
         flipflops++;
     }
 
-    if (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE) {
+    if (std::fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE) {
         LDEBUG << "Could not mate alpha, beta.  Read: " << e.ReadName() << " Tpl: " << e.Template();
         throw AlphaBetaMismatchException();
     }

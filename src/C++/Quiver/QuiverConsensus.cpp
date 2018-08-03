@@ -246,7 +246,7 @@ std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms)
     for (size_t pos = 0; pos < mms.Template().length(); pos++) {
         double scoreSum = 0.0;
         foreach (const Mutation& m, mutationEnumerator.Mutations(pos, pos + 1)) {
-            scoreSum += exp(mms.FastScore(m));
+            scoreSum += std::exp(static_cast<double>(mms.FastScore(m)));
         }
         QVs.push_back(ProbabilityToQV(1.0 - 1.0 / (1.0 + scoreSum)));
     }

@@ -104,7 +104,7 @@ int RandomPoissonDraw(RNG& rng, int mean)
 template <typename RNG>
 bool RandomBernoulliDraw(RNG& rng, float p)
 {
-    boost::random::bernoulli_distribution<> dist(p);
+    boost::random::bernoulli_distribution<> dist(static_cast<double>(p));
     return dist(rng);
 }
 

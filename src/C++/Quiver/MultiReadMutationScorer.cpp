@@ -49,7 +49,7 @@
 #include <string>
 #include <vector>
 
-#define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
+#define MIN_FAVORABLE_SCOREDIFF 0.04f  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
 namespace ConsensusCore {
 //
@@ -228,7 +228,7 @@ bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
     if (scorer != NULL && threshold < 1.0f) {
         int I = ev.ReadLength();
         int J = ev.TemplateLength();
-        int maxSize = static_cast<int>(0.5 + threshold * (I + 1) * (J + 1));
+        int maxSize = static_cast<int>(0.5f + threshold * (I + 1) * (J + 1));
 
         if (scorer->Alpha()->AllocatedEntries() >= maxSize ||
             scorer->Beta()->AllocatedEntries() >= maxSize) {
