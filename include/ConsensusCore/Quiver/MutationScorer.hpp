@@ -58,10 +58,10 @@ public:
     typedef R RecursorType;
 
 public:
-    MutationScorer(const EvaluatorType &evaluator,
-                   const R &recursor) throw(AlphaBetaMismatchException);
+    MutationScorer(const EvaluatorType& evaluator,
+                   const R& recursor) throw(AlphaBetaMismatchException);
 
-    MutationScorer(const MutationScorer &other);
+    MutationScorer(const MutationScorer& other);
     virtual ~MutationScorer();
 
 public:
@@ -69,22 +69,22 @@ public:
     void Template(std::string tpl) throw(AlphaBetaMismatchException);
 
     float Score() const;
-    float ScoreMutation(const Mutation &m) const;
+    float ScoreMutation(const Mutation& m) const;
 
 public:
     // Accessors that are handy for debugging.
-    const MatrixType *Alpha() const;
-    const MatrixType *Beta() const;
-    const PairwiseAlignment *Alignment() const;
-    const EvaluatorType *Evaluator() const;
+    const MatrixType* Alpha() const;
+    const MatrixType* Beta() const;
+    const PairwiseAlignment* Alignment() const;
+    const EvaluatorType* Evaluator() const;
     const int NumFlipFlops() const { return numFlipFlops_; }
 
 private:
-    EvaluatorType *evaluator_;
-    R *recursor_;
-    MatrixType *alpha_;
-    MatrixType *beta_;
-    MatrixType *extendBuffer_;
+    EvaluatorType* evaluator_;
+    R* recursor_;
+    MatrixType* alpha_;
+    MatrixType* beta_;
+    MatrixType* extendBuffer_;
     int numFlipFlops_;
 };
 

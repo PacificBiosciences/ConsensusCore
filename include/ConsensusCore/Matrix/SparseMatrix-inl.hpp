@@ -52,9 +52,9 @@ namespace ConsensusCore {
 //
 // Nullability
 //
-inline const SparseMatrix &SparseMatrix::Null()
+inline const SparseMatrix& SparseMatrix::Null()
 {
-    static SparseMatrix *nullObj = new SparseMatrix(0, 0);
+    static SparseMatrix* nullObj = new SparseMatrix(0, 0);
     return *nullObj;
 }
 
@@ -104,7 +104,7 @@ inline bool SparseMatrix::IsColumnEmpty(int j) const
 //
 // Accessors
 //
-inline const float &SparseMatrix::operator()(int i, int j) const
+inline const float& SparseMatrix::operator()(int i, int j) const
 {
     static const float emptyCell = Zero<lfloat>();
     if (columns_[j] == NULL) {

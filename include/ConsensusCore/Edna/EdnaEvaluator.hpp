@@ -73,8 +73,8 @@ public:
     typedef EdnaModelParams ParamsType;
 
 public:
-    EdnaEvaluator(const ChannelSequenceFeatures &features, const std::string &tpl,
-                  const std::vector<int> channelTpl, const EdnaModelParams &params)
+    EdnaEvaluator(const ChannelSequenceFeatures& features, const std::string& tpl,
+                  const std::vector<int> channelTpl, const EdnaModelParams& params)
         : features_(features)
         , params_(params)
         , tpl_(tpl)

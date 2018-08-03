@@ -80,7 +80,7 @@ int PairwiseAlignment::Deletions() const
 
 int PairwiseAlignment::Length() const { return target_.length(); }
 
-PairwiseAlignment::PairwiseAlignment(const std::string &target, const std::string &query)
+PairwiseAlignment::PairwiseAlignment(const std::string& target, const std::string& query)
     : target_(target), query_(query), transcript_(target_.length(), 'Z')
 {
     if (target_.length() != query_.length()) {
@@ -107,12 +107,12 @@ PairwiseAlignment::PairwiseAlignment(const std::string &target, const std::strin
     }
 }
 
-PairwiseAlignment *Align(const std::string &target, const std::string &query, int *score,
+PairwiseAlignment* Align(const std::string& target, const std::string& query, int* score,
                          AlignConfig config)
 {
     using boost::numeric::ublas::matrix;
 
-    const AlignParams &params = config.Params;
+    const AlignParams& params = config.Params;
     if (config.Mode != GLOBAL) {
         throw UnsupportedFeatureError("Only GLOBAL alignment supported at present");
     }
@@ -177,7 +177,7 @@ PairwiseAlignment *Align(const std::string &target, const std::string &query, in
     return new PairwiseAlignment(Reverse(raTarget), Reverse(raQuery));
 }
 
-PairwiseAlignment *Align(const std::string &target, const std::string &query, AlignConfig config)
+PairwiseAlignment* Align(const std::string& target, const std::string& query, AlignConfig config)
 {
     return Align(target, query, NULL, config);
 }
@@ -191,7 +191,7 @@ static bool addsToTarget(char transcriptChar)
     return (transcriptChar == 'M' || transcriptChar == 'R' || transcriptChar == 'D');
 }
 
-static int targetLength(const std::string &alignmentTranscript)
+static int targetLength(const std::string& alignmentTranscript)
 {
     return std::count_if(alignmentTranscript.begin(), alignmentTranscript.end(), addsToTarget);
 }
@@ -202,7 +202,7 @@ static bool addsToQuery(char transcriptChar)
     return (transcriptChar == 'M' || transcriptChar == 'R' || transcriptChar == 'I');
 }
 
-static int queryLength(const std::string &alignmentTranscript)
+static int queryLength(const std::string& alignmentTranscript)
 {
     return std::count_if(alignmentTranscript.begin(), alignmentTranscript.end(), addsToQuery);
 }
@@ -225,7 +225,7 @@ static int queryLength(const std::string &alignmentTranscript)
 //     DMM -> 0012,  MMD -> 0122, MDM -> 0112
 //     IMM -> 123,   MMI -> 013,  MIM -> 023
 //     MRM, MIDM, MDIM -> 0123
-std::vector<int> TargetToQueryPositions(const std::string &transcript)
+std::vector<int> TargetToQueryPositions(const std::string& transcript)
 {
     std::vector<int> ntp;
     ntp.reserve(targetLength(transcript) + 1);
@@ -253,16 +253,16 @@ std::vector<int> TargetToQueryPositions(const std::string &transcript)
     return ntp;
 }
 
-std::vector<int> TargetToQueryPositions(const PairwiseAlignment &aln)
+std::vector<int> TargetToQueryPositions(const PairwiseAlignment& aln)
 {
     return TargetToQueryPositions(aln.Transcript());
 }
 
 // Build the alignment given the unaligned sequences and the transcript
 // Returns NULL if transcript does not map unalnTarget into unalnQuery.
-PairwiseAlignment *PairwiseAlignment::FromTranscript(const std::string &transcript,
-                                                     const std::string &unalnTarget,
-                                                     const std::string &unalnQuery)
+PairwiseAlignment* PairwiseAlignment::FromTranscript(const std::string& transcript,
+                                                     const std::string& unalnTarget,
+                                                     const std::string& unalnQuery)
 {
     std::string alnTarget;
     std::string alnQuery;

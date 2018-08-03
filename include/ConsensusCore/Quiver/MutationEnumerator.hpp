@@ -48,7 +48,7 @@ namespace ConsensusCore {
 namespace detail {
 struct AbstractMutationEnumerator
 {
-    explicit AbstractMutationEnumerator(const std::string &tpl);
+    explicit AbstractMutationEnumerator(const std::string& tpl);
     virtual ~AbstractMutationEnumerator();
 
     virtual std::vector<Mutation> Mutations() const = 0;
@@ -61,7 +61,7 @@ protected:
 
 struct AllSingleBaseMutationEnumerator : detail::AbstractMutationEnumerator
 {
-    explicit AllSingleBaseMutationEnumerator(const std::string &tpl);
+    explicit AllSingleBaseMutationEnumerator(const std::string& tpl);
 
     std::vector<Mutation> Mutations() const;
     std::vector<Mutation> Mutations(int beginPos, int endPos) const;
@@ -69,7 +69,7 @@ struct AllSingleBaseMutationEnumerator : detail::AbstractMutationEnumerator
 
 struct UniqueSingleBaseMutationEnumerator : detail::AbstractMutationEnumerator
 {
-    explicit UniqueSingleBaseMutationEnumerator(const std::string &tpl);
+    explicit UniqueSingleBaseMutationEnumerator(const std::string& tpl);
 
     std::vector<Mutation> Mutations() const;
     std::vector<Mutation> Mutations(int beginPos, int endPos) const;
@@ -77,7 +77,7 @@ struct UniqueSingleBaseMutationEnumerator : detail::AbstractMutationEnumerator
 
 struct DinucleotideRepeatMutationEnumerator : detail::AbstractMutationEnumerator
 {
-    DinucleotideRepeatMutationEnumerator(const std::string &tpl, int minDinucRepeatElements = 3);
+    DinucleotideRepeatMutationEnumerator(const std::string& tpl, int minDinucRepeatElements = 3);
 
     std::vector<Mutation> Mutations() const;
     std::vector<Mutation> Mutations(int beginPos, int endPos) const;
@@ -87,8 +87,8 @@ private:
 };
 
 template <typename T>
-std::vector<Mutation> UniqueNearbyMutations(const T &mutationEnumerator,
-                                            const std::vector<Mutation> &centers,
+std::vector<Mutation> UniqueNearbyMutations(const T& mutationEnumerator,
+                                            const std::vector<Mutation>& centers,
                                             int neighborhoodSize);
 }
 

@@ -72,7 +72,7 @@ std::string Mutation::ToString() const
     }
 }
 
-std::ostream &operator<<(std::ostream &out, const Mutation &m)
+std::ostream& operator<<(std::ostream& out, const Mutation& m)
 {
     out << m.ToString();
     return out;
@@ -80,7 +80,7 @@ std::ostream &operator<<(std::ostream &out, const Mutation &m)
 
 ScoredMutation Mutation::WithScore(float score) const { return ScoredMutation(*this, score); }
 
-static void _ApplyMutationInPlace(const Mutation &mut, int start, std::string *tpl)
+static void _ApplyMutationInPlace(const Mutation& mut, int start, std::string* tpl)
 {
     if (mut.IsSubstitution()) {
         (*tpl).replace(start, mut.End() - mut.Start(), mut.NewBases());
@@ -91,27 +91,27 @@ static void _ApplyMutationInPlace(const Mutation &mut, int start, std::string *t
     }
 }
 
-std::string ApplyMutation(const Mutation &mut, const std::string &tpl)
+std::string ApplyMutation(const Mutation& mut, const std::string& tpl)
 {
     std::string tplCopy(tpl);
     _ApplyMutationInPlace(mut, mut.Start(), &tplCopy);
     return tplCopy;
 }
 
-std::string ApplyMutations(const std::vector<Mutation> &muts, const std::string &tpl)
+std::string ApplyMutations(const std::vector<Mutation>& muts, const std::string& tpl)
 {
     std::string tplCopy(tpl);
     std::vector<Mutation> sortedMuts(muts);
     std::sort(sortedMuts.begin(), sortedMuts.end());
     int runningLengthDiff = 0;
-    foreach (const Mutation &mut, sortedMuts) {
+    foreach (const Mutation& mut, sortedMuts) {
         _ApplyMutationInPlace(mut, mut.Start() + runningLengthDiff, &tplCopy);
         runningLengthDiff += mut.LengthDiff();
     }
     return tplCopy;
 }
 
-std::string MutationsToTranscript(const std::vector<Mutation> &mutations, const std::string &tpl)
+std::string MutationsToTranscript(const std::vector<Mutation>& mutations, const std::string& tpl)
 {
     std::vector<Mutation> sortedMuts(mutations);
     std::sort(sortedMuts.begin(), sortedMuts.end());
@@ -119,7 +119,7 @@ std::string MutationsToTranscript(const std::vector<Mutation> &mutations, const 
     // Build an alignnment transcript corresponding to these mutations.
     int tpos = 0;
     std::string transcript = "";
-    foreach (const Mutation &m, sortedMuts) {
+    foreach (const Mutation& m, sortedMuts) {
         for (; tpos < m.Start(); ++tpos) {
             transcript.push_back('M');
         }
@@ -163,13 +163,13 @@ std::string MutationsToTranscript(const std::vector<Mutation> &mutations, const 
 //      - t[4,7)=="ACA" has become t[3,7)=="ACCA",
 //      - t[5,7)=="CA"  remains "CA"==t'[5,7).
 //
-std::vector<int> TargetToQueryPositions(const std::vector<Mutation> &mutations,
-                                        const std::string &tpl)
+std::vector<int> TargetToQueryPositions(const std::vector<Mutation>& mutations,
+                                        const std::string& tpl)
 {
     return TargetToQueryPositions(MutationsToTranscript(mutations, tpl));
 }
 
-ScoredMutation::ScoredMutation(const Mutation &m, float score) : Mutation(m), score_(score) {}
+ScoredMutation::ScoredMutation(const Mutation& m, float score) : Mutation(m), score_(score) {}
 
 ScoredMutation::ScoredMutation() : Mutation(), score_(0) {}
 
@@ -182,7 +182,7 @@ std::string ScoredMutation::ToString() const
     return ss.str();
 }
 
-std::ostream &operator<<(std::ostream &out, const ScoredMutation &m)
+std::ostream& operator<<(std::ostream& out, const ScoredMutation& m)
 {
     out << m.Mutation::ToString() << " " << boost::format("%0.2f") % m.Score();
     return out;

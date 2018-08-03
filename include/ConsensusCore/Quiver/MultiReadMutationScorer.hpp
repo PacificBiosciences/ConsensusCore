@@ -61,23 +61,23 @@ protected:
 public:
     virtual int TemplateLength() const = 0;
     virtual int NumReads() const = 0;
-    virtual const MappedRead *Read(int readIndex) const = 0;
+    virtual const MappedRead* Read(int readIndex) const = 0;
 
     virtual std::string Template(StrandEnum strand = FORWARD_STRAND) const = 0;
     virtual std::string Template(StrandEnum strand, int templateStart, int templateEnd) const = 0;
 
-    virtual void ApplyMutations(const std::vector<Mutation> &mutations) = 0;
+    virtual void ApplyMutations(const std::vector<Mutation>& mutations) = 0;
 
     // Reads provided must be clipped to the reference/scaffold window implied by
     // the
     // template, however they need not span the window entirely---nonspanning
     // reads
     // must be provided with (0-based) template start/end coordinates.
-    virtual bool AddRead(const MappedRead &mappedRead, float threshold) = 0;
-    virtual bool AddRead(const MappedRead &mappedRead) = 0;
+    virtual bool AddRead(const MappedRead& mappedRead, float threshold) = 0;
+    virtual bool AddRead(const MappedRead& mappedRead) = 0;
 
-    virtual float Score(const Mutation &m) const = 0;
-    virtual float FastScore(const Mutation &m) const = 0;
+    virtual float Score(const Mutation& m) const = 0;
+    virtual float FastScore(const Mutation& m) const = 0;
 
     // Return a vector (of length NumReads) of the difference in
     // the score of each read caused by the template mutation.  In
@@ -85,17 +85,17 @@ public:
     // (i.e., it is too close to the end of the template, or the
     // read does not span the mutation site) that entry in the
     // vector is 0
-    virtual std::vector<float> Scores(const Mutation &m, float unscoredValue) const = 0;
-    virtual std::vector<float> Scores(const Mutation &m) const = 0;
+    virtual std::vector<float> Scores(const Mutation& m, float unscoredValue) const = 0;
+    virtual std::vector<float> Scores(const Mutation& m) const = 0;
 
-    virtual bool IsFavorable(const Mutation &m) const = 0;
-    virtual bool FastIsFavorable(const Mutation &m) const = 0;
+    virtual bool IsFavorable(const Mutation& m) const = 0;
+    virtual bool FastIsFavorable(const Mutation& m) const = 0;
 
     // Rough estimate of memory consumption of scoring machinery
     virtual std::vector<int> AllocatedMatrixEntries() const = 0;
     virtual std::vector<int> UsedMatrixEntries() const = 0;
-    virtual const AbstractMatrix *AlphaMatrix(int i) const = 0;
-    virtual const AbstractMatrix *BetaMatrix(int i) const = 0;
+    virtual const AbstractMatrix* AlphaMatrix(int i) const = 0;
+    virtual const AbstractMatrix* BetaMatrix(int i) const = 0;
     virtual std::vector<int> NumFlipFlops() const = 0;
 
 #if !defined(SWIG) || defined(SWIGCSHARP)
@@ -116,20 +116,20 @@ public:
     virtual std::string ToString() const = 0;
 };
 
-bool ReadScoresMutation(const MappedRead &mr, const Mutation &mut);
-Mutation OrientedMutation(const MappedRead &mr, const Mutation &mut);
+bool ReadScoresMutation(const MappedRead& mr, const Mutation& mut);
+Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
 
 namespace detail {
 template <typename ScorerType>
 struct ReadState
 {
-    MappedRead *Read;
-    ScorerType *Scorer;
+    MappedRead* Read;
+    ScorerType* Scorer;
     bool IsActive;
 
-    ReadState(MappedRead *read, ScorerType *scorer, bool isActive);
+    ReadState(MappedRead* read, ScorerType* scorer, bool isActive);
 
-    ReadState(const ReadState &other);
+    ReadState(const ReadState& other);
     ~ReadState();
     void CheckInvariants() const;
     std::string ToString() const;
@@ -146,28 +146,28 @@ public:
     typedef typename detail::ReadState<ScorerType> ReadStateType;
 
 public:
-    MultiReadMutationScorer(const QuiverConfigTable &paramsByChemistry, std::string tpl);
-    MultiReadMutationScorer(const MultiReadMutationScorer<R> &scorer);
+    MultiReadMutationScorer(const QuiverConfigTable& paramsByChemistry, std::string tpl);
+    MultiReadMutationScorer(const MultiReadMutationScorer<R>& scorer);
     virtual ~MultiReadMutationScorer();
 
     int TemplateLength() const;
     int NumReads() const;
-    const MappedRead *Read(int readIndex) const;
+    const MappedRead* Read(int readIndex) const;
 
     std::string Template(StrandEnum strand = FORWARD_STRAND) const;
     std::string Template(StrandEnum strand, int templateStart, int templateEnd) const;
-    void ApplyMutations(const std::vector<Mutation> &mutations);
+    void ApplyMutations(const std::vector<Mutation>& mutations);
 
     // Reads provided must be clipped to the reference/scaffold window implied by
     // the
     // template, however they need not span the window entirely---nonspanning
     // reads
     // must be provided with (0-based) template start/end coordinates.
-    bool AddRead(const MappedRead &mappedRead, float threshold);
-    bool AddRead(const MappedRead &mappedRead);
+    bool AddRead(const MappedRead& mappedRead, float threshold);
+    bool AddRead(const MappedRead& mappedRead);
 
-    float Score(const Mutation &m) const;
-    float FastScore(const Mutation &m) const;
+    float Score(const Mutation& m) const;
+    float FastScore(const Mutation& m) const;
 
     // Return a vector (of length NumReads) of the difference in
     // the score of each read caused by the template mutation.  In
@@ -175,17 +175,17 @@ public:
     // (i.e., it is too close to the end of the template, or the
     // read does not span the mutation site) that entry in the
     // vector is -FLT_MAX, which is to be interpreted as NA.
-    std::vector<float> Scores(const Mutation &m, float unscoredValue) const;
-    std::vector<float> Scores(const Mutation &m) const { return Scores(m, 0.0f); }
+    std::vector<float> Scores(const Mutation& m, float unscoredValue) const;
+    std::vector<float> Scores(const Mutation& m) const { return Scores(m, 0.0f); }
 
-    bool IsFavorable(const Mutation &m) const;
-    bool FastIsFavorable(const Mutation &m) const;
+    bool IsFavorable(const Mutation& m) const;
+    bool FastIsFavorable(const Mutation& m) const;
 
     // Rough estimate of memory consumption of scoring machinery
     std::vector<int> AllocatedMatrixEntries() const;
     std::vector<int> UsedMatrixEntries() const;
-    const AbstractMatrix *AlphaMatrix(int i) const;
-    const AbstractMatrix *BetaMatrix(int i) const;
+    const AbstractMatrix* AlphaMatrix(int i) const;
+    const AbstractMatrix* BetaMatrix(int i) const;
     std::vector<int> NumFlipFlops() const;
 
 #if !defined(SWIG) || defined(SWIGCSHARP)

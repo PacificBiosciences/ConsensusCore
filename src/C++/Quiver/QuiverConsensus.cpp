@@ -81,7 +81,7 @@ vector<ScoredMutation> DeleteRange(vector<ScoredMutation> input, int rStart, int
     return output;
 }
 
-bool ScoreComparer(const ScoredMutation &i, const ScoredMutation &j)
+bool ScoreComparer(const ScoredMutation& i, const ScoredMutation& j)
 {
     return i.Score() < j.Score();
 }
@@ -101,7 +101,7 @@ vector<ScoredMutation> BestSubset(vector<ScoredMutation> input, int mutationSepa
     vector<ScoredMutation> output;
 
     while (!input.empty()) {
-        ScoredMutation &best = *max_element(input.begin(), input.end(), ScoreComparer);
+        ScoredMutation& best = *max_element(input.begin(), input.end(), ScoreComparer);
         output.push_back(best);
         int nStart = best.Start() - mutationSeparation;
         int nEnd = best.Start() + mutationSeparation;
@@ -114,7 +114,7 @@ vector<ScoredMutation> BestSubset(vector<ScoredMutation> input, int mutationSepa
 // Sadly and annoyingly there is no covariance on std::vector in C++, so we have
 // to explicitly project back down to the superclass type to use the APIs as
 // written.
-vector<Mutation> ProjectDown(const vector<ScoredMutation> &smuts)
+vector<Mutation> ProjectDown(const vector<ScoredMutation>& smuts)
 {
     return vector<Mutation>(smuts.begin(), smuts.end());
 }
@@ -129,7 +129,7 @@ int ProbabilityToQV(double probability, int cap = 93)
 }
 
 template <typename E, typename O>
-E MutationEnumerator(const std::string &tpl, const O &opts)
+E MutationEnumerator(const std::string& tpl, const O& opts)
 {
     return E(tpl);
 }
@@ -139,13 +139,13 @@ E MutationEnumerator(const std::string &tpl, const O &opts)
 //
 template <>
 DinucleotideRepeatMutationEnumerator MutationEnumerator<>(
-    const std::string &tpl, const RefineDinucleotideRepeatOptions &opts)
+    const std::string& tpl, const RefineDinucleotideRepeatOptions& opts)
 {
     return DinucleotideRepeatMutationEnumerator(tpl, opts.MinDinucleotideRepeatElements);
 }
 
 template <typename E, typename O>
-bool AbstractRefineConsensus(AbstractMultiReadMutationScorer &mms, const O &opts)
+bool AbstractRefineConsensus(AbstractMultiReadMutationScorer& mms, const O& opts)
 {
     bool isConverged = false;
     float score = mms.BaselineScore();
@@ -185,7 +185,7 @@ bool AbstractRefineConsensus(AbstractMultiReadMutationScorer &mms, const O &opts
         // Screen for favorable mutations.  If none, we are done (converged).
         //
         favorableMutsAndScores.clear();
-        foreach (const Mutation &m, mutationsToTry) {
+        foreach (const Mutation& m, mutationsToTry) {
             if (mms.FastIsFavorable(m)) {
                 float mutScore = mms.Score(m);
                 favorableMutsAndScores.push_back(m.WithScore(mutScore));
@@ -215,7 +215,7 @@ bool AbstractRefineConsensus(AbstractMultiReadMutationScorer &mms, const O &opts
         }
 
         LDEBUG << "Applying mutations:";
-        foreach (const ScoredMutation &smut, bestSubset) {
+        foreach (const ScoredMutation& smut, bestSubset) {
             LDEBUG << "\t" << smut;
         }
 
@@ -227,25 +227,25 @@ bool AbstractRefineConsensus(AbstractMultiReadMutationScorer &mms, const O &opts
 }
 }  // PRIVATE
 
-bool RefineConsensus(AbstractMultiReadMutationScorer &mms, const RefineOptions &opts)
+bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
 {
     return AbstractRefineConsensus<UniqueSingleBaseMutationEnumerator>(mms, opts);
 }
 
-void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer &mms,
+void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
                                int minDinucleotideRepeatElements)
 {
     RefineDinucleotideRepeatOptions opts(minDinucleotideRepeatElements);
     AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);
 }
 
-std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer &mms)
+std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms)
 {
     std::vector<int> QVs;
     UniqueSingleBaseMutationEnumerator mutationEnumerator(mms.Template());
     for (size_t pos = 0; pos < mms.Template().length(); pos++) {
         double scoreSum = 0.0;
-        foreach (const Mutation &m, mutationEnumerator.Mutations(pos, pos + 1)) {
+        foreach (const Mutation& m, mutationEnumerator.Mutations(pos, pos + 1)) {
             scoreSum += exp(mms.FastScore(m));
         }
         QVs.push_back(ProbabilityToQV(1.0 - 1.0 / (1.0 + scoreSum)));

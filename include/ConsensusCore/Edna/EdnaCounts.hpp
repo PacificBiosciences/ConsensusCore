@@ -51,7 +51,7 @@ public:
 
     ~EdnaCounts() {}
 
-    void DoCount(Feature<int> channelRead, EdnaEvaluator &eval,
-                 MutationScorer<SparseSseEdnaRecursor> &scorer, int j1, int j2, float *results);
+    void DoCount(Feature<int> channelRead, EdnaEvaluator& eval,
+                 MutationScorer<SparseSseEdnaRecursor>& scorer, int j1, int j2, float* results);
 };
 }

@@ -76,39 +76,39 @@ public:  // Flags enums for specifying GraphViz output features
 
 public:
     PoaGraph();
-    PoaGraph(const PoaGraph &other);
-    PoaGraph(const detail::PoaGraphImpl &o);  // NB: this performs a copy
+    PoaGraph(const PoaGraph& other);
+    PoaGraph(const detail::PoaGraphImpl& o);  // NB: this performs a copy
     ~PoaGraph();
 
     //
     // Easy API
     //
-    void AddRead(const std::string &sequence, const AlignConfig &config,
-                 detail::SdpRangeFinder *rangeFinder = NULL,
-                 std::vector<Vertex> *readPathOutput = NULL);
+    void AddRead(const std::string& sequence, const AlignConfig& config,
+                 detail::SdpRangeFinder* rangeFinder = NULL,
+                 std::vector<Vertex>* readPathOutput = NULL);
 
     //
     // API for more control
     //
-    void AddFirstRead(const std::string &sequence, std::vector<Vertex> *readPathOutput = NULL);
+    void AddFirstRead(const std::string& sequence, std::vector<Vertex>* readPathOutput = NULL);
 
-    PoaAlignmentMatrix *TryAddRead(const std::string &sequence, const AlignConfig &config,
-                                   detail::SdpRangeFinder *rangeFinder = NULL) const;
+    PoaAlignmentMatrix* TryAddRead(const std::string& sequence, const AlignConfig& config,
+                                   detail::SdpRangeFinder* rangeFinder = NULL) const;
 
-    void CommitAdd(PoaAlignmentMatrix *mat, std::vector<Vertex> *readPathOutput = NULL);
+    void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput = NULL);
 
     // ----------
 
     size_t NumReads() const;
 
-    std::string ToGraphViz(int flags = 0, const PoaConsensus *pc = NULL) const;
+    std::string ToGraphViz(int flags = 0, const PoaConsensus* pc = NULL) const;
 
     void WriteGraphVizFile(std::string filename, int flags = 0,
-                           const PoaConsensus *pc = NULL) const;
+                           const PoaConsensus* pc = NULL) const;
 
-    const PoaConsensus *FindConsensus(const AlignConfig &config, int minCoverage = -INT_MAX) const;
+    const PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage = -INT_MAX) const;
 
 private:
-    detail::PoaGraphImpl *impl;
+    detail::PoaGraphImpl* impl;
 };
 }

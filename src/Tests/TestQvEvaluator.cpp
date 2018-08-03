@@ -78,7 +78,7 @@ protected:
 
 TEST_F(QvEvaluatorTest, IncVsInc4)
 {
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int I = e.ReadLength();
         int J = e.TemplateLength();
 
@@ -90,7 +90,7 @@ TEST_F(QvEvaluatorTest, IncVsInc4)
 
 TEST_F(QvEvaluatorTest, DelVsDel4)
 {
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int I = e.ReadLength();
         int J = e.TemplateLength();
 
@@ -102,7 +102,7 @@ TEST_F(QvEvaluatorTest, DelVsDel4)
 
 TEST_F(QvEvaluatorTest, ExtraVsExtra4)
 {
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int I = e.ReadLength();
         int J = e.TemplateLength();
 
@@ -114,7 +114,7 @@ TEST_F(QvEvaluatorTest, ExtraVsExtra4)
 
 TEST_F(QvEvaluatorTest, MergeVsMerge4)
 {
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int I = e.ReadLength();
         int J = e.TemplateLength();
 
@@ -132,14 +132,14 @@ TEST_F(QvEvaluatorTest, BadTagTest)
     int readLength = RandomPoissonDraw(rng, n);
     std::string seq = RandomSequence(rng, readLength);
 
-    float *insQv = RandomQvArray(rng, readLength);
-    float *subsQv = RandomQvArray(rng, readLength);
-    float *delQv = RandomQvArray(rng, readLength);
-    float *delTag = RandomTagArray(rng, readLength);
-    float *mergeQv = RandomQvArray(rng, readLength);
+    float* insQv = RandomQvArray(rng, readLength);
+    float* subsQv = RandomQvArray(rng, readLength);
+    float* delQv = RandomQvArray(rng, readLength);
+    float* delTag = RandomTagArray(rng, readLength);
+    float* mergeQv = RandomQvArray(rng, readLength);
     delTag[5] = 3;
 
-    QvSequenceFeatures *f;
+    QvSequenceFeatures* f;
     ASSERT_THROW(f = new QvSequenceFeatures(seq, insQv, subsQv, delQv, delTag, mergeQv),
                  InternalError);
 

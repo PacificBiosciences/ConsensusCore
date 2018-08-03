@@ -54,16 +54,16 @@ struct lfloat
         value = f;
     }
 
-    lfloat &operator=(float f)
+    lfloat& operator=(float f)
     {
         value = f;
         return *this;
     }
 
-    operator const float &() const { return value; }
-    operator float &() { return value; }
+    operator const float&() const { return value; }
+    operator float&() { return value; }
 
-    friend std::ostream &operator<<(std::ostream &out, const lfloat &f)
+    friend std::ostream& operator<<(std::ostream& out, const lfloat& f)
     {
         out << f.value;
         return out;

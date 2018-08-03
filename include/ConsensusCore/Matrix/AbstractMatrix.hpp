@@ -60,6 +60,6 @@ public:  // Accessors
 public:
     // Method SWIG clients can use to get a native matrix (e.g. Numpy)
     // mat must be filled as a ROW major matrix
-    virtual void ToHostMatrix(float **mat, int *rows, int *cols) const = 0;
+    virtual void ToHostMatrix(float** mat, int* rows, int* cols) const = 0;
 };
 }

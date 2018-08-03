@@ -103,7 +103,7 @@ class InternalError : public ErrorBase
 public:
     InternalError() : msg_("Internal error encountered!") {}
 
-    explicit InternalError(const std::string &msg) : msg_(msg) {}
+    explicit InternalError(const std::string& msg) : msg_(msg) {}
 
     std::string Message() const throw() { return msg_; }
 
@@ -116,7 +116,7 @@ class InvalidInputError : public ErrorBase
 public:
     InvalidInputError() : msg_("Invalid input!") {}
 
-    explicit InvalidInputError(const std::string &msg) : msg_(msg) {}
+    explicit InvalidInputError(const std::string& msg) : msg_(msg) {}
 
     std::string Message() const throw() { return msg_; }
 
@@ -129,7 +129,7 @@ class UnsupportedFeatureError : public ErrorBase
 public:
     UnsupportedFeatureError() : msg_("Unsupported feature!") {}
 
-    explicit UnsupportedFeatureError(const std::string &msg) : msg_(msg) {}
+    explicit UnsupportedFeatureError(const std::string& msg) : msg_(msg) {}
 
     std::string Message() const throw() { return msg_; }
 

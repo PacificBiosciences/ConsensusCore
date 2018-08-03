@@ -116,7 +116,7 @@ static inline float logaddexp(float x, float y)
 //
 // Computes Pr(R | hom)
 //
-static float HomozygousLogLikelihood(const fmat &siteScores)
+static float HomozygousLogLikelihood(const fmat& siteScores)
 {
     int G = siteScores.size2();
     fvec gScores(G);
@@ -129,7 +129,7 @@ static float HomozygousLogLikelihood(const fmat &siteScores)
 //
 // Computes: Pr(R | het)
 //
-static float HeterozygousLogLikelihood(const fmat &siteScores, int *allele0, int *allele1)
+static float HeterozygousLogLikelihood(const fmat& siteScores, int* allele0, int* allele1)
 {
     assert(siteScores.size2() == MUTATIONS_PER_SITE);
 
@@ -164,7 +164,7 @@ static float HeterozygousLogLikelihood(const fmat &siteScores, int *allele0, int
     return accumulate(varScores.begin(), varScores.end(), -FLT_MAX, logaddexp);
 }
 
-static inline fmat ToMatrix(const float *siteScores, int dim1, int dim2)
+static inline fmat ToMatrix(const float* siteScores, int dim1, int dim2)
 {
     // Kind of kludgy.  I blame ublas--a pretty crummy matrix library.
     fmat M(dim1, dim2);
@@ -187,7 +187,7 @@ static inline fmat ToMatrix(const float *siteScores, int dim1, int dim2)
     }
 #endif  // 0
 
-vector<int> AssignReadsToAlleles(const fmat &siteScores, int allele0, int allele1)
+vector<int> AssignReadsToAlleles(const fmat& siteScores, int allele0, int allele1)
 {
     int I = siteScores.size1();
     vector<int> assignment(I, -1);
@@ -201,7 +201,7 @@ vector<int> AssignReadsToAlleles(const fmat &siteScores, int allele0, int allele
 //  - If not, return NULL.
 //  - If so, return a pointer to a new DiploidSite object
 // logPriorRatio >= 0 is log {Pr(hom)/Pr(het)}
-DiploidSite *IsSiteHeterozygous(const float *siteScores, int dim1, int dim2, float logPriorRatio)
+DiploidSite* IsSiteHeterozygous(const float* siteScores, int dim1, int dim2, float logPriorRatio)
 {
     // First column of siteScores must correspond to no-op mutation.
     int allele0, allele1;

@@ -51,7 +51,7 @@ Read::Read(QvSequenceFeatures features, std::string name, std::string chemistry)
 {
 }
 
-Read::Read(const Read &other)
+Read::Read(const Read& other)
     : Features(other.Features), Name(other.Name), Chemistry(other.Chemistry)
 {
 }
@@ -67,7 +67,7 @@ std::string Read::ToString() const
 
 Read Read::Null() { return Read(QvSequenceFeatures(""), "", ""); }
 
-MappedRead::MappedRead(const Read &read, StrandEnum strand, int templateStart, int templateEnd,
+MappedRead::MappedRead(const Read& read, StrandEnum strand, int templateStart, int templateEnd,
                        bool pinStart, bool pinEnd)
     : Read(read)
     , Strand(strand)
@@ -78,7 +78,7 @@ MappedRead::MappedRead(const Read &read, StrandEnum strand, int templateStart, i
 {
 }
 
-MappedRead::MappedRead(const MappedRead &other)
+MappedRead::MappedRead(const MappedRead& other)
     : Read(other)
     , Strand(other.Strand)
     , TemplateStart(other.TemplateStart)

@@ -45,7 +45,7 @@
 
 namespace ConsensusCore {
 
-std::string Checksum::Of(const QvSequenceFeatures &x)
+std::string Checksum::Of(const QvSequenceFeatures& x)
 {
     boost::crc_32_type summer;
 

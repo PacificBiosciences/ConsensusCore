@@ -109,7 +109,7 @@ TYPED_TEST(RecursorTest, SmallMatchTest)
     //    std::cout << ConsensusCore::detail::PrintMatrix(alpha) << std::endl;
 
     // try the traceback
-    const PairwiseAlignment *alignment = recursor.Alignment(e, alpha);
+    const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATG", alignment->Target());
     EXPECT_EQ("GATG", alignment->Query());
     delete alignment;
@@ -138,7 +138,7 @@ TYPED_TEST(RecursorTest, SmallMismatchTest)
     EXPECT_FLOAT_EQ(-10.0f, beta(0, 0)) << std::endl << PrintMatrix(alpha) << std::endl;
 
     // try the traceback
-    const PairwiseAlignment *alignment = recursor.Alignment(e, alpha);
+    const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATG", alignment->Target());
     EXPECT_EQ("GATC", alignment->Query());
     delete alignment;
@@ -162,7 +162,7 @@ TYPED_TEST(RecursorTest, SmallMergeTest)
     //    std::cout << ConsensusCore::detail::PrintMatrix(alpha) << std::endl;
 
     // try the traceback
-    const PairwiseAlignment *alignment = recursor.Alignment(e, alpha);
+    const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATT", alignment->Target());
     EXPECT_EQ("GA-T", alignment->Query());
     delete alignment;
@@ -306,7 +306,7 @@ TYPED_TEST(RecursorFuzzTest, AlphaBetaConcordance)
 {
     R recursor(BASIC_MOVES | MERGE, this->banding_);
 
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int tplLength = e.TemplateLength();
         int readLength = e.ReadLength();
 
@@ -322,7 +322,7 @@ TYPED_TEST(RecursorFuzzTest, Alignment)
 {
     R recursor(BASIC_MOVES | MERGE, this->banding_);
 
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int tplLength = e.TemplateLength();
         int readLength = e.ReadLength();
 
@@ -330,7 +330,7 @@ TYPED_TEST(RecursorFuzzTest, Alignment)
         M beta(readLength + 1, tplLength + 1);
 
         recursor.FillAlphaBeta(e, alpha, beta);
-        const PairwiseAlignment *alignment = recursor.Alignment(e, alpha);
+        const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
         EXPECT_TRUE(alignment->Target().length() == alignment->Query().length());
         delete alignment;
     }
@@ -340,7 +340,7 @@ TYPED_TEST(RecursorFuzzTest, LinkAlphaBeta)
 {
     R recursor(BASIC_MOVES | MERGE, this->banding_);
 
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int tplLength = e.TemplateLength();
         int readLength = e.ReadLength();
 
@@ -360,7 +360,7 @@ TYPED_TEST(RecursorFuzzTest, ExtendAlpha)
 {
     R recursor(BASIC_MOVES | MERGE, this->banding_);
 
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int tplLength = e.TemplateLength();
         int readLength = e.ReadLength();
 
@@ -384,7 +384,7 @@ TYPED_TEST(RecursorFuzzTest, ExtendBeta)
 {
     R recursor(BASIC_MOVES | MERGE, this->banding_);
 
-    foreach (const QvEvaluator &e, this->fuzzEvaluators_) {
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_) {
         int tplLength = e.TemplateLength();
         int readLength = e.ReadLength();
 

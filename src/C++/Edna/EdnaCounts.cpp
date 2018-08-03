@@ -65,12 +65,12 @@ using std::max;
 #define NEG_INF -FLT_MAX
 
 namespace ConsensusCore {
-INLINE_CALLEES void EdnaCounts::DoCount(Feature<int> channelRead, EdnaEvaluator &eval,
-                                        MutationScorer<SparseSseEdnaRecursor> &scorer, int j1,
-                                        int j2, float *results)
+INLINE_CALLEES void EdnaCounts::DoCount(Feature<int> channelRead, EdnaEvaluator& eval,
+                                        MutationScorer<SparseSseEdnaRecursor>& scorer, int j1,
+                                        int j2, float* results)
 {
-    const SparseMatrix *alpha = scorer.Alpha();
-    const SparseMatrix *beta = scorer.Beta();
+    const SparseMatrix* alpha = scorer.Alpha();
+    const SparseMatrix* beta = scorer.Beta();
 
     int usedBegin, usedEnd;
     boost::tie(usedBegin, usedEnd) = RangeUnion(alpha->UsedRowRange(j1), beta->UsedRowRange(j2));

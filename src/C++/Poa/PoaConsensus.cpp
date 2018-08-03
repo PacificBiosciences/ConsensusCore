@@ -57,30 +57,30 @@ AlignConfig DefaultPoaConfig(AlignMode mode)
     return config;
 }
 
-PoaConsensus::PoaConsensus(const std::string &css, const PoaGraph &g,
-                           const std::vector<size_t> &cssPath)
+PoaConsensus::PoaConsensus(const std::string& css, const PoaGraph& g,
+                           const std::vector<size_t>& cssPath)
     : Sequence(css), Graph(g), Path(cssPath)
 {
 }
 
-PoaConsensus::PoaConsensus(const std::string &css, const detail::PoaGraphImpl &gi,
-                           const std::vector<size_t> &cssPath)
+PoaConsensus::PoaConsensus(const std::string& css, const detail::PoaGraphImpl& gi,
+                           const std::vector<size_t>& cssPath)
     : Sequence(css), Graph(gi), Path(cssPath)
 {
 }
 
 PoaConsensus::~PoaConsensus() {}
 
-const PoaConsensus *PoaConsensus::FindConsensus(const std::vector<std::string> &reads)
+const PoaConsensus* PoaConsensus::FindConsensus(const std::vector<std::string>& reads)
 {
     return FindConsensus(reads, DefaultPoaConfig(GLOBAL), -INT_MAX);
 }
 
-const PoaConsensus *PoaConsensus::FindConsensus(const std::vector<std::string> &reads,
-                                                const AlignConfig &config, int minCoverage)
+const PoaConsensus* PoaConsensus::FindConsensus(const std::vector<std::string>& reads,
+                                                const AlignConfig& config, int minCoverage)
 {
     PoaGraph pg;
-    foreach (const std::string &read, reads) {
+    foreach (const std::string& read, reads) {
         if (read.length() == 0) {
             throw InvalidInputError("Input sequences must have nonzero length.");
         }
@@ -89,7 +89,7 @@ const PoaConsensus *PoaConsensus::FindConsensus(const std::vector<std::string> &
     return pg.FindConsensus(config, minCoverage);
 }
 
-const PoaConsensus *PoaConsensus::FindConsensus(const std::vector<std::string> &reads,
+const PoaConsensus* PoaConsensus::FindConsensus(const std::vector<std::string>& reads,
                                                 AlignMode mode, int minCoverage)
 {
     return FindConsensus(reads, DefaultPoaConfig(mode), minCoverage);

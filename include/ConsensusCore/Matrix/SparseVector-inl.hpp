@@ -62,7 +62,7 @@ inline SparseVector::SparseVector(int logicalLength, int beginRow, int endRow)
     DEBUG_ONLY(CheckInvariants());
 }
 
-inline SparseVector::SparseVector(const SparseVector &other)
+inline SparseVector::SparseVector(const SparseVector& other)
     : logicalLength_(other.logicalLength_)
     , allocatedBeginRow_(other.allocatedBeginRow_)
     , allocatedEndRow_(other.allocatedEndRow_)
@@ -133,7 +133,7 @@ inline bool SparseVector::IsAllocated(int i) const
     return i >= allocatedBeginRow_ && i < allocatedEndRow_;
 }
 
-inline const float &SparseVector::operator()(int i) const
+inline const float& SparseVector::operator()(int i) const
 {
     if (IsAllocated(i)) {
         return (*storage_)[i - allocatedBeginRow_];

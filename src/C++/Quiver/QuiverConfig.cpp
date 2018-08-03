@@ -44,8 +44,8 @@
 #include <boost/algorithm/string.hpp>
 
 namespace ConsensusCore {
-QuiverConfig::QuiverConfig(const QvModelParams &qvParams, int movesAvailable,
-                           const BandingOptions &bandingOptions, float fastScoreThreshold,
+QuiverConfig::QuiverConfig(const QvModelParams& qvParams, int movesAvailable,
+                           const BandingOptions& bandingOptions, float fastScoreThreshold,
                            float addThreshold)
     : QvParams(qvParams)
     , MovesAvailable(movesAvailable)
@@ -55,7 +55,7 @@ QuiverConfig::QuiverConfig(const QvModelParams &qvParams, int movesAvailable,
 {
 }
 
-QuiverConfig::QuiverConfig(const QuiverConfig &qvConfig)
+QuiverConfig::QuiverConfig(const QuiverConfig& qvConfig)
     : QvParams(qvConfig.QvParams)
     , MovesAvailable(qvConfig.MovesAvailable)
     , Banding(qvConfig.Banding)
@@ -66,7 +66,7 @@ QuiverConfig::QuiverConfig(const QuiverConfig &qvConfig)
 
 QuiverConfigTable::QuiverConfigTable() {}
 
-bool QuiverConfigTable::InsertAs_(const std::string &name, const QuiverConfig &config)
+bool QuiverConfigTable::InsertAs_(const std::string& name, const QuiverConfig& config)
 {
     const_iterator it;
 
@@ -80,8 +80,8 @@ bool QuiverConfigTable::InsertAs_(const std::string &name, const QuiverConfig &c
 
 #define FALLBACK "*"
 
-bool QuiverConfigTable::InsertAs(const std::string &name,
-                                 const QuiverConfig &config) throw(InvalidInputError)
+bool QuiverConfigTable::InsertAs(const std::string& name,
+                                 const QuiverConfig& config) throw(InvalidInputError)
 
 {
     if (name.compare(FALLBACK) == 0)
@@ -89,20 +89,20 @@ bool QuiverConfigTable::InsertAs(const std::string &name,
     return InsertAs_(name, config);
 }
 
-bool QuiverConfigTable::Insert(const QuiverConfig &config) throw(InvalidInputError)
+bool QuiverConfigTable::Insert(const QuiverConfig& config) throw(InvalidInputError)
 {
-    const std::string &name = config.QvParams.ChemistryName;
+    const std::string& name = config.QvParams.ChemistryName;
     return InsertAs(name, config);
 }
 
-bool QuiverConfigTable::InsertDefault(const QuiverConfig &config)
+bool QuiverConfigTable::InsertDefault(const QuiverConfig& config)
 {
     return InsertAs_(FALLBACK, config);
 }
 
 int QuiverConfigTable::Size() const { return table.size(); }
 
-const QuiverConfig &QuiverConfigTable::At(const std::string &name) const throw(InvalidInputError)
+const QuiverConfig& QuiverConfigTable::At(const std::string& name) const throw(InvalidInputError)
 {
     const_iterator it;
 

@@ -88,21 +88,21 @@ public:
     int Length() const;
 
 public:
-    PairwiseAlignment(const std::string &target, const std::string &query);
+    PairwiseAlignment(const std::string& target, const std::string& query);
 
-    static PairwiseAlignment *FromTranscript(const std::string &transcript,
-                                             const std::string &unalnTarget,
-                                             const std::string &unalnQuery);
+    static PairwiseAlignment* FromTranscript(const std::string& transcript,
+                                             const std::string& unalnTarget,
+                                             const std::string& unalnQuery);
 };
 
-PairwiseAlignment *Align(const std::string &target, const std::string &query, int *score,
+PairwiseAlignment* Align(const std::string& target, const std::string& query, int* score,
                          AlignConfig config = AlignConfig::Default());
 
-PairwiseAlignment *Align(const std::string &target, const std::string &query,
+PairwiseAlignment* Align(const std::string& target, const std::string& query,
                          AlignConfig config = AlignConfig::Default());
 
 // These calls return an array, same len as target, containing indices into the
 // query string.
-std::vector<int> TargetToQueryPositions(const std::string &transcript);
-std::vector<int> TargetToQueryPositions(const PairwiseAlignment &aln);
+std::vector<int> TargetToQueryPositions(const std::string& transcript);
+std::vector<int> TargetToQueryPositions(const PairwiseAlignment& aln);
 }

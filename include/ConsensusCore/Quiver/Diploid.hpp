@@ -58,5 +58,5 @@ struct DiploidSite
 // gets transformed to just
 //  (siteScores)
 // for Python by SWIG.
-DiploidSite *IsSiteHeterozygous(const float *siteScores, int dim1, int dim2, float logPriorRatio);
+DiploidSite* IsSiteHeterozygous(const float* siteScores, int dim1, int dim2, float logPriorRatio);
 }

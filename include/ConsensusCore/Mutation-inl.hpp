@@ -64,7 +64,7 @@ inline Mutation::Mutation(MutationType type, int position, char base)
     if (!CheckInvariants()) throw InvalidInputError();
 }
 
-inline Mutation::Mutation(const Mutation &other)
+inline Mutation::Mutation(const Mutation& other)
     : type_(other.type_), start_(other.start_), end_(other.end_), newBases_(other.newBases_)
 {
 }
@@ -108,13 +108,13 @@ inline int Mutation::LengthDiff() const
         return 0;
 }
 
-inline bool Mutation::operator==(const Mutation &other) const
+inline bool Mutation::operator==(const Mutation& other) const
 {
     return (Start() == other.Start() && End() == other.End() && Type() == other.Type() &&
             NewBases() == other.NewBases());
 }
 
-inline bool Mutation::operator<(const Mutation &other) const
+inline bool Mutation::operator<(const Mutation& other) const
 {
     if (Start() != other.Start()) {
         return Start() < other.Start();

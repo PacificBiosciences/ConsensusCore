@@ -44,8 +44,8 @@ public:
     static void EnableDiagnosticLogging();
 
 #ifndef SWIG
-    static cpplog::StdErrLogger *slog;
-    static cpplog::FilteringLogger *flog;
+    static cpplog::StdErrLogger* slog;
+    static cpplog::FilteringLogger* flog;
 #endif  // SWIG
 };
 }

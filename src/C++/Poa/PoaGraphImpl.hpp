@@ -102,7 +102,7 @@ static const VD null_vertex = graph_traits<BoostGraph>::null_vertex();
 
 struct EdgeComparator
 {
-    EdgeComparator(const BoostGraph &g) : g_(g) {}
+    EdgeComparator(const BoostGraph& g) : g_(g) {}
 
     // want lex. comparison... just using pair to get it..
     bool operator()(ED e1, ED e2)
@@ -116,10 +116,10 @@ struct EdgeComparator
     }
 
 private:
-    const BoostGraph &g_;
+    const BoostGraph& g_;
 };
 
-inline std::vector<ED> inEdges(VD v, const BoostGraph &g)
+inline std::vector<ED> inEdges(VD v, const BoostGraph& g)
 {
     // This is a sad workaround the nondeterministic order of iteration
     // from BGL's in_edges. (see: http://stackoverflow.com/questions/30968690/)
@@ -163,7 +163,7 @@ struct AlignmentColumn : noncopyable
     int EndRow() const { return Score.EndRow(); }
 };
 
-typedef unordered_map<VD, const AlignmentColumn *> AlignmentColumnMap;
+typedef unordered_map<VD, const AlignmentColumn*> AlignmentColumnMap;
 
 class PoaAlignmentMatrixImpl : public PoaAlignmentMatrix
 {
@@ -199,7 +199,7 @@ class PoaGraphImpl
     Vertex externalize(VD vd) const { return vertexInfoMap_[vd].Id; }
     VD internalize(Vertex vertex) const { return vertexLookup_.at(vertex); }
 
-    std::vector<Vertex> externalizePath(const std::vector<VD> &vds) const
+    std::vector<Vertex> externalizePath(const std::vector<VD>& vds) const
     {
         std::vector<Vertex> out(vds.size(), 0);
         for (size_t i = 0; i < vds.size(); i++) {
@@ -208,7 +208,7 @@ class PoaGraphImpl
         return out;
     }
 
-    std::vector<VD> internalizePath(const std::vector<Vertex> &vertices) const
+    std::vector<VD> internalizePath(const std::vector<Vertex>& vertices) const
     {
         std::vector<VD> out(vertices.size(), null_vertex);
         for (size_t i = 0; i < vertices.size(); i++) {
@@ -230,15 +230,15 @@ class PoaGraphImpl
     //
     // utility routines
     //
-    const AlignmentColumn *makeAlignmentColumn(VD v,
-                                               const AlignmentColumnMap &alignmentColumnForVertex,
-                                               const std::string &sequence,
-                                               const AlignConfig &config, int beginRow,
+    const AlignmentColumn* makeAlignmentColumn(VD v,
+                                               const AlignmentColumnMap& alignmentColumnForVertex,
+                                               const std::string& sequence,
+                                               const AlignConfig& config, int beginRow,
                                                int endRow) const;
 
-    const AlignmentColumn *makeAlignmentColumnForExit(
-        VD v, const AlignmentColumnMap &alignmentColumnForVertex, const std::string &sequence,
-        const AlignConfig &config) const;
+    const AlignmentColumn* makeAlignmentColumnForExit(
+        VD v, const AlignmentColumnMap& alignmentColumnForVertex, const std::string& sequence,
+        const AlignConfig& config) const;
 
 public:
     //
@@ -248,38 +248,38 @@ public:
 
     std::vector<VD> consensusPath(AlignMode mode, int minCoverage = -INT_MAX) const;
 
-    void threadFirstRead(std::string sequence, std::vector<Vertex> *readPathOutput = NULL);
+    void threadFirstRead(std::string sequence, std::vector<Vertex>* readPathOutput = NULL);
 
     void tracebackAndThread(std::string sequence,
-                            const AlignmentColumnMap &alignmentColumnForVertex, AlignMode mode,
-                            std::vector<Vertex> *readPathOutput = NULL);
+                            const AlignmentColumnMap& alignmentColumnForVertex, AlignMode mode,
+                            std::vector<Vertex>* readPathOutput = NULL);
 
-    vector<ScoredMutation> *findPossibleVariants(const std::vector<Vertex> &bestPath) const;
+    vector<ScoredMutation>* findPossibleVariants(const std::vector<Vertex>& bestPath) const;
 
 public:
     PoaGraphImpl();
-    PoaGraphImpl(const PoaGraphImpl &other);
+    PoaGraphImpl(const PoaGraphImpl& other);
     ~PoaGraphImpl();
 
-    void AddRead(const std::string &sequence, const AlignConfig &config,
-                 SdpRangeFinder *rangeFinder = NULL, std::vector<Vertex> *readPathOutput = NULL);
+    void AddRead(const std::string& sequence, const AlignConfig& config,
+                 SdpRangeFinder* rangeFinder = NULL, std::vector<Vertex>* readPathOutput = NULL);
 
-    void AddFirstRead(const std::string &sequence, std::vector<Vertex> *readPathOutput = NULL);
+    void AddFirstRead(const std::string& sequence, std::vector<Vertex>* readPathOutput = NULL);
 
-    PoaAlignmentMatrixImpl *TryAddRead(const std::string &sequence, const AlignConfig &config,
-                                       SdpRangeFinder *rangeFinder = NULL) const;
+    PoaAlignmentMatrixImpl* TryAddRead(const std::string& sequence, const AlignConfig& config,
+                                       SdpRangeFinder* rangeFinder = NULL) const;
 
-    void CommitAdd(PoaAlignmentMatrix *mat, std::vector<Vertex> *readPathOutput = NULL);
+    void CommitAdd(PoaAlignmentMatrix* mat, std::vector<Vertex>* readPathOutput = NULL);
 
-    PoaConsensus *FindConsensus(const AlignConfig &config, int minCoverage = -INT_MAX);
+    PoaConsensus* FindConsensus(const AlignConfig& config, int minCoverage = -INT_MAX);
 
     size_t NumReads() const;
-    string ToGraphViz(int flags, const PoaConsensus *pc) const;
-    void WriteGraphVizFile(string filename, int flags, const PoaConsensus *pc) const;
+    string ToGraphViz(int flags, const PoaConsensus* pc) const;
+    void WriteGraphVizFile(string filename, int flags, const PoaConsensus* pc) const;
 };
 
 // free functions, we should put these all in traversals
-std::string sequenceAlongPath(const BoostGraph &g, const VertexInfoMap &vertexInfoMap,
-                              const std::vector<VD> &path);
+std::string sequenceAlongPath(const BoostGraph& g, const VertexInfoMap& vertexInfoMap,
+                              const std::vector<VD>& path);
 }
 }  // ConsensusCore::detail

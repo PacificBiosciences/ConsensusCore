@@ -56,13 +56,13 @@ static const RefineOptions DefaultRefineOptions = {
     20   // MutationNeighborhood
 };
 
-bool RefineConsensus(AbstractMultiReadMutationScorer &mms,
-                     const RefineOptions & = DefaultRefineOptions);
+bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
+                     const RefineOptions& = DefaultRefineOptions);
 
-void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer &mms,
+void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
                                int minDinucleotideRepeatElements = 3);
 
-std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer &mms);
+std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
 
 //
 // Lower priority:

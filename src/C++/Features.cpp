@@ -45,7 +45,7 @@
 #include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Utils.hpp>
 
-ConsensusCore::SequenceFeatures::SequenceFeatures(const std::string &seq)
+ConsensusCore::SequenceFeatures::SequenceFeatures(const std::string& seq)
     : sequence_(seq.c_str(), seq.length())
 {
 }
@@ -53,7 +53,7 @@ ConsensusCore::SequenceFeatures::SequenceFeatures(const std::string &seq)
 namespace {
 void CheckTagFeature(ConsensusCore::Feature<float> feature)
 {
-    foreach (const float &tag, feature) {
+    foreach (const float& tag, feature) {
         if (!(tag == 'A' || tag == 'C' || tag == 'G' || tag == 'T' || tag == 'N' || tag == 0)) {
             throw ConsensusCore::InternalError("Invalid DelTag field---must be ASCII encoded.");
         }
@@ -62,7 +62,7 @@ void CheckTagFeature(ConsensusCore::Feature<float> feature)
 }
 
 namespace ConsensusCore {
-QvSequenceFeatures::QvSequenceFeatures(const std::string &seq)
+QvSequenceFeatures::QvSequenceFeatures(const std::string& seq)
     : SequenceFeatures(seq)
     , SequenceAsFloat(Length())
     , InsQv(Length())
@@ -76,9 +76,9 @@ QvSequenceFeatures::QvSequenceFeatures(const std::string &seq)
     }
 }
 
-QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const float *insQv,
-                                       const float *subsQv, const float *delQv, const float *delTag,
-                                       const float *mergeQv)
+QvSequenceFeatures::QvSequenceFeatures(const std::string& seq, const float* insQv,
+                                       const float* subsQv, const float* delQv, const float* delTag,
+                                       const float* mergeQv)
     : SequenceFeatures(seq)
     , SequenceAsFloat(Length())
     , InsQv(insQv, Length())
@@ -93,9 +93,9 @@ QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const float *insQ
     CheckTagFeature(DelTag);
 }
 
-QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const unsigned char *insQv,
-                                       const unsigned char *subsQv, const unsigned char *delQv,
-                                       const unsigned char *delTag, const unsigned char *mergeQv)
+QvSequenceFeatures::QvSequenceFeatures(const std::string& seq, const unsigned char* insQv,
+                                       const unsigned char* subsQv, const unsigned char* delQv,
+                                       const unsigned char* delTag, const unsigned char* mergeQv)
     : SequenceFeatures(seq)
     , SequenceAsFloat(Length())
     , InsQv(insQv, Length())
@@ -110,7 +110,7 @@ QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const unsigned ch
     CheckTagFeature(DelTag);
 }
 
-QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const Feature<float> insQv,
+QvSequenceFeatures::QvSequenceFeatures(const std::string& seq, const Feature<float> insQv,
                                        const Feature<float> subsQv, const Feature<float> delQv,
                                        const Feature<float> delTag, const Feature<float> mergeQv)
     : SequenceFeatures(seq)
@@ -127,13 +127,13 @@ QvSequenceFeatures::QvSequenceFeatures(const std::string &seq, const Feature<flo
     CheckTagFeature(DelTag);
 }
 
-ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string &seq)
+ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq)
     : SequenceFeatures(seq), Channel(Length())
 {
 }
 
-ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string &seq,
-                                                 const std::vector<int> &channel)
+ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq,
+                                                 const std::vector<int>& channel)
     : SequenceFeatures(seq), Channel(&(channel[0]), Length())
 {
 }

@@ -29,12 +29,12 @@ using std::max;
 using std::make_pair;
 using boost::optional;
 
-static inline bool compareAnchorsOnCssPos(const SdpAnchor &a1, const SdpAnchor &a2)
+static inline bool compareAnchorsOnCssPos(const SdpAnchor& a1, const SdpAnchor& a2)
 {
     return a1.first < a2.first;
 }
 
-static const SdpAnchor *binarySearchAnchors(const SdpAnchorVector &anchors, size_t cssPosition)
+static const SdpAnchor* binarySearchAnchors(const SdpAnchorVector& anchors, size_t cssPosition)
 {
     typedef SdpAnchorVector::const_iterator iter_t;
     iter_t found = std::lower_bound(anchors.begin(), anchors.end(), make_pair(cssPosition, -1),
@@ -46,27 +46,27 @@ static const SdpAnchor *binarySearchAnchors(const SdpAnchorVector &anchors, size
     }
 }
 
-static inline Interval next(const Interval &v, int upperBound)
+static inline Interval next(const Interval& v, int upperBound)
 {
     return Interval(min(v.Begin + 1, upperBound), min(v.End + 1, upperBound));
 }
 
-static inline Interval prev(const Interval &v, int lowerBound = 0)
+static inline Interval prev(const Interval& v, int lowerBound = 0)
 {
     return Interval(max(v.Begin - 1, lowerBound), max(v.End - 1, lowerBound));
 }
 
-inline Interval rangeIntersection(const Interval &range1, const Interval &range2)
+inline Interval rangeIntersection(const Interval& range1, const Interval& range2)
 {
     return Interval(max(range1.Begin, range2.Begin), min(range1.End, range2.End));
 }
 
 SdpRangeFinder::~SdpRangeFinder() {}
 
-void SdpRangeFinder::InitRangeFinder(const PoaGraphImpl &poaGraph,
-                                     const std::vector<Vertex> &consensusPath,
-                                     const std::string &consensusSequence,
-                                     const std::string &readSequence)
+void SdpRangeFinder::InitRangeFinder(const PoaGraphImpl& poaGraph,
+                                     const std::vector<Vertex>& consensusPath,
+                                     const std::string& consensusSequence,
+                                     const std::string& readSequence)
 {
 #if DEBUG_RANGE_FINDER
     poaGraph.WriteGraphVizFile("debug-graph.dot", PoaGraph::VERBOSE_NODES, NULL);
@@ -92,7 +92,7 @@ void SdpRangeFinder::InitRangeFinder(const PoaGraphImpl &poaGraph,
     for (size_t cssPos = 0; cssPos < consensusPath.size(); cssPos++) {
         Vertex vExt = consensusPath[cssPos];
         VD v = poaGraph.internalize(vExt);
-        const SdpAnchor *anchor = binarySearchAnchors(anchors, cssPos);
+        const SdpAnchor* anchor = binarySearchAnchors(anchors, cssPos);
         if (anchor != NULL) {
 #if DEBUG_RANGE_FINDER
             cout << "Anchor: " << anchor->first << "-" << anchor->second << " (Vertex " << vExt
