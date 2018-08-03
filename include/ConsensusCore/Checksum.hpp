@@ -41,8 +41,9 @@
 
 namespace ConsensusCore {
 
-    class Checksum {
-    public:
-        static std::string Of(const QvSequenceFeatures& f);
-    };
+class Checksum
+{
+public:
+    static std::string Of(const QvSequenceFeatures &f);
+};
 }

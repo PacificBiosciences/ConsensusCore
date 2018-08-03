@@ -47,9 +47,9 @@
 #include <string>
 #include <vector>
 
-#include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
 #include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using std::string;
 using std::vector;
@@ -66,7 +66,7 @@ TEST(MutationEnumerationTest, TestAllMutations)
     std::string tpl = "GAATC";
     std::vector<Mutation> result = AllSingleBaseMutationEnumerator(tpl).Mutations();
     // 4 insertions, 3 substitutions, and 1 deletion per base
-    EXPECT_EQ(8*tpl.length(), result.size());
+    EXPECT_EQ(8 * tpl.length(), result.size());
 }
 
 TEST(MutationEnumerationTest, TestUniqueMutations)
@@ -76,9 +76,8 @@ TEST(MutationEnumerationTest, TestUniqueMutations)
     // 3 insertions, 3 substitions, and 1 deletion per base,
     // except the first (which has an extra insertion),
     // and the homopolymeric A (which is less a deletion)
-    EXPECT_EQ(7*tpl.length() + 1 - 1, result.size());
+    EXPECT_EQ(7 * tpl.length() + 1 - 1, result.size());
 }
-
 
 TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
 {
@@ -94,7 +93,8 @@ TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
     EXPECT_EQ(8 + 7, result.size());
 
     result = UniqueNearbyMutations(enumerator, centers, 2);
-    // 8 for the first, 7 for the second, 6 for the third (no homopolymeric deletion)
+    // 8 for the first, 7 for the second, 6 for the third (no homopolymeric
+    // deletion)
     EXPECT_EQ(8 + 7 + 6, result.size());
 
     centers.push_back(Mutation(SUBSTITUTION, 3, 'G'));
@@ -102,7 +102,6 @@ TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
     std::vector<Mutation> expected = UniqueSingleBaseMutationEnumerator(tpl).Mutations();
     EXPECT_THAT(result, UnorderedElementsAreArray(expected));
 }
-
 
 TEST(MutationEnumerationTest, TestDinucleotideMutations)
 {

@@ -56,7 +56,6 @@ using ConsensusCore::DenseMatrix;
 using ConsensusCore::SparseMatrix;
 using ConsensusCore::lfloat;
 
-
 template <typename T>
 class MatrixTest : public ::testing::Test
 {
@@ -69,7 +68,6 @@ using testing::Types;
 typedef Types<DenseMatrix, SparseMatrix> Implementations;
 TYPED_TEST_CASE(MatrixTest, Implementations);
 
-
 TYPED_TEST(MatrixTest, Basic)
 {
     float NEG_INF = -FLT_MAX;
@@ -78,10 +76,8 @@ TYPED_TEST(MatrixTest, Basic)
     TypeParam m(10, 10);
     EXPECT_EQ(10, m.Rows());
     EXPECT_EQ(10, m.Columns());
-    for (int i = 0; i < 10; ++i)
-    {
-        for (int j = 0; j < 10; ++j)
-        {
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 10; ++j) {
             EXPECT_EQ(NEG_INF, m(i, j));
         }
     }
@@ -93,8 +89,7 @@ TYPED_TEST(MatrixTest, Basic)
     EXPECT_EQ(5, m(1, 1));
     EXPECT_EQ(6, m(2, 1));
     m.ClearColumn(1);
-    for (int j = 0; j < 10; ++j)
-    {
+    for (int j = 0; j < 10; ++j) {
         EXPECT_EQ(NEG_INF, m(j, 1));
     }
 }
@@ -114,8 +109,7 @@ TYPED_TEST(MatrixTest, Ranges)
 
     // check settings on empty matrix
     EXPECT_EQ(0, m.UsedEntries());
-    for (int j = 0; j < 10; j++)
-    {
+    for (int j = 0; j < 10; j++) {
         int start, end;
         boost::tie(start, end) = m.UsedRowRange(j);
         EXPECT_EQ(0, start);
@@ -123,8 +117,7 @@ TYPED_TEST(MatrixTest, Ranges)
     }
 
     // simple modifications
-    for (int j = 0; j < 10; j++)
-    {
+    for (int j = 0; j < 10; j++) {
         int start, end;
         m.StartEditingColumn(j, 0, 10);
         m.Set(2, j, 0.0);
@@ -137,8 +130,7 @@ TYPED_TEST(MatrixTest, Ranges)
     }
     EXPECT_EQ(30, m.UsedEntries());
 
-    for (int j = 0; j < 10; j++)
-    {
+    for (int j = 0; j < 10; j++) {
         int start, end;
         m.ClearColumn(j);
         boost::tie(start, end) = m.UsedRowRange(j);
@@ -180,8 +172,7 @@ TYPED_TEST(MatrixTest, SSE)
     // test Get4
     __m128 cookieRead = m.Get4(0, 0);
     _mm_storeu_ps(cookieReadArray, cookieRead);
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
         EXPECT_EQ(cookieArray[i], cookieReadArray[i]);
     }
 }
@@ -190,27 +181,23 @@ TYPED_TEST(MatrixTest, ToHostArray)
 {
     TypeParam m(10, 10);
     int v = 0;
-    for (int j = 0; j < 10; j++)
-    {
+    for (int j = 0; j < 10; j++) {
         m.StartEditingColumn(j, 0, 0);
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             m.Set(i, j, v);
             v++;
         }
         m.FinishEditingColumn(j, 0, 10);
     }
 
-    float* hostArray;
+    float *hostArray;
     int rows, cols;
     m.ToHostMatrix(&hostArray, &rows, &cols);
     EXPECT_EQ(10, rows);
     EXPECT_EQ(10, cols);
     v = 0;
-    for (int j = 0; j < 10; j++)
-    {
-        for (int i = 0; i < 10; i++)
-        {
+    for (int j = 0; j < 10; j++) {
+        for (int i = 0; i < 10; i++) {
             EXPECT_EQ(v, hostArray[i * cols + j]);
             v++;
         }
@@ -218,10 +205,7 @@ TYPED_TEST(MatrixTest, ToHostArray)
     delete[] hostArray;
 }
 
-
-TYPED_TEST(MatrixTest, NonSequentialAccess)
-{}
-
+TYPED_TEST(MatrixTest, NonSequentialAccess) {}
 
 TYPED_TEST(MatrixTest, Holes)
 {
@@ -236,13 +220,11 @@ TYPED_TEST(MatrixTest, BigBandedMatrix)
     const int M = 1000;
     const int N = 1000;
     TypeParam m(M, N);
-    for (int j = 0; j < N; j++)
-    {
+    for (int j = 0; j < N; j++) {
         m.StartEditingColumn(j, 0, 0);
         int start = std::max(0, j - bandWidth);
-        int end   = std::min(M, j + bandWidth + 1);
-        for (int i = start; i < end; i++)
-        {
+        int end = std::min(M, j + bandWidth + 1);
+        for (int i = start; i < end; i++) {
             m.Set(i, j, i / (1. + j));
         }
         m.FinishEditingColumn(j, start, end);
@@ -255,7 +237,6 @@ TYPED_TEST(MatrixTest, BigIrregularBandedMatrix)
 {
     // fill a big matrix, experimenting with modulating the bandwidth
 }
-
 
 TYPED_TEST(MatrixTest, CopyTest)
 {

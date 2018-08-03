@@ -37,26 +37,21 @@
 
 #pragma once
 
-#include <ConsensusCore/Features.hpp>
-#include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Edna/EdnaEvaluator.hpp>
-#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Features.hpp>
 #include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/Quiver/MutationScorer.hpp>
+#include <ConsensusCore/Types.hpp>
 
-namespace ConsensusCore
+namespace ConsensusCore {
+class EdnaCounts
 {
-    class EdnaCounts
-    {
-    public:
-        EdnaCounts()
-        {}
+public:
+    EdnaCounts() {}
 
-        ~EdnaCounts()
-        {}
+    ~EdnaCounts() {}
 
-        void DoCount(Feature<int> channelRead,
-                     EdnaEvaluator& eval,
-                     MutationScorer<SparseSseEdnaRecursor>& scorer,
-                     int j1, int j2, float *results);
-    };
+    void DoCount(Feature<int> channelRead, EdnaEvaluator &eval,
+                 MutationScorer<SparseSseEdnaRecursor> &scorer, int j1, int j2, float *results);
+};
 }
