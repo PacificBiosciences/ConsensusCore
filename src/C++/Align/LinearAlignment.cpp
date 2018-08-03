@@ -259,7 +259,7 @@ std::string OptimalTranscript(const std::string& target, int j1, int j2, const s
 }
 
 PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const std::string& query,
-                                              int* score, AlignConfig config)
+                                              int* score, AlignConfig)
 {
     int J = target.length();
     ublas::vector<int> buf1(J + 1), buf2(J + 1);

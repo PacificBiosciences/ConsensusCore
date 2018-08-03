@@ -129,7 +129,7 @@ int ProbabilityToQV(double probability, int cap = 93)
 }
 
 template <typename E, typename O>
-E MutationEnumerator(const std::string& tpl, const O& opts)
+E MutationEnumerator(const std::string& tpl, const O&)
 {
     return E(tpl);
 }

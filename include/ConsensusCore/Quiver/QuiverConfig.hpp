@@ -62,13 +62,9 @@ struct BandingOptions
 {
     float ScoreDiff;
 
-    BandingOptions(int diagonalCross, float scoreDiff) : ScoreDiff(scoreDiff) {}
+    BandingOptions(int, float scoreDiff) : ScoreDiff(scoreDiff) {}
 
-    BandingOptions(int diagonalCross, float scoreDiff, float dynamicAdjustFactor,
-                   float dynamicAdjustOffset)
-        : ScoreDiff(scoreDiff)
-    {
-    }
+    BandingOptions(int, float scoreDiff, float, float) : ScoreDiff(scoreDiff) {}
 };
 
 /// \brief A parameter vector for analysis using the QV model

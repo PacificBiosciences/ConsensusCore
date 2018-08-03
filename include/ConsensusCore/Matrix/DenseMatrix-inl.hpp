@@ -70,7 +70,7 @@ inline const int DenseMatrix::Columns() const { return size2(); }
 //
 // Entry range queries per column
 //
-inline void DenseMatrix::StartEditingColumn(int j, int hintBegin, int hintEnd)
+inline void DenseMatrix::StartEditingColumn(int j, int, int)
 {
     assert(columnBeingEdited_ == -1);
     columnBeingEdited_ = j;
@@ -106,7 +106,16 @@ inline void DenseMatrix::Set(int i, int j, float v)
     boost_dense_matrix::operator()(i, j) = v;
 }
 
-inline bool DenseMatrix::IsAllocated(int i, int j) const
+inline bool DenseMatrix::IsAllocated(int
+#ifndef NDEBUG
+                                         i
+#endif
+                                     ,
+                                     int
+#ifndef NDEBUG
+                                         j
+#endif
+                                     ) const
 {
     assert(0 <= i && i < Rows() && 0 <= j && j < Columns());
     return true;

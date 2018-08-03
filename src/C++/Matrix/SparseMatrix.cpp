@@ -114,7 +114,7 @@ void SparseMatrix::ToHostMatrix(float** mat, int* rows, int* cols) const
     }
 }
 
-void SparseMatrix::CheckInvariants(int column) const
+void SparseMatrix::CheckInvariants(int) const
 {
     for (int j = 0; j < nCols_; j++) {
         if (columns_[j] != NULL) columns_[j]->CheckInvariants();

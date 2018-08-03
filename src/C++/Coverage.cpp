@@ -45,8 +45,12 @@ using std::vector;
 
 namespace ConsensusCore {
 
-void CoverageInWindow(int tStartDim, int* tStart, int tEndDim, int* tEnd, int winStart, int winLen,
-                      int* coverage)
+void CoverageInWindow(int tStartDim, int* tStart, int
+#ifndef NDEBUG
+                                                      tEndDim
+#endif
+                      ,
+                      int* tEnd, int winStart, int winLen, int* coverage)
 {
     using std::max;
     using std::min;
@@ -67,7 +71,11 @@ void CoverageInWindow(int tStartDim, int* tStart, int tEndDim, int* tEnd, int wi
 
 #define CHUNK_SIZE 10000
 
-vector<Interval> CoveredIntervals(int minCoverage, int tStartDim, int* tStart, int tEndDim,
+vector<Interval> CoveredIntervals(int minCoverage, int tStartDim, int* tStart, int
+#ifndef NDEBUG
+                                                                                   tEndDim
+#endif
+                                  ,
                                   int* tEnd, int winStart, int winLen)
 {
     assert(tStartDim == tEndDim);

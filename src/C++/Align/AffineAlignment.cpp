@@ -87,8 +87,7 @@ inline float MatchScore(char t, char q, float matchScore, float mismatchScore,
                         float partialMatchScore);
 
 template <>
-inline float MatchScore<Standard>(char t, char q, float matchScore, float mismatchScore,
-                                  float partialMatchScore)
+inline float MatchScore<Standard>(char t, char q, float matchScore, float mismatchScore, float)
 {
     return (t == q ? matchScore : mismatchScore);
 }
