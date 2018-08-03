@@ -142,7 +142,7 @@ std::vector<int> RandomSampleWithoutReplacement(RNG& rng, int n, int k)
     // Random sample of k elements from [0..n) without replacement
     std::vector<int> draws;
     boost::random::uniform_int_distribution<> indexDist(0, n - 1);
-    while (draws.size() < k) {
+    while (static_cast<int>(draws.size()) < k) {
         int draw = indexDist(rng);
         if (std::find(draws.begin(), draws.end(), draw) == draws.end()) {
             draws.push_back(draw);

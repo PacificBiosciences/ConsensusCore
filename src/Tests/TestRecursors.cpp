@@ -216,7 +216,8 @@ TYPED_TEST(RecursorTest, LinkTest)
     //    std::cout << ConsensusCore::detail::PrintMatrix(beta) << std::endl;
 
     float score = beta(0, 0);
-    for (int j = 2; j < tpl.length() - 1; j++) {
+    const int tplLen = tpl.length();
+    for (int j = 2; j < tplLen - 1; j++) {
         float linkScore = recursor.LinkAlphaBeta(e, alpha, j, beta, j, j);
         ASSERT_FLOAT_EQ(score, linkScore) << "(Column " << j << ")";
     }
@@ -239,7 +240,8 @@ TYPED_TEST(RecursorTest, ExtendAlphaTest)
     //    std::cout << ConsensusCore::detail::PrintMatrix(beta) << std::endl;
 
     M ext(read.Length() + 1, 2);
-    for (int j = 2; j <= tpl.length() - 1; j++) {
+    const int tplLen = tpl.length();
+    for (int j = 2; j <= tplLen - 1; j++) {
         recursor.ExtendAlpha(e, alpha, j, ext);
         for (int extCol = 0; extCol < 2; extCol++) {
             for (int i = 0; i <= read.Length(); i++) {
@@ -262,7 +264,8 @@ TYPED_TEST(RecursorTest, ExtendBetaTest)
     recursor.FillAlphaBeta(e, alpha, beta);
 
     M ext(read.Length() + 1, 2);
-    for (int j = 1; j <= tpl.length() - 2; j++) {
+    const int tplLen = tpl.length();
+    for (int j = 1; j <= tplLen - 2; j++) {
         recursor.ExtendBeta(e, beta, j, ext);
         for (int i = 0; i <= read.Length(); i++) {
             ASSERT_FLOAT_EQ(beta(i, j), ext(i, 1)) << i << " " << j << std::endl;
