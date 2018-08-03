@@ -80,16 +80,14 @@ bool QuiverConfigTable::InsertAs_(const std::string& name, const QuiverConfig& c
 
 #define FALLBACK "*"
 
-bool QuiverConfigTable::InsertAs(const std::string& name,
-                                 const QuiverConfig& config) throw(InvalidInputError)
-
+bool QuiverConfigTable::InsertAs(const std::string& name, const QuiverConfig& config)
 {
     if (name.compare(FALLBACK) == 0)
         throw InvalidInputError("Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
     return InsertAs_(name, config);
 }
 
-bool QuiverConfigTable::Insert(const QuiverConfig& config) throw(InvalidInputError)
+bool QuiverConfigTable::Insert(const QuiverConfig& config)
 {
     const std::string& name = config.QvParams.ChemistryName;
     return InsertAs(name, config);
@@ -102,7 +100,7 @@ bool QuiverConfigTable::InsertDefault(const QuiverConfig& config)
 
 int QuiverConfigTable::Size() const { return table.size(); }
 
-const QuiverConfig& QuiverConfigTable::At(const std::string& name) const throw(InvalidInputError)
+const QuiverConfig& QuiverConfigTable::At(const std::string& name) const
 {
     const_iterator it;
 

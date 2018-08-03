@@ -162,7 +162,7 @@ std::string OptimalTranscript(const std::string& target, int j1, int j2, const s
 
     std::string x, x1, x2;
     int segmentScore;
-    const AlignParams& params = config.Params;
+    const AlignParams& configParams = config.Params;
 
     //
     // Base case
@@ -189,18 +189,19 @@ std::string OptimalTranscript(const std::string& target, int j1, int j2, const s
         //
         Sm(j1 - 1) = 0;
         for (int j = j1; j <= j2; j++) {
-            Sm(j) = Sm(j - 1) + params.Delete;
+            Sm(j) = Sm(j - 1) + configParams.Delete;
         }
         for (int i = i1; i <= mid; i++) {
             int s, c;
             s = Sm(j1 - 1);
-            c = Sm(j1 - 1) + params.Insert;
+            c = Sm(j1 - 1) + configParams.Insert;
             Sm(j1 - 1) = c;
             for (int j = j1; j <= j2; j++) {
                 char t = target[j - 1];
                 char q = query[i - 1];
-                c = Max3(Sm(j) + params.Insert, s + (t == q ? params.Match : params.Mismatch),
-                         c + params.Delete);
+                c = Max3(Sm(j) + configParams.Insert,
+                         s + (t == q ? configParams.Match : configParams.Mismatch),
+                         c + configParams.Delete);
                 s = Sm(j);
                 Sm(j) = c;
             }
@@ -212,18 +213,19 @@ std::string OptimalTranscript(const std::string& target, int j1, int j2, const s
         //
         Sp(j2) = 0;
         for (int j = j2 - 1; j >= j1 - 1; j--) {
-            Sp(j) = Sp(j + 1) + params.Delete;
+            Sp(j) = Sp(j + 1) + configParams.Delete;
         }
         for (int i = i2 - 1; i >= mid; i--) {
             int s, c;
             s = Sp(j2);
-            c = Sp(j2) + params.Delete;
+            c = Sp(j2) + configParams.Delete;
             Sp(j2) = c;
             for (int j = j2 - 1; j >= j1 - 1; j--) {
                 char t = target[j];  // j + 1 - 1
                 char q = query[i];   // i + 1 - 1
-                c = Max3(Sp(j) + params.Insert, s + (t == q ? params.Match : params.Mismatch),
-                         c + params.Delete);
+                c = Max3(Sp(j) + configParams.Insert,
+                         s + (t == q ? configParams.Match : configParams.Mismatch),
+                         c + configParams.Delete);
                 s = Sp(j);
                 Sp(j) = c;
             }
@@ -259,7 +261,7 @@ std::string OptimalTranscript(const std::string& target, int j1, int j2, const s
 }
 
 PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const std::string& query,
-                                              int* score, AlignConfig config)
+                                              int* score, AlignConfig)
 {
     int J = target.length();
     ublas::vector<int> buf1(J + 1), buf2(J + 1);
@@ -269,7 +271,7 @@ PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const s
 }
 
 PairwiseAlignment* ConsensusCore::AlignLinear(const std::string& target, const std::string& query,
-                                              AlignConfig config)
+                                              AlignConfig config_)
 {
-    return AlignLinear(target, query, NULL, config);
+    return AlignLinear(target, query, NULL, config_);
 }

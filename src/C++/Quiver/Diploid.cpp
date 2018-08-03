@@ -107,9 +107,9 @@ static inline float logaddexp(float x, float y)
 {
     float diff = x - y;
     if (diff > 0) {
-        return x + log1p(exp(-diff));
+        return x + std::log1p(std::exp(-diff));
     } else {
-        return y + log1p(exp(diff));
+        return y + std::log1p(std::exp(diff));
     }
 }
 

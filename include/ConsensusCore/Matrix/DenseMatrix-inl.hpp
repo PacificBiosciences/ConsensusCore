@@ -63,14 +63,14 @@ inline bool DenseMatrix::IsNull() const { return (Rows() == 0 && Columns() == 0)
 //
 // Size information
 //
-inline const int DenseMatrix::Rows() const { return size1(); }
+inline int DenseMatrix::Rows() const { return size1(); }
 
-inline const int DenseMatrix::Columns() const { return size2(); }
+inline int DenseMatrix::Columns() const { return size2(); }
 
 //
 // Entry range queries per column
 //
-inline void DenseMatrix::StartEditingColumn(int j, int hintBegin, int hintEnd)
+inline void DenseMatrix::StartEditingColumn(int j, int, int)
 {
     assert(columnBeingEdited_ == -1);
     columnBeingEdited_ = j;
@@ -87,13 +87,13 @@ inline void DenseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedR
 
 inline Interval DenseMatrix::UsedRowRange(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return usedRanges_[j];
 }
 
 inline bool DenseMatrix::IsColumnEmpty(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return (usedRanges_[j].Begin >= usedRanges_[j].End);
 }
 
@@ -106,7 +106,16 @@ inline void DenseMatrix::Set(int i, int j, float v)
     boost_dense_matrix::operator()(i, j) = v;
 }
 
-inline bool DenseMatrix::IsAllocated(int i, int j) const
+inline bool DenseMatrix::IsAllocated(int
+#ifndef NDEBUG
+                                         i
+#endif
+                                     ,
+                                     int
+#ifndef NDEBUG
+                                         j
+#endif
+                                     ) const
 {
     assert(0 <= i && i < Rows() && 0 <= j && j < Columns());
     return true;
@@ -126,7 +135,7 @@ inline void DenseMatrix::ClearColumn(int j)
     // contiguously)
     int begin, end;
     boost::tie(begin, end) = usedRanges_[j];
-    std::fill_n((float*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
+    std::fill_n(reinterpret_cast<float*>(&boost_dense_matrix::operator()(begin, j)),  // NOLINT
                 end - begin, value_type());
     usedRanges_[j] = Interval(0, 0);
     DEBUG_ONLY(CheckInvariants(j);)

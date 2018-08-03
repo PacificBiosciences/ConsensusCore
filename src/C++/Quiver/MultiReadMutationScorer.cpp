@@ -49,7 +49,7 @@
 #include <string>
 #include <vector>
 
-#define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
+#define MIN_FAVORABLE_SCOREDIFF 0.04f  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
 namespace ConsensusCore {
 //
@@ -228,7 +228,7 @@ bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
     if (scorer != NULL && threshold < 1.0f) {
         int I = ev.ReadLength();
         int J = ev.TemplateLength();
-        int maxSize = static_cast<int>(0.5 + threshold * (I + 1) * (J + 1));
+        int maxSize = static_cast<int>(0.5f + threshold * (I + 1) * (J + 1));
 
         if (scorer->Alpha()->AllocatedEntries() >= maxSize ||
             scorer->Beta()->AllocatedEntries() >= maxSize) {
@@ -343,7 +343,7 @@ template <typename R>
 std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
 {
     std::vector<int> allocatedCounts;
-    for (int i = 0; i < (int)reads_.size(); i++) {
+    for (int i = 0; i < static_cast<int>(reads_.size()); i++) {
         int n = AlphaMatrix(i)->AllocatedEntries() + BetaMatrix(i)->AllocatedEntries();
         allocatedCounts.push_back(n);
     }
@@ -354,7 +354,7 @@ template <typename R>
 std::vector<int> MultiReadMutationScorer<R>::UsedMatrixEntries() const
 {
     std::vector<int> usedCounts;
-    for (int i = 0; i < (int)reads_.size(); i++) {
+    for (int i = 0; i < static_cast<int>(reads_.size()); i++) {
         int n = AlphaMatrix(i)->UsedEntries() + BetaMatrix(i)->UsedEntries();
         usedCounts.push_back(n);
     }
@@ -413,8 +413,10 @@ void MultiReadMutationScorer<R>::CheckInvariants() const
         if (rs.IsActive) {
             assert(rs.Scorer->Template() ==
                    Template(rs.Read->Strand, rs.Read->TemplateStart, rs.Read->TemplateEnd));
-            assert(0 <= rs.Read->TemplateStart && rs.Read->TemplateStart <= fwdTemplate_.size());
-            assert(0 <= rs.Read->TemplateEnd && rs.Read->TemplateEnd <= fwdTemplate_.size());
+            assert(0 <= rs.Read->TemplateStart &&
+                   rs.Read->TemplateStart <= static_cast<int>(fwdTemplate_.size()));
+            assert(0 <= rs.Read->TemplateEnd &&
+                   rs.Read->TemplateEnd <= static_cast<int>(fwdTemplate_.size()));
             assert(rs.Read->TemplateStart <= rs.Read->TemplateEnd);
         }
     }
@@ -467,7 +469,8 @@ void ReadState<ScorerType>::CheckInvariants() const
 #ifndef NDEBUG
     if (IsActive) {
         assert(Read != NULL && Scorer != NULL);
-        assert((int)Scorer->Template().length() == Read->TemplateEnd - Read->TemplateStart);
+        assert(static_cast<int>(Scorer->Template().length()) ==
+               Read->TemplateEnd - Read->TemplateStart);
     }
 #endif  // !NDEBUG
 }

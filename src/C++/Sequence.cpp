@@ -60,13 +60,13 @@ static char ComplementArray[] = {
 
 namespace ConsensusCore {
 
-char ComplementaryBase(char base) { return ComplementArray[(int)base]; }
+char ComplementaryBase(char base) { return ComplementArray[static_cast<int>(base)]; }
 
 std::string Complement(const std::string& input)
 {
     std::string output(input.length(), 127);
     for (unsigned int i = 0; i < input.length(); i++) {
-        output[i] = ComplementArray[(int)input[i]];
+        output[i] = ComplementArray[static_cast<int>(input[i])];
     }
     return output;
 }

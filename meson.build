@@ -25,6 +25,14 @@ if get_option('sse3')
 endif
 
 foreach cflag: [
+  '-Wduplicated-cond',
+  '-Wduplicated-branches',
+  '-Wlogical-op',
+  '-Wrestrict',
+  '-Wuseless-cast',
+  '-Wdouble-promotion',
+  '-Wshadow',
+  '-Wold-style-cast',
   '-Wformat=1']
     if cpp.has_argument(cflag)
       quiver_flags += cflag

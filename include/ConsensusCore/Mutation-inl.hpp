@@ -74,7 +74,7 @@ inline bool Mutation::CheckInvariants() const
     if (!((type_ == INSERTION && (start_ == end_) && newBases_.length() > 0) ||
           (type_ == DELETION && (start_ < end_) && newBases_.length() == 0) ||
           (type_ == SUBSTITUTION && (start_ < end_) &&
-           ((int)(newBases_.length()) == end_ - start_))))  // NOLINT
+           (static_cast<int>(newBases_.length()) == end_ - start_))))  // NOLINT
     {
         return false;
     }

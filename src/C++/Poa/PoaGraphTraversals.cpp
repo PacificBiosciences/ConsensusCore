@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#include <limits>
+
 #include <ConsensusCore/Matrix/VectorL.hpp>
 #include <ConsensusCore/Poa/PoaGraph.hpp>
 #include <ConsensusCore/Utils.hpp>
@@ -46,7 +48,7 @@
 namespace ConsensusCore {
 namespace detail {
 
-std::string sequenceAlongPath(const BoostGraph& g, const VertexInfoMap& vertexInfoMap,
+std::string sequenceAlongPath(const BoostGraph&, const VertexInfoMap& vertexInfoMap,
                               const std::vector<VD>& path)
 {
     std::stringstream ss;
@@ -190,7 +192,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
 
     if (outputPath) {
         outputPath->resize(I);
-        std::fill(outputPath->begin(), outputPath->end(), (size_t)-1);
+        std::fill(outputPath->begin(), outputPath->end(), std::numeric_limits<size_t>::max());
     }
 
 #define READPOS (i - 1)
@@ -237,7 +239,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
                 const AlignmentColumn* prevCol = alignmentColumnForVertex.at(prevVertex);
                 int prevRow = ArgMax(prevCol->Score);
 
-                while (i > static_cast<int>(prevRow)) {
+                while (i > prevRow) {
                     VD newForkVertex = addVertex(sequence[READPOS]);
                     add_edge(newForkVertex, forkVertex, g_);
                     VERTEX_ON_PATH(READPOS, newForkVertex);
@@ -289,7 +291,8 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
 
     // all filled in?
     assert(outputPath == NULL ||
-           std::find(outputPath->begin(), outputPath->end(), ((size_t)-1)) == outputPath->end());
+           std::find(outputPath->begin(), outputPath->end(), std::numeric_limits<size_t>::max()) ==
+               outputPath->end());
 
 #undef READPOS
 #undef VERTEX_ON_PATH
@@ -321,7 +324,7 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
     // Return value will be deallocated by PoaConsensus destructor.
     vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
-    for (int i = 2; i < (int)bestPath_.size() - 2; i++)  // NOLINT
+    for (int i = 2; i < static_cast<int>(bestPath_.size()) - 2; i++)  // NOLINT
     {
         VD v = bestPath_[i];
         boost::unordered_set<VD> children = childVertices(v, g_);
@@ -346,8 +349,8 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
         float bestInsertScore = -FLT_MAX;
         VD bestInsertVertex = null_vertex;
 
-        foreach (VD v, children) {
-            boost::unordered_set<VD>::iterator found = lookBack.find(v);
+        foreach (VD vi, children) {
+            boost::unordered_set<VD>::iterator found = lookBack.find(vi);
             if (found != lookBack.end()) {
                 float score = vertexInfoMap_[*found].Score;
                 if (score > bestInsertScore) {
@@ -371,10 +374,10 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
         float bestMismatchScore = -FLT_MAX;
         VD bestMismatchVertex = null_vertex;
 
-        foreach (VD v, children) {
-            if (v == bestPath_[i + 1]) continue;
+        foreach (VD vi, children) {
+            if (vi == bestPath_[i + 1]) continue;
 
-            boost::unordered_set<VD>::iterator found = lookBack.find(v);
+            boost::unordered_set<VD>::iterator found = lookBack.find(vi);
             if (found != lookBack.end()) {
                 float score = vertexInfoMap_[*found].Score;
                 if (score > bestMismatchScore) {

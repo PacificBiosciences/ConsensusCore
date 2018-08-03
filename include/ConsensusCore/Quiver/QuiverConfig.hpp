@@ -62,13 +62,9 @@ struct BandingOptions
 {
     float ScoreDiff;
 
-    BandingOptions(int diagonalCross, float scoreDiff) : ScoreDiff(scoreDiff) {}
+    BandingOptions(int, float scoreDiff) : ScoreDiff(scoreDiff) {}
 
-    BandingOptions(int diagonalCross, float scoreDiff, float dynamicAdjustFactor,
-                   float dynamicAdjustOffset)
-        : ScoreDiff(scoreDiff)
-    {
-    }
+    BandingOptions(int, float scoreDiff, float, float) : ScoreDiff(scoreDiff) {}
 };
 
 /// \brief A parameter vector for analysis using the QV model
@@ -92,58 +88,58 @@ struct QvModelParams
     //
     // Constructor for single merge rate and merge rate slope
     //
-    QvModelParams(const std::string& ChemistryName, const std::string& ModelName, float Match,
-                  float Mismatch, float MismatchS, float Branch, float BranchS, float DeletionN,
-                  float DeletionWithTag, float DeletionWithTagS, float Nce, float NceS, float Merge,
-                  float MergeS)
-        : ChemistryName(ChemistryName)
-        , ModelName(ModelName)
-        , Match(Match)
-        , Mismatch(Mismatch)
-        , MismatchS(MismatchS)
-        , Branch(Branch)
-        , BranchS(BranchS)
-        , DeletionN(DeletionN)
-        , DeletionWithTag(DeletionWithTag)
-        , DeletionWithTagS(DeletionWithTagS)
-        , Nce(Nce)
-        , NceS(NceS)
+    QvModelParams(const std::string& ChemistryName_, const std::string& ModelName_, float Match_,
+                  float Mismatch_, float MismatchS_, float Branch_, float BranchS_,
+                  float DeletionN_, float DeletionWithTag_, float DeletionWithTagS_, float Nce_,
+                  float NceS_, float Merge_, float MergeS_)
+        : ChemistryName(ChemistryName_)
+        , ModelName(ModelName_)
+        , Match(Match_)
+        , Mismatch(Mismatch_)
+        , MismatchS(MismatchS_)
+        , Branch(Branch_)
+        , BranchS(BranchS_)
+        , DeletionN(DeletionN_)
+        , DeletionWithTag(DeletionWithTag_)
+        , DeletionWithTagS(DeletionWithTagS_)
+        , Nce(Nce_)
+        , NceS(NceS_)
     {
         for (int base = 0; base < 4; base++) {
-            this->Merge[base] = Merge;
-            this->MergeS[base] = MergeS;
+            this->Merge[base] = Merge_;
+            this->MergeS[base] = MergeS_;
         }
     }
 
     //
     // Constructor for per-channel merge rate and merge rate slope
     //
-    QvModelParams(const std::string& ChemistryName, const std::string& ModelName, float Match,
-                  float Mismatch, float MismatchS, float Branch, float BranchS, float DeletionN,
-                  float DeletionWithTag, float DeletionWithTagS, float Nce, float NceS,
-                  float Merge_A, float Merge_C, float Merge_G, float Merge_T, float MergeS_A,
-                  float MergeS_C, float MergeS_G, float MergeS_T)
-        : ChemistryName(ChemistryName)
-        , ModelName(ModelName)
-        , Match(Match)
-        , Mismatch(Mismatch)
-        , MismatchS(MismatchS)
-        , Branch(Branch)
-        , BranchS(BranchS)
-        , DeletionN(DeletionN)
-        , DeletionWithTag(DeletionWithTag)
-        , DeletionWithTagS(DeletionWithTagS)
-        , Nce(Nce)
-        , NceS(NceS)
+    QvModelParams(const std::string& ChemistryName_, const std::string& ModelName_, float Match_,
+                  float Mismatch_, float MismatchS_, float Branch_, float BranchS_,
+                  float DeletionN_, float DeletionWithTag_, float DeletionWithTagS_, float Nce_,
+                  float NceS_, float Merge_A_, float Merge_C_, float Merge_G_, float Merge_T_,
+                  float MergeS_A_, float MergeS_C_, float MergeS_G_, float MergeS_T_)
+        : ChemistryName(ChemistryName_)
+        , ModelName(ModelName_)
+        , Match(Match_)
+        , Mismatch(Mismatch_)
+        , MismatchS(MismatchS_)
+        , Branch(Branch_)
+        , BranchS(BranchS_)
+        , DeletionN(DeletionN_)
+        , DeletionWithTag(DeletionWithTag_)
+        , DeletionWithTagS(DeletionWithTagS_)
+        , Nce(Nce_)
+        , NceS(NceS_)
     {
-        this->Merge[0] = Merge_A;
-        this->Merge[1] = Merge_C;
-        this->Merge[2] = Merge_G;
-        this->Merge[3] = Merge_T;
-        this->MergeS[0] = MergeS_A;
-        this->MergeS[1] = MergeS_C;
-        this->MergeS[2] = MergeS_G;
-        this->MergeS[3] = MergeS_T;
+        this->Merge[0] = Merge_A_;
+        this->Merge[1] = Merge_C_;
+        this->Merge[2] = Merge_G_;
+        this->Merge[3] = Merge_T_;
+        this->MergeS[0] = MergeS_A_;
+        this->MergeS[1] = MergeS_C_;
+        this->MergeS[2] = MergeS_G_;
+        this->MergeS[3] = MergeS_T_;
     }
 
     // Access to the array-stored params
@@ -192,18 +188,18 @@ public:
     bool InsertDefault(const QuiverConfig& config);
 
     // Insert, using the chemistry found in the config.
-    bool Insert(const QuiverConfig& config) throw(InvalidInputError);
+    bool Insert(const QuiverConfig& config);
 
     // Insert, aliasing as a different chemistry name.  This is
     // important, for example, when a read presents itself as
     // "XL-C2" but we have no trained models for "XL-C2", so we
     // want to have At("XL-C2") fetch the config for a similar
     // chemistry.
-    bool InsertAs(const std::string& name, const QuiverConfig& config) throw(InvalidInputError);
+    bool InsertAs(const std::string& name, const QuiverConfig& config);
 
     int Size() const;
 
-    const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);
+    const QuiverConfig& At(const std::string& name) const;
 
     std::vector<std::string> Keys() const;
 

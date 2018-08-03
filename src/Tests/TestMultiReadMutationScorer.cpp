@@ -289,7 +289,8 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
     mScorer.AddRead(mr);
 
     std::vector<Mutation> muts;
-    for (int i = 0; i < tpl.length(); i += 2) {
+    const int tplLen = tpl.length();
+    for (int i = 0; i < tplLen; i += 2) {
         Mutation mutation(SUBSTITUTION, i, 'A');
         muts += mutation;
     }

@@ -137,7 +137,7 @@ std::string MutationsToTranscript(const std::vector<Mutation>& mutations, const 
             ShouldNotReachHere();
         }
     }
-    for (; tpos < (int)tpl.length(); ++tpos) {
+    for (; tpos < static_cast<int>(tpl.length()); ++tpos) {
         transcript.push_back('M');
     }
     return transcript;

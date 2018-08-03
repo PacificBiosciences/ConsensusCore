@@ -46,8 +46,8 @@ protected:
     virtual ~AbstractMatrix() {}
 
 public:  // Size information
-    virtual const int Rows() const = 0;
-    virtual const int Columns() const = 0;
+    virtual int Rows() const = 0;
+    virtual int Columns() const = 0;
 
 public:  // Information about entries filled by column
     virtual int UsedEntries() const = 0;

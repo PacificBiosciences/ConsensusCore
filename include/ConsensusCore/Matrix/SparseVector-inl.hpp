@@ -198,6 +198,6 @@ inline void SparseVector::CheckInvariants() const
     assert(0 <= allocatedBeginRow_ && allocatedBeginRow_ < logicalLength_);
     assert(0 <= allocatedEndRow_ && allocatedEndRow_ <= logicalLength_);
     assert(allocatedBeginRow_ <= allocatedEndRow_);
-    assert((allocatedEndRow_ - allocatedBeginRow_) <= (signed)storage_->size());
+    assert((allocatedEndRow_ - allocatedBeginRow_) <= static_cast<int>(storage_->size()));
 }
 }

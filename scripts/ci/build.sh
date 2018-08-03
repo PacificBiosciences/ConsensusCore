@@ -9,6 +9,7 @@ set -vex
 # '--wrap-mode nofallback' prevents meson from downloading
 # stuff from the internet or using subprojects.
 meson \
+  --werror \
   --default-library shared \
   --libdir lib \
   --unity "${ENABLED_UNITY_BUILD:-off}" \

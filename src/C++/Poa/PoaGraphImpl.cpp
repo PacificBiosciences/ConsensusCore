@@ -189,8 +189,7 @@ const AlignmentColumn* PoaGraphImpl::makeAlignmentColumnForExit(VD v,
 
 const AlignmentColumn* PoaGraphImpl::makeAlignmentColumn(VD v, const AlignmentColumnMap& colMap,
                                                          const std::string& sequence,
-                                                         const AlignConfig& config, int beginRow,
-                                                         int endRow) const
+                                                         const AlignConfig& config, int, int) const
 {
     AlignmentColumn* curCol = new AlignmentColumn(v, sequence.length() + 1);
     const PoaNode& vertexInfo = vertexInfoMap_[v];

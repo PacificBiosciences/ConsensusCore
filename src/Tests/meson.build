@@ -21,6 +21,7 @@ quiver_test = executable(
   'quiver_test',
   quiver_test_cpp_sources,
   dependencies : [
+    quiver_boost_dep,
     quiver_gtest_dep,
     quiver_gmock_dep],
   include_directories : [
