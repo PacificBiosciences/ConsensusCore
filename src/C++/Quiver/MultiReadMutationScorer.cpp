@@ -343,7 +343,7 @@ template <typename R>
 std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
 {
     std::vector<int> allocatedCounts;
-    for (int i = 0; i < (int)reads_.size(); i++) {
+    for (int i = 0; i < static_cast<int>(reads_.size()); i++) {
         int n = AlphaMatrix(i)->AllocatedEntries() + BetaMatrix(i)->AllocatedEntries();
         allocatedCounts.push_back(n);
     }
@@ -354,7 +354,7 @@ template <typename R>
 std::vector<int> MultiReadMutationScorer<R>::UsedMatrixEntries() const
 {
     std::vector<int> usedCounts;
-    for (int i = 0; i < (int)reads_.size(); i++) {
+    for (int i = 0; i < static_cast<int>(reads_.size()); i++) {
         int n = AlphaMatrix(i)->UsedEntries() + BetaMatrix(i)->UsedEntries();
         usedCounts.push_back(n);
     }
@@ -469,7 +469,8 @@ void ReadState<ScorerType>::CheckInvariants() const
 #ifndef NDEBUG
     if (IsActive) {
         assert(Read != NULL && Scorer != NULL);
-        assert((int)Scorer->Template().length() == Read->TemplateEnd - Read->TemplateStart);
+        assert(static_cast<int>(Scorer->Template().length()) ==
+               Read->TemplateEnd - Read->TemplateStart);
     }
 #endif  // !NDEBUG
 }

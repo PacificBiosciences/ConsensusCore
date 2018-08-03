@@ -87,13 +87,13 @@ inline void DenseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedR
 
 inline Interval DenseMatrix::UsedRowRange(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return usedRanges_[j];
 }
 
 inline bool DenseMatrix::IsColumnEmpty(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return (usedRanges_[j].Begin >= usedRanges_[j].End);
 }
 
@@ -135,7 +135,7 @@ inline void DenseMatrix::ClearColumn(int j)
     // contiguously)
     int begin, end;
     boost::tie(begin, end) = usedRanges_[j];
-    std::fill_n((float*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
+    std::fill_n(reinterpret_cast<float*>(&boost_dense_matrix::operator()(begin, j)),  // NOLINT
                 end - begin, value_type());
     usedRanges_[j] = Interval(0, 0);
     DEBUG_ONLY(CheckInvariants(j);)

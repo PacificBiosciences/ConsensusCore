@@ -52,7 +52,7 @@ std::string PairwiseAlignment::Target() const { return target_; }
 
 std::string PairwiseAlignment::Query() const { return query_; }
 
-float PairwiseAlignment::Accuracy() const { return ((float)(Matches())) / Length(); }
+float PairwiseAlignment::Accuracy() const { return (static_cast<float>(Matches())) / Length(); }
 
 std::string PairwiseAlignment::Transcript() const { return transcript_; }
 
@@ -248,7 +248,7 @@ std::vector<int> TargetToQueryPositions(const std::string& transcript)
     }
     ntp.push_back(queryPos);
 
-    assert((int)ntp.size() == targetLength(transcript) + 1);
+    assert(static_cast<int>(ntp.size()) == targetLength(transcript) + 1);
     assert(ntp[targetLength(transcript)] == queryLength(transcript));
     return ntp;
 }

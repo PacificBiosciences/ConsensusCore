@@ -91,13 +91,13 @@ inline void SparseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int used
 
 inline Interval SparseMatrix::UsedRowRange(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return usedRanges_[j];
 }
 
 inline bool SparseMatrix::IsColumnEmpty(int j) const
 {
-    assert(0 <= j && j < (int)usedRanges_.size());
+    assert(0 <= j && j < static_cast<int>(usedRanges_.size()));
     return (usedRanges_[j].Begin >= usedRanges_[j].End);
 }
 

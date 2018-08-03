@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#include <limits>
+
 #include <ConsensusCore/Matrix/VectorL.hpp>
 #include <ConsensusCore/Poa/PoaGraph.hpp>
 #include <ConsensusCore/Utils.hpp>
@@ -190,7 +192,7 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
 
     if (outputPath) {
         outputPath->resize(I);
-        std::fill(outputPath->begin(), outputPath->end(), (size_t)-1);
+        std::fill(outputPath->begin(), outputPath->end(), std::numeric_limits<size_t>::max());
     }
 
 #define READPOS (i - 1)
@@ -289,7 +291,8 @@ void PoaGraphImpl::tracebackAndThread(std::string sequence,
 
     // all filled in?
     assert(outputPath == NULL ||
-           std::find(outputPath->begin(), outputPath->end(), ((size_t)-1)) == outputPath->end());
+           std::find(outputPath->begin(), outputPath->end(), std::numeric_limits<size_t>::max()) ==
+               outputPath->end());
 
 #undef READPOS
 #undef VERTEX_ON_PATH
@@ -321,7 +324,7 @@ vector<ScoredMutation>* PoaGraphImpl::findPossibleVariants(
     // Return value will be deallocated by PoaConsensus destructor.
     vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
-    for (int i = 2; i < (int)bestPath_.size() - 2; i++)  // NOLINT
+    for (int i = 2; i < static_cast<int>(bestPath_.size()) - 2; i++)  // NOLINT
     {
         VD v = bestPath_[i];
         boost::unordered_set<VD> children = childVertices(v, g_);

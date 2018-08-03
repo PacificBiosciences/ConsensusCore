@@ -142,7 +142,7 @@ float MutationScorer<R>::ScoreMutation(const Mutation& m) const
     float score;
 
     bool atBegin = (m.Start() < 3);
-    bool atEnd = (m.End() > (int)oldTpl.length() - 2);
+    bool atEnd = (m.End() > static_cast<int>(oldTpl.length()) - 2);
 
     if (!atBegin && !atEnd) {
         // Install mutated template

@@ -86,7 +86,7 @@ public:
 
     T ElementAt(int i) const { return (*this)[i]; }
 
-    std::string ToString() const { return (std::string)(*this); }
+    std::string ToString() const { return std::string{*this}; }
 
 private:
     int length_;
