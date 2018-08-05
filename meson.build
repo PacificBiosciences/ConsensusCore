@@ -39,6 +39,22 @@ foreach cflag: [
     endif
 endforeach
 
+# Clang emits annoying
+#
+#   clang: warning: argument unused during compilation:
+#     '-pthread' [-Wunused-command-line-argument]
+#
+# warnings on macOS, which adds no value and is taken care
+# of by '-Wl,-dead_strip_dylibs' anyways.
+if cpp.get_id() == 'clang'
+  foreach cflag: [
+    '-Wno-unused-command-line-argument']
+      if cpp.has_argument(cflag)
+        add_global_link_arguments(cflag, language : 'cpp')
+      endif
+  endforeach
+endif
+
 ################
 # dependencies #
 ################
