@@ -19,6 +19,8 @@ module load ccache
 module load boost
 
 module load gtest
+module load python/2
+module load swig
 
 
 BOOST_ROOT="${BOOST_ROOT%/include}"
@@ -37,5 +39,6 @@ fi
 
 export ENABLED_TESTS="true"
 
-bash scripts/ci/build.sh
-bash scripts/ci/test.sh
+source scripts/ci/setup.sh
+source scripts/ci/build.sh
+source scripts/ci/test.sh

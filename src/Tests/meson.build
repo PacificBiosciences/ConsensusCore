@@ -50,3 +50,14 @@ test(
     'ARGS=-V',
     'VERBOSE=1'],
   timeout : 1800)
+
+if get_option('swig')
+  test(
+    'quiver python import',
+    quiver_python,
+    args : [
+      files('test_import.py')],
+    env : [
+      'PYTHONPATH=' + quiver_pythonpath],
+    timeout : 1800)
+endif

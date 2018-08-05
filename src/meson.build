@@ -4,6 +4,14 @@
 
 subdir('C++')
 
+########
+# SWIG #
+########
+
+if get_option('swig')
+  subdir('SWIG')
+endif
+
 #########
 # tests #
 #########
