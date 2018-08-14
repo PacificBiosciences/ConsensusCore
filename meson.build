@@ -1,7 +1,7 @@
 project(
   'Quiver',
   'cpp',
-  version : '1.1.0',
+  version : '1.1.1',
   default_options : [
     'buildtype=release',
     'warning_level=3',
@@ -14,16 +14,17 @@ project(
 # CXXFLAGS #
 ############
 
-quiver_flags = []
 cpp = meson.get_compiler('cpp')
 
 # SSE3
+quiver_perf_flags = []
 if get_option('sse3')
   if cpp.has_argument('-msse3')
-    quiver_flags += '-msse3'
+    quiver_perf_flags += '-msse3'
   endif
 endif
 
+quiver_warning_flags = []
 foreach cflag: [
   '-Wduplicated-cond',
   '-Wduplicated-branches',
@@ -35,7 +36,7 @@ foreach cflag: [
   '-Wold-style-cast',
   '-Wformat=1']
     if cpp.has_argument(cflag)
-      quiver_flags += cflag
+      quiver_warning_flags += cflag
     endif
 endforeach
 
@@ -54,6 +55,10 @@ if cpp.get_id() == 'clang'
       endif
   endforeach
 endif
+
+quiver_flags = [
+  quiver_perf_flags,
+  quiver_warning_flags]
 
 ################
 # dependencies #

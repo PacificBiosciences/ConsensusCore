@@ -78,6 +78,7 @@ quiver_cc1_pylib = quiver_python.extension_module(
     quiver_include_directories],
   link_with : quiver_cc1_lib,
   cpp_args : [
+    quiver_perf_flags,
     # this is also hacky and won't work on Windows
     '-I' + quiver_numpy_incdir,
     # SWIG generates functions with unused arguments
