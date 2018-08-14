@@ -1,7 +1,7 @@
 project(
   'Quiver',
   'cpp',
-  version : '0.9',
+  version : '1.1.0',
   default_options : [
     'buildtype=release',
     'warning_level=3',
