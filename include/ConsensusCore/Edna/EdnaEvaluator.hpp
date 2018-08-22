@@ -118,7 +118,7 @@ public:
         float trans = 1.0f - ps - pm;
 
         float em = moveDist(features_.Channel[i], j);
-        return log(trans * em);
+        return std::log(trans * em);
     }
 
     float Del(int i, int j) const
@@ -132,7 +132,7 @@ public:
             float trans = 1.0f - ps - pm;
 
             float em = moveDist(0, j);
-            return log(trans * em);
+            return std::log(trans * em);
         }
     }
 
@@ -142,7 +142,7 @@ public:
 
         float trans = pStay(j);
         float em = stayDist(features_.Channel[i], j);
-        return log(trans * em);
+        return std::log(trans * em);
     }
 
     float Merge(int i, int j) const
@@ -154,7 +154,7 @@ public:
         } else {
             float ps = pStay(j);
             float pm = (1.0f - ps) * pMerge(j);
-            return log(pm);
+            return std::log(pm);
         }
     }
 
@@ -163,20 +163,20 @@ public:
         if (j1 == j2) {
             float trans = pStay(j1);
             float em = stayDist(obs, j1);
-            return log(trans * em);
+            return std::log(trans * em);
         } else if (j1 + 1 == j2) {
             float ps = pStay(j1);
             float pm = (1.0f - ps) * pMerge(j1);
             float trans = 1.0f - ps - pm;
 
             float em = moveDist(obs, j1);
-            return log(trans * em);
+            return std::log(trans * em);
         } else if (j1 + 2 == j2) {
             float ps = pStay(j1);
             float pm = (1.0f - ps) * pMerge(j1);
 
             if (obs == templateBase(j1))
-                return log(pm);
+                return std::log(pm);
 
             else
                 return NEG_INF;
