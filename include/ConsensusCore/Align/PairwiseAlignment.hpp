@@ -2,12 +2,11 @@
 
 #pragma once
 
+#include <cmath>
 #include <string>
 #include <vector>
 
 #include <ConsensusCore/Align/AlignConfig.hpp>
-
-namespace {
 
 // Utility functions common to implementations of aligners
 
@@ -21,7 +20,6 @@ inline int ArgMax3(int a, int b, int c)
         return 1;
     else
         return 2;
-}
 }
 
 namespace ConsensusCore {
