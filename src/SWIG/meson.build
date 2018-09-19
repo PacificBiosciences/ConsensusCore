@@ -86,3 +86,36 @@ quiver_cc1_pylib = quiver_python.extension_module(
 
 # used for tests
 quiver_pythonpath = meson.current_build_dir()
+
+##
+## FIXME(dseifert): delete all of this once Meson can generate python bytecode itself
+##
+
+# python .py files should be byte-compiled before installing, in order not to have the python
+# vm generate them at runtime which on some distros causes them to become orphaned
+custom_target('quiver_py_bytecompile_pyo',
+  input: quiver_swig_gen,
+  output: 'ConsensusCore.pyo',
+  command: [
+    quiver_python,
+    '-OO',
+    '-m',
+    'compileall',
+    '-q',
+    '-f',
+    '@INPUT1@'],
+  install : true,
+  install_dir : quiver_python.get_install_dir())
+
+custom_target('quiver_py_bytecompile_pyc',
+  input: quiver_swig_gen,
+  output: 'ConsensusCore.pyc',
+  command: [
+    quiver_python,
+    '-m',
+    'compileall',
+    '-q',
+    '-f',
+    '@INPUT1@'],
+  install : true,
+  install_dir : quiver_python.get_install_dir())
