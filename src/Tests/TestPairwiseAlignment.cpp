@@ -1,38 +1,3 @@
-// Copyright (c) 2011-2013, Pacific Biosciences of California, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted (subject to the limitations in the
-// disclaimer below) provided that the following conditions are met:
-//
-//  * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//  * Redistributions in binary form must reproduce the above
-//    copyright notice, this list of conditions and the following
-//    disclaimer in the documentation and/or other materials provided
-//    with the distribution.
-//
-//  * Neither the name of Pacific Biosciences nor the names of its
-//    contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-// NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
-// GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY PACIFIC
-// BIOSCIENCES AND ITS CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL PACIFIC BIOSCIENCES OR ITS
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-// USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-// OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-// SUCH DAMAGE.
-
 // Author: David Alexander
 
 #include <gmock/gmock.h>
@@ -42,7 +7,6 @@
 #include <ConsensusCore/Align/AffineAlignment.hpp>
 #include <ConsensusCore/Align/LinearAlignment.hpp>
 #include <ConsensusCore/Align/PairwiseAlignment.hpp>
-
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAreArray;
@@ -60,16 +24,14 @@ TEST(PairwiseAlignmentTests, RepresentationTests)
     EXPECT_FLOAT_EQ(0.75, a.Accuracy());
     EXPECT_EQ("MMDM", a.Transcript());
 
-    PairwiseAlignment a2("GATTA-CA",
-                         "CA-TAACA");
+    PairwiseAlignment a2("GATTA-CA", "CA-TAACA");
     EXPECT_EQ("RMDMMIMM", a2.Transcript());
-    EXPECT_FLOAT_EQ(5./8, a2.Accuracy());
+    EXPECT_FLOAT_EQ(5. / 8, a2.Accuracy());
     EXPECT_EQ(1, a2.Mismatches());
     EXPECT_EQ(1, a2.Deletions());
     EXPECT_EQ(1, a2.Insertions());
     EXPECT_EQ(5, a2.Matches());
 }
-
 
 TEST(PairwiseAlignmentTests, GlobalAlignmentTests)
 {
@@ -90,24 +52,23 @@ TEST(PairwiseAlignmentTests, GlobalAlignmentTests)
     a = Align("GATTACA", "TT");
     EXPECT_EQ("GATTACA", a->Target());
     EXPECT_EQ("--TT---", a->Query());
-    EXPECT_FLOAT_EQ(2./7, a->Accuracy());
+    EXPECT_FLOAT_EQ(2. / 7, a->Accuracy());
     delete a;
 }
-
 
 TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
 {
     // MMM -> 0123
     {
-        int expected[] = { 0, 1, 2, 3 };
+        int expected[] = {0, 1, 2, 3};
         ASSERT_THAT(TargetToQueryPositions("MMM"), ElementsAreArray(expected));
     }
 
     // DMM -> 0012, MDM -> 0112, MMD -> 0122,
     {
-        int expected1[] = { 0, 0, 1, 2 };
-        int expected2[] = { 0, 1, 1, 2 };
-        int expected3[] = { 0, 1, 2, 2 };
+        int expected1[] = {0, 0, 1, 2};
+        int expected2[] = {0, 1, 1, 2};
+        int expected3[] = {0, 1, 2, 2};
         ASSERT_THAT(TargetToQueryPositions("DMM"), ElementsAreArray(expected1));
         ASSERT_THAT(TargetToQueryPositions("MDM"), ElementsAreArray(expected2));
         ASSERT_THAT(TargetToQueryPositions("MMD"), ElementsAreArray(expected3));
@@ -115,9 +76,9 @@ TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
 
     // IMM -> 123, MIM -> 023, MMI -> 013,
     {
-        int expected1[] = { 1, 2, 3 };
-        int expected2[] = { 0, 2, 3 };
-        int expected3[] = { 0, 1, 3 };
+        int expected1[] = {1, 2, 3};
+        int expected2[] = {0, 2, 3};
+        int expected3[] = {0, 1, 3};
         ASSERT_THAT(TargetToQueryPositions("IMM"), ElementsAreArray(expected1));
         ASSERT_THAT(TargetToQueryPositions("MIM"), ElementsAreArray(expected2));
         ASSERT_THAT(TargetToQueryPositions("MMI"), ElementsAreArray(expected3));
@@ -126,14 +87,13 @@ TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
     // MRM, MDIM -> 0123
     // MIDM -> 0223
     {
-        int expected1[] = { 0, 1, 2, 3 };
-        int expected2[] = { 0, 2, 2, 3 };
-        ASSERT_THAT(TargetToQueryPositions("MRM"),  ElementsAreArray(expected1));
+        int expected1[] = {0, 1, 2, 3};
+        int expected2[] = {0, 2, 2, 3};
+        ASSERT_THAT(TargetToQueryPositions("MRM"), ElementsAreArray(expected1));
         ASSERT_THAT(TargetToQueryPositions("MDIM"), ElementsAreArray(expected1));
         ASSERT_THAT(TargetToQueryPositions("MIDM"), ElementsAreArray(expected2));
     }
 }
-
 
 // ------------------ AffineAlignment tests ---------------------
 
@@ -175,12 +135,11 @@ TEST(AffineAlignmentTests, BasicTests)
     delete a;
 }
 
-
 TEST(AffineAlignmentTests, LargeGapTest)
 {
     // Test a real-world large insertion, found in an E. Coli
     // experiment
-    const char* target = \
+    const char* target =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -199,7 +158,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "CTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAAA"
         "TCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    const char* query = \
+    const char* query =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -221,7 +180,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "GCTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAA"
         "ATCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    const char* expectedAlignedTarget = \
+    const char* expectedAlignedTarget =
         "AACGATTTTATGATGGCATGTGACATGTATTTCCGTTGGGGGCATTTTAATAAGTGAGGA"
         "AGTGATAGGAAGTGACCAGATAATACATATATGTTCTGTACTCTCTTGCGCATTTTGATT"
         "GTTGACTGAGTAACCAGACAGTTGATGTGCACGATTTCCCCTCGCCCTAACAGACGTGGG"
@@ -248,8 +207,6 @@ TEST(AffineAlignmentTests, LargeGapTest)
     delete a;
 }
 
-
-
 // ------------------ IUPAC-aware alignment tests ---------------------
 
 TEST(IupacAlignmentTests, BasicTest)
@@ -265,7 +222,6 @@ TEST(IupacAlignmentTests, BasicTest)
     ASSERT_EQ("-TTTMG", a->Query());
     delete a;
 }
-
 
 // ---------------- Linear-space alignment tests -----------------------
 
@@ -298,7 +254,6 @@ TEST(LinearAlignmentTests, BasicTest)
     EXPECT_EQ(1, score);
     delete a;
 
-
     a = AlignLinear("GATT", "GATT");
     EXPECT_FLOAT_EQ(1.0, a->Accuracy());
     EXPECT_EQ("GATT", a->Target());
@@ -316,17 +271,22 @@ TEST(LinearAlignmentTests, BasicTest)
     a = AlignLinear("GATTACA", "TT");
     EXPECT_EQ("GATTACA", a->Target());
     EXPECT_EQ("--TT---", a->Query());
-    EXPECT_FLOAT_EQ(2./7, a->Accuracy());
+    EXPECT_FLOAT_EQ(2. / 7, a->Accuracy());
     delete a;
 
-    const char* ref = "GTATTTTAAATAAAAACATTAAGTTATGACGAAGAAGAACGGAAACGCCTTAAACCGGAAAATTTTCATAAATAGCGAAAACCCGCGAGGTCGCCGCCC";
-    const char* read = "GTATTTTAAATAAAAAAACATTATAGTTTAATGAACGAGAATGAACGGTAATACGCCTTTAAAGCCTGAAATATTTTTCCATAAATGTAATTTCTGTATATAATCTCCGCGAGTGTCTGCCGCCC";
+    const char* ref =
+        "GTATTTTAAATAAAAACATTAAGTTATGACGAAGAAGAACGGAAACGCCTTAAACCGG"
+        "AAAATTTTCATAAATAGCGAAAACCCGCGAGGTCGCCGCCC";
+    const char* read =
+        "GTATTTTAAATAAAAAAACATTATAGTTTAATGAACGAGAATGAACGGTAATACGCC"
+        "TTTAAAGCCTGAAATATTTTTCCATAAATGTAATTTCTGTATATAATCTCCGCGAGT"
+        "GTCTGCCGCCC";
 
     a = AlignLinear(ref, read, &score);
     peerAlignment = Align(ref, read, &peerScore, config);
+    delete peerAlignment;
     EXPECT_EQ(score, peerScore);
 }
-
 
 #if 0
 TEST(LinearAlignmentTests, SemiglobalTests)

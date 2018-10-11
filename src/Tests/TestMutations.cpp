@@ -1,38 +1,3 @@
-// Copyright (c) 2011-2013, Pacific Biosciences of California, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted (subject to the limitations in the
-// disclaimer below) provided that the following conditions are met:
-//
-//  * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//  * Redistributions in binary form must reproduce the above
-//    copyright notice, this list of conditions and the following
-//    disclaimer in the documentation and/or other materials provided
-//    with the distribution.
-//
-//  * Neither the name of Pacific Biosciences nor the names of its
-//    contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-// NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
-// GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY PACIFIC
-// BIOSCIENCES AND ITS CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL PACIFIC BIOSCIENCES OR ITS
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-// USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-// OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-// SUCH DAMAGE.
-
 // Author: David Alexander
 
 #include <gmock/gmock.h>
@@ -47,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using std::string;
 using std::vector;
@@ -107,7 +72,6 @@ TEST(MutationTest, ApplyMutationsTest)
     EXPECT_EQ("GATTACA", tpl);
 }
 
-
 TEST(MutationTest, ApplyMutationsToSamePositionTest)
 {
     // Test the very real scenario of Ins@x, Subs@x.
@@ -155,7 +119,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         Mutation m2(INSERTION, 5, 'C');
         Mutation m3(SUBSTITUTION, 4, 'G');
         muts += m1, m2, m3;
-        int expectedMtp[] = { 0, 1, 2, 2, 3, 5, 6, 7 };
+        int expectedMtp[] = {0, 1, 2, 2, 3, 5, 6, 7};
         ASSERT_THAT(TargetToQueryPositions(muts, tpl), ElementsAreArray(expectedMtp));
     }
 
@@ -165,7 +129,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         std::vector<Mutation> muts2;
         Mutation m(INSERTION, 0, 'A');
         muts2 += m;
-        int expectedMtp2[] = { 1, 2, 3 };
+        int expectedMtp2[] = {1, 2, 3};
         ASSERT_THAT(TargetToQueryPositions(muts2, tpl2), ElementsAreArray(expectedMtp2));
     }
 
@@ -175,7 +139,7 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         std::vector<Mutation> muts3;
         Mutation m(DELETION, 0, '-');
         muts3 += m;
-        int expectedMtp3[] = { 0, 0, 1, 2 };
+        int expectedMtp3[] = {0, 0, 1, 2};
         ASSERT_THAT(TargetToQueryPositions(muts3, tpl3), ElementsAreArray(expectedMtp3));
     }
 }

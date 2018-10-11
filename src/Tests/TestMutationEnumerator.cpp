@@ -1,38 +1,3 @@
-// Copyright (c) 2011-2014, Pacific Biosciences of California, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted (subject to the limitations in the
-// disclaimer below) provided that the following conditions are met:
-//
-//  * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//  * Redistributions in binary form must reproduce the above
-//    copyright notice, this list of conditions and the following
-//    disclaimer in the documentation and/or other materials provided
-//    with the distribution.
-//
-//  * Neither the name of Pacific Biosciences nor the names of its
-//    contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-// NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
-// GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY PACIFIC
-// BIOSCIENCES AND ITS CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL PACIFIC BIOSCIENCES OR ITS
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-// USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-// OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-// SUCH DAMAGE.
-
 // Author: David Alexander
 
 #include <gmock/gmock.h>
@@ -47,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
 #include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/Utils.hpp>
 
 using std::string;
 using std::vector;
@@ -66,7 +31,7 @@ TEST(MutationEnumerationTest, TestAllMutations)
     std::string tpl = "GAATC";
     std::vector<Mutation> result = AllSingleBaseMutationEnumerator(tpl).Mutations();
     // 4 insertions, 3 substitutions, and 1 deletion per base
-    EXPECT_EQ(8*tpl.length(), result.size());
+    EXPECT_EQ(8 * tpl.length(), result.size());
 }
 
 TEST(MutationEnumerationTest, TestUniqueMutations)
@@ -76,9 +41,8 @@ TEST(MutationEnumerationTest, TestUniqueMutations)
     // 3 insertions, 3 substitions, and 1 deletion per base,
     // except the first (which has an extra insertion),
     // and the homopolymeric A (which is less a deletion)
-    EXPECT_EQ(7*tpl.length() + 1 - 1, result.size());
+    EXPECT_EQ(7 * tpl.length() + 1 - 1, result.size());
 }
-
 
 TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
 {
@@ -94,7 +58,8 @@ TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
     EXPECT_EQ(8 + 7, result.size());
 
     result = UniqueNearbyMutations(enumerator, centers, 2);
-    // 8 for the first, 7 for the second, 6 for the third (no homopolymeric deletion)
+    // 8 for the first, 7 for the second, 6 for the third (no homopolymeric
+    // deletion)
     EXPECT_EQ(8 + 7 + 6, result.size());
 
     centers.push_back(Mutation(SUBSTITUTION, 3, 'G'));
@@ -102,7 +67,6 @@ TEST(MutationEnumerationTest, TestUniqueNearbyMutations)
     std::vector<Mutation> expected = UniqueSingleBaseMutationEnumerator(tpl).Mutations();
     EXPECT_THAT(result, UnorderedElementsAreArray(expected));
 }
-
 
 TEST(MutationEnumerationTest, TestDinucleotideMutations)
 {

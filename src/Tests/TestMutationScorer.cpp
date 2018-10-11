@@ -1,38 +1,3 @@
-// Copyright (c) 2011-2013, Pacific Biosciences of California, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted (subject to the limitations in the
-// disclaimer below) provided that the following conditions are met:
-//
-//  * Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//  * Redistributions in binary form must reproduce the above
-//    copyright notice, this list of conditions and the following
-//    disclaimer in the documentation and/or other materials provided
-//    with the distribution.
-//
-//  * Neither the name of Pacific Biosciences nor the names of its
-//    contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-// NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
-// GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY PACIFIC
-// BIOSCIENCES AND ITS CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-// WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL PACIFIC BIOSCIENCES OR ITS
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-// USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-// OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-// SUCH DAMAGE.
-
 // Author: David Alexander
 
 #include <gtest/gtest.h>
@@ -42,30 +7,28 @@
 
 #include <ConsensusCore/Features.hpp>
 #include <ConsensusCore/Mutation.hpp>
-#include <ConsensusCore/Read.hpp>
-#include <ConsensusCore/Sequence.hpp>
 #include <ConsensusCore/Quiver/MutationScorer.hpp>
 #include <ConsensusCore/Quiver/QuiverConfig.hpp>
 #include <ConsensusCore/Quiver/QvEvaluator.hpp>
 #include <ConsensusCore/Quiver/ReadScorer.hpp>
 #include <ConsensusCore/Quiver/SimpleRecursor.hpp>
 #include <ConsensusCore/Quiver/SseRecursor.hpp>
+#include <ConsensusCore/Read.hpp>
+#include <ConsensusCore/Sequence.hpp>
 
 #include "ParameterSettings.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using namespace boost::assign;  // NOLINT
 
-typedef testing::Types<SimpleQvRecursor,
-                       SseQvRecursor,
-                       SparseSimpleQvRecursor,
-                       SparseSseQvRecursor>    AllRecursorTypes;
+typedef testing::Types<SimpleQvRecursor, SseQvRecursor, SparseSimpleQvRecursor, SparseSseQvRecursor>
+    AllRecursorTypes;
 
-TYPED_TEST_CASE(MutationScorerTest,          AllRecursorTypes);
-
+TYPED_TEST_CASE(MutationScorerTest, AllRecursorTypes);
 
 //
-// ================== Tests for single read MutationScorer ============================
+// ================== Tests for single read MutationScorer
+// ============================
 //
 
 template <typename R>
@@ -76,9 +39,9 @@ public:
 
 protected:
     MutationScorerTest()
-        : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingConfig_(TestingConfig())
-    {}
+        : recursor_(ALL_MOVES, BandingOptions(4, 200)), testingConfig_(TestingConfig())
+    {
+    }
 
     virtual ~MutationScorerTest() {}
 
@@ -88,14 +51,13 @@ protected:
 };
 
 #define MS MutationScorer<TypeParam>
-#define E  typename TypeParam::EvaluatorType
+#define E typename TypeParam::EvaluatorType
 
-#define recursor  (this->recursor_)
-#define params    (this->testingConfig_.QvParams)
-#define config    (this->testingConfig_)
+#define recursor (this->recursor_)
+#define params (this->testingConfig_.QvParams)
+#define config (this->testingConfig_)
 
 extern Read AnonymousRead(std::string seq);
-
 
 TYPED_TEST(MutationScorerTest, BasicTest)
 {
@@ -110,19 +72,18 @@ TYPED_TEST(MutationScorerTest, BasicTest)
 
     // Testing mutations should not change the template.
     // Let's just make sure of that.
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
-    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
 }
-
 
 TYPED_TEST(MutationScorerTest, CopyTest)
 {
@@ -133,7 +94,6 @@ TYPED_TEST(MutationScorerTest, CopyTest)
     MS msCopy(ms);
     ASSERT_EQ(ms.Score(), msCopy.Score());
 }
-
 
 TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
 {
@@ -148,13 +108,13 @@ TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
     Mutation substitutionMutation(SUBSTITUTION, 0, 'T');
     Mutation deletionMutation(DELETION, 0, '-');
 
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(insertBefore));
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation1));
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation2));
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertBefore));
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation1));
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation2));
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
 }
 
 TYPED_TEST(MutationScorerTest, MutationsAtEnd)
@@ -168,13 +128,12 @@ TYPED_TEST(MutationScorerTest, MutationsAtEnd)
     Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
     Mutation deletionMutation(DELETION, 6, '-');
 
-    EXPECT_EQ(0                , ms.Score());
-    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionMutation));
 }
-
 
 TYPED_TEST(MutationScorerTest, TinyTemplate)
 {
@@ -188,19 +147,17 @@ TYPED_TEST(MutationScorerTest, TinyTemplate)
     EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtBeginning));
     EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtEnd));
 
-
     Mutation insertAtBeginning(INSERTION, 0, 'T');
     Mutation insertAtEnd(INSERTION, 4, 'T');
     EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtBeginning));
     EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtEnd));
 
-    for (int pos = 0; pos < tpl.length(); pos++)
-    {
+    const int tplLen = tpl.length();
+    for (int pos = 0; pos < tplLen; pos++) {
         Mutation m(SUBSTITUTION, pos, 'A');
         EXPECT_EQ(params.Mismatch, ms.ScoreMutation(m));
     }
 }
-
 
 TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 {
@@ -210,24 +167,21 @@ TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
     MS ms(ev, recursor);
     Mutation insertMutation(INSERTION, 4, 'A');
 
-    EXPECT_EQ("GATTACA"       , ms.Template());
-    EXPECT_EQ(0               , ms.Score());
-    EXPECT_EQ("GATTACA"       , ms.Template());
-    EXPECT_EQ(params.Merge[0] , ms.ScoreMutation(insertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.ScoreMutation(insertMutation));
 
     std::string newTpl = ApplyMutation(insertMutation, tpl);
     ms.Template(newTpl);
-    EXPECT_EQ(params.Merge[0] , ms.Score());
-    EXPECT_EQ("GATTAACA"      , ms.Template());
+    EXPECT_EQ(params.Merge[0], ms.Score());
+    EXPECT_EQ("GATTAACA", ms.Template());
 }
-
-
-
 
 TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
 {
     //                     0123456789012345678
-    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTT = "CCCCCGATTACACCCCC";
     std::string tplTTTT = "CCCCCGATTTTACACCCCC";
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
     std::string tplAATT = "CCCCCGAAATTACACCCCC";
@@ -253,7 +207,7 @@ TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
 TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
 {
     //                     0123456789012345678
-    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTT = "CCCCCGATTACACCCCC";
     std::string tplTTTT = "CCCCCGATTTTACACCCCC";
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
 

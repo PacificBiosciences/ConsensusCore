@@ -1,0 +1,5 @@
+option('sse3',  type : 'boolean', value : true, description : 'Enable SSE3 codepaths')
+option('tests', type : 'boolean', value : true, description : 'Enable dependencies required for testing')
+
+# python:
+option('swig',  type : 'boolean', value : true, description : 'Build Quiver\'s SWIG interfacing code')
